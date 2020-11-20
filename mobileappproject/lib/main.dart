@@ -69,7 +69,7 @@ class ShrineApp extends StatelessWidget {
       // home: HomePage(),
       initialRoute: '/login',
       routes: {
-        '/login': (context) => LoginPage(),
+        '/login': (context) => SignInPage(),
       },
       onGenerateRoute: _getRoute,
     );
@@ -79,7 +79,7 @@ class ShrineApp extends StatelessWidget {
     if (settings.name == '/login') {
       return MaterialPageRoute<void>(
         settings: settings,
-        builder: (BuildContext context) => LoginPage(),
+        builder: (BuildContext context) => SignInPage(),
         fullscreenDialog: true,
       );
     }

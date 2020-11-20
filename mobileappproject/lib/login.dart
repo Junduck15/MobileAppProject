@@ -1,120 +1,179 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'add.dart';
 
-class LoginPage extends StatefulWidget {
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+class SignInPage extends StatefulWidget {
+  final String title = 'Sign In & Out';
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<StatefulWidget> createState() => _SignInPageState();
 }
-
-class _LoginPageState extends State<LoginPage> {
+class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+
+      body: Builder(builder: (BuildContext context) {
+        return ListView(
+          padding: EdgeInsets.all(8),
+          scrollDirection: Axis.vertical,
           children: <Widget>[
-            SizedBox(height: 80.0),
-            Column(
-              children: <Widget>[
-                Image.asset('assets/diamond.png'),
-                SizedBox(height: 16.0),
-                Text('SHRINE'),
-              ],
-            ),
-            SizedBox(height: 120.0),
-            _googleSignInButton(context),
-            SizedBox(height: 12.0),
-            _guestSignInButton(context),
+            Image.network('http://handong.edu/site/handong/res/img/logo.png'),
+             _OtherProvidersSignInSection(),
+            _AnonymouslySignInSection(),
+           
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 }
 
-Widget _googleSignInButton(BuildContext context) {
-  return OutlineButton(
-    splashColor: Colors.grey,
-    onPressed: () async {
-      await _signInWithGoogle();
-      Navigator.pop(context);
-    },
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-    highlightElevation: 0,
-    borderSide: BorderSide(color: Colors.grey),
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Text(
-              'Sign in with Google',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey,
+class _AnonymouslySignInSection extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _AnonymouslySignInSectionState();
+}
+
+class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
+  bool _success;
+  String _userID;
+  User user;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  alignment: Alignment.center,
+                  child: SignInButtonBuilder(
+                    text: "Guest",
+                    icon: Icons.person_outline,
+                    backgroundColor: Colors.grey,
+                    onPressed: () async {
+                      await _signInAnonymously();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Add(id: _auth)),
+                      );
+                    },
+                  ),
+                ),
+                Visibility(
+                  visible: _success == null ? false : true,
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      _success == null
+                          ? ''
+                          : (_success
+                              ? 'Successfully signed in, uid: ' + _userID
+                              : 'Sign in failed'),
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                )
+              ],
+            )));
+  }
+
+  Future _signInAnonymously() async {
+    try {
+      user = (await _auth.signInAnonymously()).user;
+
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Signed in Anonymously as user ${user.uid}"),
+      ));
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to sign in Anonymously"),
+      ));
+    }
+
+    return Future.delayed(Duration(seconds: 3));
+  }
+}
+
+Future toHome() async {}
+
+class _OtherProvidersSignInSection extends StatefulWidget {
+  _OtherProvidersSignInSection();
+
+  @override
+  State<StatefulWidget> createState() => _OtherProvidersSignInSectionState();
+}
+
+class _OtherProvidersSignInSectionState
+    extends State<_OtherProvidersSignInSection> {
+  GoogleSignInAccount googleUser;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.only(top: 8.0),
+                alignment: Alignment.center,
+                child: SignInButton(
+                  Buttons.GoogleDark,
+                  text: "Google",
+                  onPressed: () async {
+                    await _signInWithGoogle();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Add(id: _auth)),
+                    );
+                  },
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+            ],
+          )),
+    );
+  }
 
-Widget _guestSignInButton(BuildContext context) {
-  return OutlineButton(
-    splashColor: Colors.grey,
-    onPressed: () async {
-      await _singInAsGuest();
-      Navigator.pop(context);
-    },
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-    highlightElevation: 0,
-    borderSide: BorderSide(color: Colors.grey),
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Text(
-              'Sign in as Guest',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey,
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+  Future _signInWithGoogle() async {
+    try {
+      UserCredential userCredential;
 
-Future<UserCredential> _signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+      if (kIsWeb) {
+        GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        userCredential = await _auth.signInWithPopup(googleProvider);
+      } else {
+        googleUser = await GoogleSignIn().signIn();
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final GoogleAuthCredential googleAuthCredential =
+            GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        userCredential = await _auth.signInWithCredential(googleAuthCredential);
+      }
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final user = userCredential.user;
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Sign In ${user.uid} with Google"),
+      ));
+    } catch (e) {
+      print(e);
 
-  // Create a new credential
-  final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth.accessToken,
-    idToken: googleAuth.idToken,
-  );
-
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
-}
-
-_singInAsGuest() async {
-  UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to sign in with Google: ${e}"),
+      ));
+    }
+  }
 }
