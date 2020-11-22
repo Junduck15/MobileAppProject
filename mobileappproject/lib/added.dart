@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'home.dart';
+
 class Added extends StatelessWidget {
   final String problem;
   final String answer;
@@ -82,8 +84,12 @@ class Added extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-               Navigator.pop(context);
-               Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage()),
+                );
+               //Navigator.pop(context);
               },
             ))
       ],
