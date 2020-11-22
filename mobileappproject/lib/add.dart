@@ -9,19 +9,19 @@ import 'dart:async';
 import 'added.dart';
 
 class Add extends StatefulWidget {
-  final FirebaseAuth id;
 
-  const Add({Key key, this.id}) : super(key: key);
-  _Add createState() => _Add(id: id);
+  _Add createState() => _Add();
 }
 
 class _Add extends State<Add> {
   File _image;
-  FirebaseAuth id;
+  //String id;
   var imageString;
   String username;
-  _Add({this.id});
+  //_Add({this.id});
   bool isSwitched = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +105,7 @@ class _Add extends State<Add> {
           Container(
             alignment: Alignment.centerRight,
             child: IconButton(
-                icon: Icon(Icons.picture_as_pdf_outlined),
+                icon: Icon(Icons.picture_as_pdf),
                 onPressed: () async {
                   await getImage();
                 }),
@@ -151,9 +151,10 @@ class _Add extends State<Add> {
           'problemtext': problem.text,
           'answer': answer.text,
           'picture': imageString,
-          'creator': id.currentUser.uid,
+          'creator': _auth.currentUser.uid,
           'isShared': isSwitched
         });
+        print(_auth.currentUser.uid);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Added(problem: problem.text, answer: answer.text)),
