@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:mobileappproject/home.dart';
 import 'add.dart';
 import 'quiz.dart';
 
@@ -64,7 +65,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Quiz()),
+                            builder: (context) => HomePage()),
                       );
                     },
                   ),
@@ -136,7 +137,7 @@ class _OtherProvidersSignInSectionState
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Add(id: _auth)),
+                          builder: (context) => Add()),
                     );
                   },
                 ),
