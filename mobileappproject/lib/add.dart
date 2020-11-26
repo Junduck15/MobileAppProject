@@ -32,6 +32,7 @@ class _Add extends State<Add> {
     final multi2 = TextEditingController();
     final multi3 = TextEditingController();
     final multiAnswer = TextEditingController();
+    bool isMultiple = false;
     Future<void> _addPathToDatabase(String text) async {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
@@ -86,8 +87,11 @@ class _Add extends State<Add> {
               activeColor: Colors.blue),
         ]));
     Widget multipleChoice = Container(
-      child: Column(children:[
-        TextField(
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+        child: Column(children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
               controller: multi1,
               decoration: new InputDecoration(
                 labelText: "오답1",
@@ -98,7 +102,10 @@ class _Add extends State<Add> {
                 ),
               ),
             ),
-            TextField(
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
               controller: multi2,
               decoration: new InputDecoration(
                 labelText: "오답2",
@@ -109,7 +116,10 @@ class _Add extends State<Add> {
                 ),
               ),
             ),
-            TextField(
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
               controller: multi3,
               decoration: new InputDecoration(
                 labelText: "오답3",
@@ -120,7 +130,10 @@ class _Add extends State<Add> {
                 ),
               ),
             ),
-            TextField(
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
               controller: multiAnswer,
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
@@ -131,13 +144,12 @@ class _Add extends State<Add> {
                 ),
               ),
             ),
-      ])
-    );
-    Widget buttonSection = Container(
-      padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          ),
+          isShared
+        ]));
+    Widget problemSection = Container(
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('문제'),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -165,10 +177,15 @@ class _Add extends State<Add> {
             color: Colors.black,
             height: 1.0,
           ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 15, 0, 0),
-            child: Text('정답'),
-          ),
+        ]
+        )
+        );
+    Widget answerSection = Container(
+      padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('정답'),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
@@ -187,6 +204,7 @@ class _Add extends State<Add> {
         ],
       ),
     );
+    
     Widget submitButton = Center(
         child: RaisedButton(
       padding: EdgeInsets.fromLTRB(80, 5, 80, 5),
@@ -217,7 +235,11 @@ class _Add extends State<Add> {
 
     return MaterialApp(
       title: 'Flutter layout demo',
-      home: Scaffold(
+      home: DefaultTabController(
+       
+        length: 2,
+        child:
+      Scaffold(
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
@@ -225,22 +247,26 @@ class _Add extends State<Add> {
             '문제 입력',
             style: TextStyle(color: Colors.black),
           ),
-        ),
-        body: ListView(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(onPressed: null, child: Text('주관식')),
-                Container(height: 20, child: VerticalDivider(color: Colors.black)),
-                TextButton(onPressed: null, child: Text('객관식'))
+           bottom: TabBar(
+             labelColor: Colors.black,
+              tabs: [
+                Tab(text: "주관식"),
+                Tab(text: "객관식"),
               ],
             ),
-            buttonSection,
-            submitButton
+        ),
+        body: TabBarView(children: [ 
+          Container(
+            child: ListView(children: [ problemSection, answerSection, submitButton],)
+          ),
+         
+           Container(
+            child: ListView(children: [ problemSection, multipleChoice, submitButton],)
+          ),
           ],
         ),
       ),
+      )
     );
   }
 }
