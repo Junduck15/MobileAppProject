@@ -9,7 +9,6 @@ import 'dart:async';
 import 'added.dart';
 
 class Add extends StatefulWidget {
-
   _Add createState() => _Add();
 }
 
@@ -29,6 +28,10 @@ class _Add extends State<Add> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     final problem = TextEditingController();
     final answer = TextEditingController();
+    final multi1 = TextEditingController();
+    final multi2 = TextEditingController();
+    final multi3 = TextEditingController();
+    final multiAnswer = TextEditingController();
     Future<void> _addPathToDatabase(String text) async {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
@@ -82,6 +85,54 @@ class _Add extends State<Add> {
               activeTrackColor: Colors.blueAccent,
               activeColor: Colors.blue),
         ]));
+    Widget multipleChoice = Container(
+      child: Column(children:[
+        TextField(
+              controller: multi1,
+              decoration: new InputDecoration(
+                labelText: "오답1",
+                fillColor: Colors.white,
+                border: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(20.0),
+                  borderSide: new BorderSide(),
+                ),
+              ),
+            ),
+            TextField(
+              controller: multi2,
+              decoration: new InputDecoration(
+                labelText: "오답2",
+                fillColor: Colors.white,
+                border: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(20.0),
+                  borderSide: new BorderSide(),
+                ),
+              ),
+            ),
+            TextField(
+              controller: multi3,
+              decoration: new InputDecoration(
+                labelText: "오답3",
+                fillColor: Colors.white,
+                border: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(20.0),
+                  borderSide: new BorderSide(),
+                ),
+              ),
+            ),
+            TextField(
+              controller: multiAnswer,
+              decoration: new InputDecoration(
+                labelText: "정답을 입력해주세요.",
+                fillColor: Colors.white,
+                border: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(20.0),
+                  borderSide: new BorderSide(),
+                ),
+              ),
+            ),
+      ])
+    );
     Widget buttonSection = Container(
       padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
       child: Column(
@@ -157,7 +208,9 @@ class _Add extends State<Add> {
         print(_auth.currentUser.uid);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Added(problem: problem.text, answer: answer.text)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  Added(problem: problem.text, answer: answer.text)),
         );
       },
     ));
@@ -174,7 +227,18 @@ class _Add extends State<Add> {
           ),
         ),
         body: ListView(
-          children: <Widget>[buttonSection, submitButton],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(onPressed: null, child: Text('주관식')),
+                Container(height: 20, child: VerticalDivider(color: Colors.black)),
+                TextButton(onPressed: null, child: Text('객관식'))
+              ],
+            ),
+            buttonSection,
+            submitButton
+          ],
         ),
       ),
     );
