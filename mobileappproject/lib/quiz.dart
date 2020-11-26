@@ -70,7 +70,7 @@ class _Quiz extends State<Quiz> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return LinearProgressIndicator();
         }
 
         problemList = snapshot.data.docs
@@ -79,18 +79,28 @@ class _Quiz extends State<Quiz> {
 
         return Column(
           children: [
-            _Picture(context),
             Container(
               height: 10,
               child: Divider(),
             ),
+            Container(
+              height: 30,
+              child: Text(
+                (index + 1).toString() + '/' + problemList.length.toString(),
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            _Picture(context),
             Expanded(
               child: Container(
                 child: Text(
                   problemList[index].problemtext,
                   maxLines: 5,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 20,
                   ),
                 ),
               ),
@@ -118,9 +128,26 @@ class _Quiz extends State<Quiz> {
                     onPressed: () {
                       if (index > 0) {
                         setState(() {
-                          answerList.add(_answerController.text);
+                          if (index < answerList.length) {
+                            answerList[index] = _answerController.text;
+                          }
+                          else {
+                            answerList.add(_answerController.text);
+                          }
                           index--;
+                          _answerController.text = answerList[index];
                         });
+                      }
+                      else {
+                        final snackBar = SnackBar(
+                          content: Text('처음 문제입니다!'),
+                          action: SnackBarAction(
+                            label: '확인',
+                            onPressed: () {
+                            },
+                          ),
+                        );
+                        Scaffold.of(context).showSnackBar(snackBar);
                       }
                     },
                   ),
@@ -129,9 +156,31 @@ class _Quiz extends State<Quiz> {
                     onPressed: () {
                       if (index < problemList.length - 1) {
                         setState(() {
-                          answerList.add(_answerController.text);
+                          if (index < answerList.length) {
+                            answerList[index] = _answerController.text;
+                          }
+                          else {
+                            answerList.add(_answerController.text);
+                          }
                           index++;
+                          if (index < answerList.length) {
+                            _answerController.text = answerList[index];
+                          }
+                          else {
+                            _answerController.text = "";
+                          }
                         });
+                      }
+                      else {
+                        final snackBar = SnackBar(
+                          content: Text('마지막 문제입니다!'),
+                          action: SnackBarAction(
+                            label: '확인',
+                            onPressed: () {
+                            },
+                          ),
+                        );
+                        Scaffold.of(context).showSnackBar(snackBar);
                       }
                     },
                   ),
