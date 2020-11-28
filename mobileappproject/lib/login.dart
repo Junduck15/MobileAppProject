@@ -62,10 +62,9 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                     onPressed: () async {
                       await _signInAnonymously();
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomePage()),
+                      Navigator.pushReplacementNamed(
+                          context,
+                          '/home',
                       );
                     },
                   ),
@@ -134,10 +133,9 @@ class _OtherProvidersSignInSectionState
                   text: "Google",
                   onPressed: () async {
                     await _signInWithGoogle();
-                    Navigator.push(
+                    Navigator.pushReplacementNamed(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => Add()),
+                      '/home',
                     );
                   },
                 ),
