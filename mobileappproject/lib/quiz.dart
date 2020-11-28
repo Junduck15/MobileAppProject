@@ -34,21 +34,44 @@ class Problem {
 }
 
 class Quiz extends StatefulWidget {
-  _Quiz createState() => _Quiz();
+  final String problemType;
+  final String difficulty;
+  final String order;
+  final int quizNumber;
+
+  const Quiz({
+    Key key,
+    this.problemType,
+    this.difficulty,
+    this.order,
+    this.quizNumber,
+  }) : super(key: key);
+
+  _Quiz createState() => _Quiz(problemType: problemType, difficulty: difficulty, order: order, quizNumber: quizNumber);
 }
 
 class _Quiz extends State<Quiz> {
   List<Problem> problemList;
   List<String> answerList = [];
+  String problemType;
+  String difficulty;
+  String order;
+  int quizNumber = 0;
   int index = 0;
   final _answerController = TextEditingController();
+
+  _Quiz({
+    this.problemType,
+    this.difficulty,
+    this.order,
+    this.quizNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         title: Text(
           '퀴즈',
           style: TextStyle(color: Colors.black),

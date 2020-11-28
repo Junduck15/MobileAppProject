@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobileappproject/QuizMenu.dart';
 import 'package:mobileappproject/quiz.dart';
 import 'dart:async';
 
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   int _currentIndex = 0;
 
-  final List<Widget> _children = [Add(), Quiz(), BankPage()];
+  final List<Widget> _children = [Add(), QuizMenu(), BankPage()];
 
   void _onTap(int index) {
     setState(() {
