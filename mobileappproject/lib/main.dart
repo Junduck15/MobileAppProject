@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'home.dart';
 import 'login.dart';
 
 void main() {
@@ -70,6 +71,7 @@ class ShrineApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => SignInPage(),
+        '/home': (context) => HomePage(),
       },
       onGenerateRoute: _getRoute,
     );
