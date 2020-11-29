@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'home.dart';
+import 'edit.dart';
 
 class Added extends StatelessWidget {
   final String problem;
   final String answer;
-  const Added({Key key, this.problem, this.answer}) : super(key: key);
+  final bool isMul;
+  const Added({Key key, this.problem, this.answer, this.isMul}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Widget prob = Container(
@@ -70,7 +72,7 @@ class Added extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Added(),
+                      builder: (context) => Edit(isMul : isMul),
                     ));
               },
             )),

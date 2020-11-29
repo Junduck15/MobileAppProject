@@ -9,15 +9,19 @@ import 'package:mobileappproject/login.dart';
 import 'dart:async';
 import 'added.dart';
 
-class Add extends StatefulWidget {
-  _Add createState() => _Add();
+class Edit extends StatefulWidget {
+  final isMul;
+  _Edit createState() => _Edit(isMul: isMul);
+  const Edit({Key key, this.isMul}) : super(key: key);
 }
 
-class _Add extends State<Add> {
+class _Edit extends State<Edit> {
+  bool isMul;
+  _Edit({this.isMul});
   File _image;
   List<dynamic> problemTypes = [];
   String problemType;
-  bool isMultiple;
+
   //String id;
   var imageString;
   String username;
@@ -31,7 +35,7 @@ class _Add extends State<Add> {
   String multi3Val = "";
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
@@ -49,7 +53,6 @@ class _Add extends State<Add> {
     final multi3Controller = TextEditingController(text: multi3Val);
     final multiAnswerController = TextEditingController(text: multiAnswerVal);
 
-    bool isMultiple = false;
     Future<void> _addPathToDatabase(String text) async {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
@@ -322,179 +325,165 @@ class _Add extends State<Add> {
       ),
     );
 
-    
     return Scaffold(
       appBar: AppBar(
           elevation: 0,
           //backgroundColor: Colors.white,
           title: Text(
-            '문제 입력',
+            '문제 수정',
             style: TextStyle(color: Colors.white),
           )),
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints.expand(height: 50),
-              child: TabBar(
-                labelColor: Colors.black,
-                indicatorColor: Color.fromRGBO(86, 171, 190, 1.0),
-                tabs: [
-                  Tab(text: "주관식"),
-                  Tab(text: "객관식"),
-                ],
-              ),
+      body: isMul == false
+          ? Column(
+              children: [
+                Container(
+                    child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      problemSection,
+                      SizedBox(
+                        height: 30,
+                      ),
+                      answerSection,
+                      SizedBox(
+                        height: 30,
+                      ),
+                      _body,
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: RaisedButton(
+                          color: maincolor,
+                          child: Text(
+                            '문제 등록',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+                            firestore
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .collection(_selectedVal)
+                                .add({
+                              'problemtext': problemController.text,
+                              'answer': answerController.text,
+                              'picture': imageString,
+                              'creator': _auth.currentUser.uid,
+                              'isShared': isSwitched,
+                            });
+                            firestore
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .update({
+                              "problemTypes":
+                                  FieldValue.arrayUnion([_selectedVal]),
+                            });
+                            if (_formKey.currentState.validate() &&
+                                problemController.text != "" &&
+                                answerController.text != "") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Added(
+                                        problem: problemController.text,
+                                        answer: answerController.text)),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ],
+            )
+          : Column(
+              children: [
+                Container(
+                    child: Form(
+                  key: _formKeyMulti,
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      problemSection,
+                      SizedBox(
+                        height: 30,
+                      ),
+                      multipleChoice,
+                      SizedBox(
+                        height: 30,
+                      ),
+                      _body,
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: RaisedButton(
+                          color: Colors.blue,
+                          child: Text(
+                            '문제 등록',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+                            List<String> multipleWrongAnswers =
+                                new List<String>();
+                            multipleWrongAnswers.add(multi1Controller.text);
+                            multipleWrongAnswers.add(multi2Controller.text);
+                            multipleWrongAnswers.add(multi3Controller.text);
+                            firestore
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .collection(_selectedVal)
+                                .add({
+                              'problemtext': problemController.text,
+                              'multipleAnswer': multiAnswerController.text,
+                              'picture': imageString,
+                              'creator': _auth.currentUser.uid,
+                              'isShared': isSwitched,
+                              'multipleWrongAnswers': multipleWrongAnswers
+                            });
+                            firestore
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .update({
+                              "problemTypes":
+                                  FieldValue.arrayUnion([_selectedVal]),
+                            });
+                            if (_formKeyMulti.currentState.validate() &&
+                                problemController.text != "" &&
+                                multi1Controller.text != "" &&
+                                multi2Controller.text != "" &&
+                                multi3Controller.text != "" &&
+                                multiAnswerController.text != "" &&
+                                problemType != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Added(
+                                        problem: problemController.text,
+                                        answer: multiAnswerController.text)),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ],
             ),
-            Expanded(
-                child: Container(
-              child: TabBarView(
-                children: [
-                  Container(
-                      child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                        ),
-                        problemSection,
-                        SizedBox(
-                          height: 30,
-                        ),
-                        answerSection,
-                        SizedBox(
-                          height: 30,
-                        ),
-                        _body,
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: RaisedButton(
-                            color: maincolor,
-                            child: Text(
-                              '문제 등록',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                            onPressed: () {
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid)
-                                  .collection(_selectedVal)
-                                  .add({
-                                'problemtext': problemController.text,
-                                'answer': answerController.text,
-                                'picture': imageString,
-                                'creator': _auth.currentUser.uid,
-                                'isShared': isSwitched,
-                              });
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid).update({
-                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
-                                  });
-                              if (_formKey.currentState.validate() &&
-                                  problemController.text != "" &&
-                                  answerController.text != "") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Added(
-                                          problem: problemController.text,
-                                          answer: answerController.text,
-                                          isMul: false)),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-                  Container(
-                      child: Form(
-                    key: _formKeyMulti,
-                    child: ListView(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                        ),
-                        problemSection,
-                        SizedBox(
-                          height: 30,
-                        ),
-                        multipleChoice,
-                        SizedBox(
-                          height: 30,
-                        ),
-                        _body,
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: RaisedButton(
-                            color: Colors.blue,
-                            child: Text(
-                              '문제 등록',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                            onPressed: () {
-                              List<String> multipleWrongAnswers = new List<String>();
-                              multipleWrongAnswers.add(multi1Controller.text);
-                              multipleWrongAnswers.add(multi2Controller.text);
-                              multipleWrongAnswers.add(multi3Controller.text);
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid)
-                                  .collection(_selectedVal)
-                                  .add({
-                                'problemtext': problemController.text,
-                                'multipleAnswer': multiAnswerController.text,
-                                'picture': imageString,
-                                'creator': _auth.currentUser.uid,
-                                'isShared': isSwitched,
-                                'multipleWrongAnswers': multipleWrongAnswers
-                              });
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid).update({
-                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
-                                  });
-                              if (_formKeyMulti.currentState.validate() &&
-                                  problemController.text != "" &&
-                                  multi1Controller.text != "" &&
-                                  multi2Controller.text != "" &&
-                                  multi3Controller.text != "" &&
-                                  multiAnswerController.text != "" &&
-                                  problemType != null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Added(
-                                          problem: problemController.text,
-                                          answer: multiAnswerController.text,
-                                          isMul: true)),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-                ],
-              ),
-            ))
-          ],
-        ),
-      ),
     );
   }
 }
