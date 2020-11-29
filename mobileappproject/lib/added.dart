@@ -26,6 +26,11 @@ class Added extends StatelessWidget {
             color: Colors.grey,
             height: 1.0,
           ),
+        ]));
+        Widget answ = Container(
+               margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
+      child: Column(
+        children: [
           Center(
             child: Container(
                 decoration: BoxDecoration(
@@ -118,6 +123,10 @@ class Added extends StatelessWidget {
                 margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
                 child: Text('등록된 문제')),
             prob,
+            Container(
+                margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
+                child: Text('정답')),
+                answ,
             buttons
           ],
         ),

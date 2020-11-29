@@ -19,7 +19,7 @@ class _BankPageState extends State<BankPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Bank'),
+          title: Text('문제 은행'),
         ),
         body: Container(
             margin: EdgeInsets.fromLTRB(85, 30, 0, 10),
