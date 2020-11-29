@@ -415,7 +415,8 @@ class _Add extends State<Add> {
                             onPressed: () {
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
-                                  answerController.text != "") {
+                                  answerController.text != "" &&
+                                  problemType != null) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

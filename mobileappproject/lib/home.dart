@@ -1,16 +1,9 @@
-import 'dart:io';
-import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobileappproject/QuizMenu.dart';
-import 'package:mobileappproject/quiz.dart';
-import 'dart:async';
 
 
-import 'add.dart';
+import 'profile.dart';
 import 'bank.dart';
 import 'folderlist.dart';
 
