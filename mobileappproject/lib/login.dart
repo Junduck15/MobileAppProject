@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
@@ -70,7 +71,6 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                     backgroundColor: Colors.white,
                     onPressed: () async {
                       await _signInAnonymously();
-
                       Navigator.pushReplacementNamed(
                         context,
                         '/home',
@@ -101,6 +101,8 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
     try {
       user = (await _auth.signInAnonymously()).user;
 
+      addUser(user.uid);
+
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Signed in Anonymously as user ${user.uid}"),
       ));
@@ -110,7 +112,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
       ));
     }
 
-    return Future.delayed(Duration(seconds: 3));
+    return Future.delayed(Duration(seconds: 1));
   }
 }
 
@@ -166,10 +168,13 @@ class _OtherProvidersSignInSectionState
       }
 
       final user = userCredential.user;
+
+      addUser(user.uid);
+
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Sign In ${user.uid} with Google"),
       ));
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       print(e);
 
@@ -178,4 +183,15 @@ class _OtherProvidersSignInSectionState
       ));
     }
   }
+}
+
+Future<void> addUser(String uid) {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  return users
+      .doc(uid)
+      .set({
+    "problemTypes" : [],
+  })
+      .then((value) => print("User Added"))
+      .catchError((error) => print("Failed to add user: $error"));
 }

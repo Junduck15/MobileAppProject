@@ -3,11 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'home.dart';
 import 'login.dart';
+import 'add.dart';
 
 void main() {
   runApp(App());
 }
-
 
 class App extends StatefulWidget {
   _AppState createState() => _AppState();
@@ -26,7 +26,7 @@ class _AppState extends State<App> {
       setState(() {
         _initialized = true;
       });
-    } catch(e) {
+    } catch (e) {
       // Set `_error` state to true if Firebase initialization fails
       setState(() {
         _error = true;
@@ -43,7 +43,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     // Show error message if initialization failed
-    if(_error) {
+    if (_error) {
       return Container(
         child: Text('error'),
       );
@@ -56,22 +56,26 @@ class _AppState extends State<App> {
       );
     }
 
-    return ShrineApp();
+    return MyApp();
   }
 }
 
 // TODO: Convert ShrineApp to stateful widget (104)
-class ShrineApp extends StatelessWidget {
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Shrine',
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(86, 171, 190, 1.0),
+      ),
+
       // home: HomePage(),
       initialRoute: '/login',
       routes: {
         '/login': (context) => SignInPage(),
         '/home': (context) => HomePage(),
+        '/add': (context) => Add(),
       },
       onGenerateRoute: _getRoute,
     );
