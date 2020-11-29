@@ -114,13 +114,31 @@ class _Add extends State<Add> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
+          final newTypeController = TextEditingController();
           return AlertDialog(
             title: Text("문제 그룹 생성"),
-            content: Text("생성할 문제 그룹 이름을 입력해주세요."),
+            content: Container(
+              height: 80,
+              child: Column(
+                children: [
+                  Text("생성할 문제 그룹 이름을 입력해주세요."),
+                  TextField(
+                    controller: newTypeController,
+                  ),
+                ],
+              ),
+            ),
             actions: <Widget>[
               FlatButton(
                 child: Text("생성"),
                 onPressed: () {
+                  firestore
+                      .collection('users')
+                      .doc(_auth.currentUser.uid)
+                      .update({
+                    "problemTypes":
+                    FieldValue.arrayUnion([newTypeController.text]),
+                  });
                   Navigator.pop(context);
                 },
               ),
