@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +20,12 @@ class _Add extends State<Add> {
   String username;
   //_Add({this.id});
   bool isSwitched = false;
-
+  String problemVal = "";
+  String answerVal = "";
+  String multi1Val = "";
+  String multi2Val = "";
+  String multi3Val = "";
+  String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -28,13 +34,15 @@ class _Add extends State<Add> {
     final _valueList = ['토익', '토플'];
     var _selectedVal = '토익';
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final problem = TextEditingController();
-    final answer = TextEditingController();
-    final multi1 = TextEditingController();
-    final multi2 = TextEditingController();
-    final multi3 = TextEditingController();
-    final multiAnswer = TextEditingController();
     List <String> multipleAnswers= new List<String>();
+    final problemController = TextEditingController(text: problemVal);
+    final answerController = TextEditingController(text: answerVal);
+    final multi1Controller = TextEditingController(text: multi1Val);
+    final multi2Controller = TextEditingController(text: multi2Val);
+    final multi3Controller = TextEditingController(text: multi3Val);
+    final multiAnswerController = TextEditingController(text: multiAnswerVal);
+
+    bool isMultiple = false;
     Future<void> _addPathToDatabase(String text) async {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
@@ -83,6 +91,12 @@ class _Add extends State<Add> {
               onChanged: (value) async{
                  setState(() {
                   isSwitched = value;
+                  problemVal = problemController.text;
+                  answerVal = answerController.text;
+                  multi1Val = multi1Controller.text;
+                  multi2Val = multi2Controller.text;
+                  multi3Val = multi3Controller.text;
+                  multiAnswerVal = multiAnswerController.text;
                 });
               },
               activeTrackColor: Colors.blueAccent,
@@ -95,7 +109,7 @@ class _Add extends State<Add> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
-              controller: multi1,
+              controller: multi1Controller,
               decoration: new InputDecoration(
                 labelText: "오답1",
                 fillColor: Colors.white,
@@ -109,7 +123,7 @@ class _Add extends State<Add> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
-              controller: multi2,
+              controller: multi2Controller,
               decoration: new InputDecoration(
                 labelText: "오답2",
                 fillColor: Colors.white,
@@ -123,7 +137,7 @@ class _Add extends State<Add> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
-              controller: multi3,
+              controller: multi3Controller,
               decoration: new InputDecoration(
                 labelText: "오답3",
                 fillColor: Colors.white,
@@ -139,7 +153,7 @@ class _Add extends State<Add> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
-              controller: multiAnswer,
+              controller: multiAnswerController,
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
                 fillColor: Colors.white,
@@ -177,7 +191,7 @@ class _Add extends State<Add> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
-              controller: problem,
+              controller: problemController,
               decoration: new InputDecoration(
                 labelText: "문제를 입력해주세요.",
                 fillColor: Colors.black,
@@ -213,7 +227,7 @@ class _Add extends State<Add> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
-              controller: answer,
+              controller: answerController,
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
                 fillColor: Colors.white,
@@ -241,8 +255,8 @@ class _Add extends State<Add> {
       ),
       onPressed: () {
         firestore.collection('users').doc(_auth.currentUser.uid).collection('collectionPath').add({
-          'problemtext': problem.text,
-          'answer': answer.text,
+          'problemtext': problemController.text,
+          'answer': answerController.text,
           'picture': imageString,
           'creator': _auth.currentUser.uid,
           'isShared': isSwitched
@@ -252,7 +266,7 @@ class _Add extends State<Add> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  Added(problem: problem.text, answer: answer.text)),
+                  Added(problem: problemController.text, answer: answerController.text)),
         );
       },
     ));
