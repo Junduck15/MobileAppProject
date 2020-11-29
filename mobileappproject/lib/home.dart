@@ -33,26 +33,31 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
         body: _children[_currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            onTap: _onTap,
-            currentIndex: _currentIndex,
-            items: [
-              new BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                title: Text('오답노트'),
-              ),
-              new BottomNavigationBarItem(
-                icon: Icon(Icons.description),
-                title: Text('퀴즈풀기'),
-              ),
-              new BottomNavigationBarItem(
-                icon: Icon(Icons.question_answer),
-                title: Text('문제은행'),
-              )
-            ])
+        bottomNavigationBar: _BottomBar()
     );
+  }
+
+
+  Widget _BottomBar(){
+    return BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        onTap: _onTap,
+        currentIndex: _currentIndex,
+        items: [
+          new BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('오답노트'),
+          ),
+          new BottomNavigationBarItem(
+            icon: Icon(Icons.description),
+            title: Text('퀴즈풀기'),
+          ),
+          new BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer),
+            title: Text('문제은행'),
+          )
+        ]);
+
   }
 }
