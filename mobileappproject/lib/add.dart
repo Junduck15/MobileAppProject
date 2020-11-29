@@ -31,7 +31,7 @@ class _Add extends State<Add> {
   String multi3Val = "";
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  List _valueList = [];
+  
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
@@ -41,7 +41,7 @@ class _Add extends State<Add> {
     final ImagePicker _picker = ImagePicker();
 
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    List<String> multipleAnswers = new List<String>();
+
     final problemController = TextEditingController(text: problemVal);
     final answerController = TextEditingController(text: answerVal);
     final multi1Controller = TextEditingController(text: multi1Val);
@@ -114,45 +114,45 @@ class _Add extends State<Add> {
       return Row(
         children: [
           Expanded(
-              child: Container(
-                width: 300,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: FormField<String>(
-                  builder: (FormFieldState<String> state) {
-                    return InputDecorator(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButtonFormField<String>(
-                          hint: Text("문제 그룹 선택해주세요."),
-                          value: problemType,
-                          isDense: true,
-                          onChanged: (newValue) {
-                            setState(() {
-                              problemType = newValue;
-                              problemVal = problemController.text;
-                              answerVal = answerController.text;
-                              multi1Val = multi1Controller.text;
-                              multi2Val = multi2Controller.text;
-                              multi3Val = multi3Controller.text;
-                              multiAnswerVal = multiAnswerController.text;
-                            });
-                          },
-                          items: problemTypes.map((dynamic value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          validator: (value) =>
-                          value == null ? '문제 순서를 선택하지 않았습니다.' : null,
-                        ),
+            child: Container(
+              width: 300,
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: FormField<String>(
+                builder: (FormFieldState<String> state) {
+                  return InputDecorator(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButtonFormField<String>(
+                        hint: Text("문제 그룹 선택해주세요."),
+                        value: problemType,
+                        isDense: true,
+                        onChanged: (newValue) {
+                          setState(() {
+                            problemType = newValue;
+                            problemVal = problemController.text;
+                            answerVal = answerController.text;
+                            multi1Val = multi1Controller.text;
+                            multi2Val = multi2Controller.text;
+                            multi3Val = multi3Controller.text;
+                            multiAnswerVal = multiAnswerController.text;
+                          });
+                        },
+                        items: problemTypes.map((dynamic value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        validator: (value) =>
+                            value == null ? '문제 순서를 선택하지 않았습니다.' : null,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
+            ),
           ),
           Container(
             width: 30,
@@ -164,18 +164,15 @@ class _Add extends State<Add> {
                   color: Colors.white,
                 ),
               ),
-              onPressed: (){
-
-              },
+              onPressed: () {},
             ),
           ),
         ],
       );
-        ;
+      ;
     }
 
     Widget _body = FutureBuilder<DocumentSnapshot>(
-     
       future: FirebaseFirestore.instance
           .collection("users")
           .doc(_auth.currentUser.uid)
@@ -325,37 +322,7 @@ class _Add extends State<Add> {
       ),
     );
 
-    Widget submitButton = Center(
-        child: RaisedButton(
-      padding: EdgeInsets.fromLTRB(80, 5, 80, 5),
-      child: Text(
-        '문제 등록',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      onPressed: () {
-        firestore
-            .collection('users')
-            .doc(_auth.currentUser.uid)
-            .collection(_selectedVal)
-            .add({
-          'problemtext': problemController.text,
-          'answer': answerController.text,
-          'picture': imageString,
-          'creator': _auth.currentUser.uid,
-          'isShared': isSwitched
-        });
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Added(
-                  problem: problemController.text,
-                  answer: answerController.text)),
-        );
-      },
-    ));
-
+    
     return Scaffold(
       appBar: AppBar(
           elevation: 0,
@@ -414,6 +381,22 @@ class _Add extends State<Add> {
                               ),
                             ),
                             onPressed: () {
+                              firestore
+                                  .collection('users')
+                                  .doc(_auth.currentUser.uid)
+                                  .collection(_selectedVal)
+                                  .add({
+                                'problemtext': problemController.text,
+                                'answer': answerController.text,
+                                'picture': imageString,
+                                'creator': _auth.currentUser.uid,
+                                'isShared': isSwitched,
+                              });
+                              firestore
+                                  .collection('users')
+                                  .doc(_auth.currentUser.uid).update({
+                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
+                                  });
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
@@ -462,6 +445,27 @@ class _Add extends State<Add> {
                               ),
                             ),
                             onPressed: () {
+                              List<String> multipleWrongAnswers = new List<String>();
+                              multipleWrongAnswers.add(multi1Controller.text);
+                              multipleWrongAnswers.add(multi2Controller.text);
+                              multipleWrongAnswers.add(multi3Controller.text);
+                              firestore
+                                  .collection('users')
+                                  .doc(_auth.currentUser.uid)
+                                  .collection(_selectedVal)
+                                  .add({
+                                'problemtext': problemController.text,
+                                'multipleAnswer': multiAnswerController.text,
+                                'picture': imageString,
+                                'creator': _auth.currentUser.uid,
+                                'isShared': isSwitched,
+                                'multipleWrongAnswers': multipleWrongAnswers
+                              });
+                              firestore
+                                  .collection('users')
+                                  .doc(_auth.currentUser.uid).update({
+                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
+                                  });
                               if (_formKeyMulti.currentState.validate() &&
                                   problemController.text != "" &&
                                   multi1Controller.text != "" &&
@@ -474,7 +478,7 @@ class _Add extends State<Add> {
                                   MaterialPageRoute(
                                       builder: (context) => Added(
                                           problem: problemController.text,
-                                          answer: answerController.text)),
+                                          answer: multiAnswerController.text)),
                                 );
                               }
                             },
