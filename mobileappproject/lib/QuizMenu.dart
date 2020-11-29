@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'quiz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,6 @@ class _QuizMenu extends State<QuizMenu> {
   String problemType;
   String difficulty;
   String order;
-  int quizNumber;
 
   final _quizNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -57,7 +57,9 @@ class _QuizMenu extends State<QuizMenu> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          problemTypes = snapshot.data.data()["problemTypes"];
+          snapshot.data.data()["problemTypes"] != null
+              ? problemTypes = snapshot.data.data()["problemTypes"]
+              : problemTypes = [];
         }
 
         return Form(
@@ -97,11 +99,13 @@ class _QuizMenu extends State<QuizMenu> {
                     if (_formKey.currentState.validate()) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Quiz(
+                        MaterialPageRoute(
+                          builder: (context) => Quiz(
                             problemType: problemType,
                             difficulty: difficulty,
                             order: order,
-                            quizNumber: quizNumber),
+                            quizNumber: int.parse(_quizNumberController.text),
+                          ),
                         ),
                       );
                     }
@@ -140,7 +144,8 @@ class _QuizMenu extends State<QuizMenu> {
                     child: Text(value),
                   );
                 }).toList(),
-                validator: (value) => value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                validator: (value) =>
+                    value == null ? '문제 그룹를 선택하지 않았습니다.' : null,
               ),
             ),
           );
@@ -174,7 +179,8 @@ class _QuizMenu extends State<QuizMenu> {
                     child: Text(value),
                   );
                 }).toList(),
-                validator: (value) => value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                validator: (value) =>
+                    value == null ? '출제 문제를 선택하지 않았습니다.' : null,
               ),
             ),
           );
@@ -210,7 +216,8 @@ class _QuizMenu extends State<QuizMenu> {
                     child: Text(value),
                   );
                 }).toList(),
-                validator: (value) => value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                validator: (value) =>
+                    value == null ? '문제 순서를 선택하지 않았습니다.' : null,
               ),
             ),
           );
@@ -223,13 +230,15 @@ class _QuizMenu extends State<QuizMenu> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
-        decoration: new InputDecoration(
+        decoration: InputDecoration(
           labelText: "문제 수를 입력해주세요.",
           fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),
         ),
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        keyboardType: TextInputType.number,
         controller: _quizNumberController,
         validator: (value) {
           if (value.isEmpty) {
