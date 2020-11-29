@@ -25,6 +25,8 @@ class _Add extends State<Add> {
   @override
   Widget build(BuildContext context) {
     final ImagePicker _picker = ImagePicker();
+    final _valueList = ['토익', '토플'];
+    var _selectedVal = '토익';
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     final problem = TextEditingController();
     final answer = TextEditingController();
@@ -32,7 +34,7 @@ class _Add extends State<Add> {
     final multi2 = TextEditingController();
     final multi3 = TextEditingController();
     final multiAnswer = TextEditingController();
-    bool isMultiple = false;
+    List <String> multipleAnswers= new List<String>();
     Future<void> _addPathToDatabase(String text) async {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
@@ -78,14 +80,15 @@ class _Add extends State<Add> {
           Text('다른 사용자들에게 문제 공유'),
           Switch(
               value: isSwitched,
-              onChanged: (value) {
-                setState(() {
+              onChanged: (value) async{
+                 setState(() {
                   isSwitched = value;
                 });
               },
               activeTrackColor: Colors.blueAccent,
               activeColor: Colors.blue),
         ]));
+        
     Widget multipleChoice = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(children: [
@@ -129,7 +132,9 @@ class _Add extends State<Add> {
                   borderSide: new BorderSide(),
                 ),
               ),
+           
             ),
+            
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -147,6 +152,24 @@ class _Add extends State<Add> {
           ),
           isShared
         ]));
+    Widget probCategory = Container(
+      child: Center(child: DropdownButton(
+        value: _selectedVal,
+        items: _valueList.map(
+          (value) {
+            return DropdownMenuItem (
+              value: value,
+              child: Text(value),);
+          
+          },
+        ).toList(),
+        onChanged: (value){
+          setState((){
+            _selectedVal = value;
+          });
+        }
+      ),)
+    );
     Widget problemSection = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -180,6 +203,7 @@ class _Add extends State<Add> {
         ]
         )
         );
+        
     Widget answerSection = Container(
       padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
       child: Column(
@@ -216,7 +240,7 @@ class _Add extends State<Add> {
         ),
       ),
       onPressed: () {
-        firestore.collection('problem').add({
+        firestore.collection('users').doc(_auth.currentUser.uid).collection('collectionPath').add({
           'problemtext': problem.text,
           'answer': answer.text,
           'picture': imageString,
@@ -257,13 +281,13 @@ class _Add extends State<Add> {
         ),
         body: TabBarView(children: [ 
           Container(
-            child: ListView(children: [ problemSection, answerSection, submitButton],)
+            child: ListView(children: [ problemSection, answerSection, probCategory,submitButton],)
           ),
          
            Container(
-            child: ListView(children: [ problemSection, multipleChoice, submitButton],)
+            child: ListView(children: [ problemSection, multipleChoice,probCategory, submitButton],)
           ),
-          ],
+        ]
         ),
       ),
       )
