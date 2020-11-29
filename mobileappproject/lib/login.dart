@@ -71,7 +71,6 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                     backgroundColor: Colors.white,
                     onPressed: () async {
                       await _signInAnonymously();
-
                       Navigator.pushReplacementNamed(
                         context,
                         '/home',

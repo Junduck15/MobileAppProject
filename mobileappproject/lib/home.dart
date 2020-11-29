@@ -12,6 +12,7 @@ import 'dart:async';
 
 import 'add.dart';
 import 'bank.dart';
+import 'folderlist.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -22,7 +23,7 @@ class _HomePageState extends State<HomePage> {
 
   int _currentIndex = 0;
 
-  final List<Widget> _children = [Add(), QuizMenu(), BankPage()];
+  final List<Widget> _children = [FolderPage(), QuizMenu(), BankPage()];
 
   void _onTap(int index) {
     setState(() {
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         body: _children[_currentIndex],
         bottomNavigationBar: _BottomBar()
     );
