@@ -31,7 +31,7 @@ class _Add extends State<Add> {
   String multi3Val = "";
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
@@ -140,39 +140,38 @@ class _Add extends State<Add> {
       return Row(
         children: [
           Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: FormField<String>(
-                  builder: (FormFieldState<String> state) {
-                    return InputDecorator(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButtonFormField<String>(
-                          hint: Text("문제 그룹 선택해주세요."),
-                          value: problemType,
-                          isDense: true,
-                          onChanged: (newValue) {
-                            setState(() {
-                              problemType = newValue;
-                              problemVal = problemController.text;
-                              answerVal = answerController.text;
-                              multi1Val = multi1Controller.text;
-                              multi2Val = multi2Controller.text;
-                              multi3Val = multi3Controller.text;
-                              multiAnswerVal = multiAnswerController.text;
-                            });
-                          },
-                          items: problemTypes.map((dynamic value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          validator: (value) =>
-                          value == null ? '문제 순서를 선택하지 않았습니다.' : null,
-                        ),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: FormField<String>(
+                builder: (FormFieldState<String> state) {
+                  return InputDecorator(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButtonFormField<String>(
+                        hint: Text("문제 그룹 선택해주세요."),
+                        value: problemType,
+                        isDense: true,
+                        onChanged: (newValue) {
+                          setState(() {
+                            problemType = newValue;
+                            problemVal = problemController.text;
+                            answerVal = answerController.text;
+                            multi1Val = multi1Controller.text;
+                            multi2Val = multi2Controller.text;
+                            multi3Val = multi3Controller.text;
+                            multiAnswerVal = multiAnswerController.text;
+                          });
+                        },
+                        items: problemTypes.map((dynamic value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        validator: (value) =>
+                            value == null ? '문제 순서를 선택하지 않았습니다.' : null,
                       ),
                     ),
                   );
@@ -190,7 +189,7 @@ class _Add extends State<Add> {
                   color: Colors.white,
                 ),
               ),
-              onPressed: (){
+              onPressed: () {
                 _showDialog();
               },
             ),
@@ -349,7 +348,6 @@ class _Add extends State<Add> {
       ),
     );
 
-    
     return Scaffold(
       appBar: AppBar(
           elevation: 0,
@@ -421,9 +419,11 @@ class _Add extends State<Add> {
                               });
                               firestore
                                   .collection('users')
-                                  .doc(_auth.currentUser.uid).update({
-                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
-                                  });
+                                  .doc(_auth.currentUser.uid)
+                                  .update({
+                                "problemTypes":
+                                    FieldValue.arrayUnion([_selectedVal]),
+                              });
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
@@ -472,7 +472,8 @@ class _Add extends State<Add> {
                               ),
                             ),
                             onPressed: () {
-                              List<String> multipleWrongAnswers = new List<String>();
+                              List<String> multipleWrongAnswers =
+                                  new List<String>();
                               multipleWrongAnswers.add(multi1Controller.text);
                               multipleWrongAnswers.add(multi2Controller.text);
                               multipleWrongAnswers.add(multi3Controller.text);
@@ -490,9 +491,11 @@ class _Add extends State<Add> {
                               });
                               firestore
                                   .collection('users')
-                                  .doc(_auth.currentUser.uid).update({
-                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
-                                  });
+                                  .doc(_auth.currentUser.uid)
+                                  .update({
+                                "problemTypes":
+                                    FieldValue.arrayUnion([_selectedVal]),
+                              });
                               if (_formKeyMulti.currentState.validate() &&
                                   problemController.text != "" &&
                                   multi1Controller.text != "" &&
