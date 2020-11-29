@@ -31,6 +31,7 @@ class _Add extends State<Add> {
   List _valueList = [];
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
+  final _formKeyMulti = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final ImagePicker _picker = ImagePicker();
@@ -122,6 +123,12 @@ class _Add extends State<Add> {
                   onChanged: (newValue) {
                     setState(() {
                       problemType = newValue;
+                      problemVal = problemController.text;
+                  answerVal = answerController.text;
+                  multi1Val = multi1Controller.text;
+                  multi2Val = multi2Controller.text;
+                  multi3Val = multi3Controller.text;
+                  multiAnswerVal = multiAnswerController.text;
                     });
                   },
                   items: problemTypes.map((dynamic value) {
@@ -372,7 +379,7 @@ class _Add extends State<Add> {
                           ),
                         ),
                         onPressed: () {
-                          if (_formKey.currentState.validate()&&problemVal!=""&&answerVal!="") {
+                          if (_formKey.currentState.validate()&&problemController.text!=""&&answerController.text!="") {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -388,13 +395,55 @@ class _Add extends State<Add> {
                 ),
               )),
               Container(
-                  child: ListView(
-                children: [
-                  problemSection,
-                  multipleChoice,
-                  _body,
-                  submitButton,
-                ],
+                  child: Form(
+                key: _formKeyMulti,
+                child: ListView(
+                  children: [
+                    SizedBox(
+                      height: 30,
+                    ),
+                    problemSection,
+                    SizedBox(
+                      height: 30,
+                    ),
+                    multipleChoice,
+                    SizedBox(
+                      height: 30,
+                    ),
+                    _body,
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: RaisedButton(
+                        color: Colors.blue,
+                        child: Text(
+                          '문제 등록',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_formKeyMulti.currentState.validate()&&problemController.text!=""
+                          &&multi1Controller.text!=""
+                          &&multi2Controller.text!=""
+                          &&multi3Controller.text!=""
+                          &&multiAnswerController.text!=""
+                          &&problemType!=null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(  
+                                  builder: (context) => Added(
+                                      problem: problemController.text,
+                                      answer: answerController.text)),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               )),
             ]),
           ),
