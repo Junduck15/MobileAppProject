@@ -31,7 +31,7 @@ class _Add extends State<Add> {
   String multi3Val = "";
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
@@ -110,12 +110,55 @@ class _Add extends State<Add> {
               activeColor: Colors.blue),
         ]));
 
+    void _showDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          final newTypeController = TextEditingController();
+          return AlertDialog(
+            title: Text("문제 그룹 생성"),
+            content: Container(
+              height: 80,
+              child: Column(
+                children: [
+                  Text("생성할 문제 그룹 이름을 입력해주세요."),
+                  TextField(
+                    controller: newTypeController,
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("생성"),
+                onPressed: () {
+                  firestore
+                      .collection('users')
+                      .doc(_auth.currentUser.uid)
+                      .update({
+                    "problemTypes":
+                    FieldValue.arrayUnion([newTypeController.text]),
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text("취소"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     Widget _ProblemTypeSection(BuildContext context) {
       return Row(
         children: [
           Expanded(
             child: Container(
-              width: 300,
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: FormField<String>(
                 builder: (FormFieldState<String> state) {
@@ -155,21 +198,22 @@ class _Add extends State<Add> {
             ),
           ),
           Container(
-            width: 30,
+            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
             child: RaisedButton(
-              color: Colors.blue,
+              color: maincolor,
               child: Text(
                 '+',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                _showDialog();
+              },
             ),
           ),
         ],
       );
-      ;
     }
 
     Widget _body = FutureBuilder<DocumentSnapshot>(
@@ -322,7 +366,6 @@ class _Add extends State<Add> {
       ),
     );
 
-    
     return Scaffold(
       appBar: AppBar(
           elevation: 0,
@@ -394,9 +437,11 @@ class _Add extends State<Add> {
                               });
                               firestore
                                   .collection('users')
-                                  .doc(_auth.currentUser.uid).update({
-                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
-                                  });
+                                  .doc(_auth.currentUser.uid)
+                                  .update({
+                                "problemTypes":
+                                    FieldValue.arrayUnion([_selectedVal]),
+                              });
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
@@ -446,7 +491,8 @@ class _Add extends State<Add> {
                               ),
                             ),
                             onPressed: () {
-                              List<String> multipleWrongAnswers = new List<String>();
+                              List<String> multipleWrongAnswers =
+                                  new List<String>();
                               multipleWrongAnswers.add(multi1Controller.text);
                               multipleWrongAnswers.add(multi2Controller.text);
                               multipleWrongAnswers.add(multi3Controller.text);
@@ -464,9 +510,11 @@ class _Add extends State<Add> {
                               });
                               firestore
                                   .collection('users')
-                                  .doc(_auth.currentUser.uid).update({
-                                    "problemTypes": FieldValue.arrayUnion([_selectedVal]),
-                                  });
+                                  .doc(_auth.currentUser.uid)
+                                  .update({
+                                "problemTypes":
+                                    FieldValue.arrayUnion([_selectedVal]),
+                              });
                               if (_formKeyMulti.currentState.validate() &&
                                   problemController.text != "" &&
                                   multi1Controller.text != "" &&
