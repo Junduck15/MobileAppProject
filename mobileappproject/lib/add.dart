@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobileappproject/login.dart';
 import 'dart:async';
 import 'added.dart';
 
@@ -16,9 +17,11 @@ class _Add extends State<Add> {
   File _image;
   List<dynamic> problemTypes = [];
   String problemType;
+
   //String id;
   var imageString;
   String username;
+
   //_Add({this.id});
   bool isSwitched = false;
   String problemVal = "";
@@ -32,6 +35,7 @@ class _Add extends State<Add> {
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final ImagePicker _picker = ImagePicker();
@@ -124,11 +128,11 @@ class _Add extends State<Add> {
                     setState(() {
                       problemType = newValue;
                       problemVal = problemController.text;
-                  answerVal = answerController.text;
-                  multi1Val = multi1Controller.text;
-                  multi2Val = multi2Controller.text;
-                  multi3Val = multi3Controller.text;
-                  multiAnswerVal = multiAnswerController.text;
+                      answerVal = answerController.text;
+                      multi1Val = multi1Controller.text;
+                      multi2Val = multi2Controller.text;
+                      multi3Val = multi3Controller.text;
+                      multiAnswerVal = multiAnswerController.text;
                     });
                   },
                   items: problemTypes.map((dynamic value) {
@@ -237,7 +241,7 @@ class _Add extends State<Add> {
           ),
           isShared
         ]));
-  
+
     Widget problemSection = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -326,19 +330,21 @@ class _Add extends State<Add> {
       },
     ));
 
-    return MaterialApp(
-        title: 'Flutter layout demo',
-        home: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              title: Text(
-                '문제 입력',
-                style: TextStyle(color: Colors.black),
-              ),
-              bottom: TabBar(
+    return Scaffold(
+      appBar: AppBar(
+          elevation: 0,
+          //backgroundColor: Colors.white,
+          title: Text(
+            '문제 입력',
+            style: TextStyle(color: Colors.white),
+          )),
+      body: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: <Widget>[
+            Container(
+              constraints: BoxConstraints.expand(height: 50),
+              child: TabBar(
                 labelColor: Colors.black,
                 indicatorColor: Color.fromRGBO(86, 171, 190, 1.0),
                 tabs: [
@@ -347,106 +353,116 @@ class _Add extends State<Add> {
                 ],
               ),
             ),
-            body: TabBarView(children: [
-              Container(
-                  child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    SizedBox(
-                      height: 30,
-                    ),
-                    problemSection,
-                    SizedBox(
-                      height: 30,
-                    ),
-                    answerSection,
-                    SizedBox(
-                      height: 30,
-                    ),
-                    _body,
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: RaisedButton(
-                        color: Colors.blue,
-                        child: Text(
-                          '문제 등록',
-                          style: TextStyle(
-                            color: Colors.white,
+            Expanded(
+                child: Container(
+              child: TabBarView(
+                children: [
+                  Container(
+                      child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        problemSection,
+                        SizedBox(
+                          height: 30,
+                        ),
+                        answerSection,
+                        SizedBox(
+                          height: 30,
+                        ),
+                        _body,
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: RaisedButton(
+                            color: maincolor,
+                            child: Text(
+                              '문제 등록',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState.validate() &&
+                                  problemController.text != "" &&
+                                  answerController.text != "") {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Added(
+                                          problem: problemController.text,
+                                          answer: answerController.text)),
+                                );
+                              }
+                            },
                           ),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState.validate()&&problemController.text!=""&&answerController.text!="") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Added(
-                                      problem: problemController.text,
-                                      answer: answerController.text)),
-                            );
-                          }
-                        },
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
-              Container(
-                  child: Form(
-                key: _formKeyMulti,
-                child: ListView(
-                  children: [
-                    SizedBox(
-                      height: 30,
-                    ),
-                    problemSection,
-                    SizedBox(
-                      height: 30,
-                    ),
-                    multipleChoice,
-                    SizedBox(
-                      height: 30,
-                    ),
-                    _body,
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: RaisedButton(
-                        color: Colors.blue,
-                        child: Text(
-                          '문제 등록',
-                          style: TextStyle(
-                            color: Colors.white,
+                  )),
+                  Container(
+                      child: Form(
+                    key: _formKeyMulti,
+                    child: ListView(
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        problemSection,
+                        SizedBox(
+                          height: 30,
+                        ),
+                        multipleChoice,
+                        SizedBox(
+                          height: 30,
+                        ),
+                        _body,
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: RaisedButton(
+                            color: Colors.blue,
+                            child: Text(
+                              '문제 등록',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_formKeyMulti.currentState.validate() &&
+                                  problemController.text != "" &&
+                                  multi1Controller.text != "" &&
+                                  multi2Controller.text != "" &&
+                                  multi3Controller.text != "" &&
+                                  multiAnswerController.text != "" &&
+                                  problemType != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Added(
+                                          problem: problemController.text,
+                                          answer: answerController.text)),
+                                );
+                              }
+                            },
                           ),
                         ),
-                        onPressed: () {
-                          if (_formKeyMulti.currentState.validate()&&problemController.text!=""
-                          &&multi1Controller.text!=""
-                          &&multi2Controller.text!=""
-                          &&multi3Controller.text!=""
-                          &&multiAnswerController.text!=""
-                          &&problemType!=null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(  
-                                  builder: (context) => Added(
-                                      problem: problemController.text,
-                                      answer: answerController.text)),
-                            );
-                          }
-                        },
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
-            ]),
-          ),
-        ));
+                  )),
+                ],
+              ),
+            ))
+          ],
+        ),
+      ),
+    );
   }
 }
