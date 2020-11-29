@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +14,8 @@ class Add extends StatefulWidget {
 
 class _Add extends State<Add> {
   File _image;
+  List<dynamic> problemTypes = [];
+  String problemType;
   //String id;
   var imageString;
   String username;
@@ -27,14 +28,15 @@ class _Add extends State<Add> {
   String multi3Val = "";
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  List _valueList = [];
+  var _selectedVal = '토익';
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final ImagePicker _picker = ImagePicker();
-    final _valueList = ['토익', '토플'];
-    var _selectedVal = '토익';
+
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    List <String> multipleAnswers= new List<String>();
+    List<String> multipleAnswers = new List<String>();
     final problemController = TextEditingController(text: problemVal);
     final answerController = TextEditingController(text: answerVal);
     final multi1Controller = TextEditingController(text: multi1Val);
@@ -88,8 +90,8 @@ class _Add extends State<Add> {
           Text('다른 사용자들에게 문제 공유'),
           Switch(
               value: isSwitched,
-              onChanged: (value) async{
-                 setState(() {
+              onChanged: (value) async {
+                setState(() {
                   isSwitched = value;
                   problemVal = problemController.text;
                   answerVal = answerController.text;
@@ -102,7 +104,71 @@ class _Add extends State<Add> {
               activeTrackColor: Colors.blueAccent,
               activeColor: Colors.blue),
         ]));
-        
+
+    Widget _ProblemTypeSection(BuildContext context) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: FormField<String>(
+          builder: (FormFieldState<String> state) {
+            return InputDecorator(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0))),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButtonFormField<String>(
+                  hint: Text("문제 그룹 선택해주세요."),
+                  value: problemType,
+                  isDense: true,
+                  onChanged: (newValue) {
+                    setState(() {
+                      problemType = newValue;
+                    });
+                  },
+                  items: problemTypes.map((dynamic value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  validator: (value) =>
+                      value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    Widget _body = FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance
+          .collection("users")
+          .doc(_auth.currentUser.uid)
+          .get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text("Something went wrong");
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          problemTypes = snapshot.data.data()["problemTypes"];
+        }
+
+        return Form(
+          // key: _formKey,
+          child: Column(
+            children: [
+              _ProblemTypeSection(context),
+              SizedBox(
+                height: 30,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
     Widget multipleChoice = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(children: [
@@ -146,9 +212,7 @@ class _Add extends State<Add> {
                   borderSide: new BorderSide(),
                 ),
               ),
-           
             ),
-            
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -166,24 +230,7 @@ class _Add extends State<Add> {
           ),
           isShared
         ]));
-    Widget probCategory = Container(
-      child: Center(child: DropdownButton(
-        value: _selectedVal,
-        items: _valueList.map(
-          (value) {
-            return DropdownMenuItem (
-              value: value,
-              child: Text(value),);
-          
-          },
-        ).toList(),
-        onChanged: (value){
-          setState((){
-            _selectedVal = value;
-          });
-        }
-      ),)
-    );
+  
     Widget problemSection = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -214,10 +261,8 @@ class _Add extends State<Add> {
             color: Colors.black,
             height: 1.0,
           ),
-        ]
-        )
-        );
-        
+        ]));
+
     Widget answerSection = Container(
       padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
       child: Column(
@@ -242,11 +287,10 @@ class _Add extends State<Add> {
         ],
       ),
     );
-    
+
     Widget submitButton = Center(
         child: RaisedButton(
       padding: EdgeInsets.fromLTRB(80, 5, 80, 5),
-      color: Colors.blue,
       child: Text(
         '문제 등록',
         style: TextStyle(
@@ -254,57 +298,106 @@ class _Add extends State<Add> {
         ),
       ),
       onPressed: () {
-        firestore.collection('users').doc(_auth.currentUser.uid).collection('collectionPath').add({
+        firestore
+            .collection('users')
+            .doc(_auth.currentUser.uid)
+            .collection(_selectedVal)
+            .add({
           'problemtext': problemController.text,
           'answer': answerController.text,
           'picture': imageString,
           'creator': _auth.currentUser.uid,
           'isShared': isSwitched
         });
-        print(_auth.currentUser.uid);
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  Added(problem: problemController.text, answer: answerController.text)),
+              builder: (context) => Added(
+                  problem: problemController.text,
+                  answer: answerController.text)),
         );
       },
     ));
 
     return MaterialApp(
-      title: 'Flutter layout demo',
-      home: DefaultTabController(
-       
-        length: 2,
-        child:
-      Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          title: Text(
-            '문제 입력',
-            style: TextStyle(color: Colors.black),
-          ),
-           bottom: TabBar(
-             labelColor: Colors.black,
-              tabs: [
-                Tab(text: "주관식"),
-                Tab(text: "객관식"),
-              ],
+        title: 'Flutter layout demo',
+        home: DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              title: Text(
+                '문제 입력',
+                style: TextStyle(color: Colors.black),
+              ),
+              bottom: TabBar(
+                labelColor: Colors.black,
+                indicatorColor: Color.fromRGBO(86, 171, 190, 1.0),
+                tabs: [
+                  Tab(text: "주관식"),
+                  Tab(text: "객관식"),
+                ],
+              ),
             ),
-        ),
-        body: TabBarView(children: [ 
-          Container(
-            child: ListView(children: [ problemSection, answerSection, probCategory,submitButton],)
+            body: TabBarView(children: [
+              Container(
+                  child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    SizedBox(
+                      height: 30,
+                    ),
+                    problemSection,
+                    SizedBox(
+                      height: 30,
+                    ),
+                    answerSection,
+                    SizedBox(
+                      height: 30,
+                    ),
+                    _body,
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: RaisedButton(
+                        color: Colors.blue,
+                        child: Text(
+                          '문제 등록',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()&&problemVal!=""&&answerVal!="") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Added(
+                                      problem: problemController.text,
+                                      answer: answerController.text)),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+              Container(
+                  child: ListView(
+                children: [
+                  problemSection,
+                  multipleChoice,
+                  _body,
+                  submitButton,
+                ],
+              )),
+            ]),
           ),
-         
-           Container(
-            child: ListView(children: [ problemSection, multipleChoice,probCategory, submitButton],)
-          ),
-        ]
-        ),
-      ),
-      )
-    );
+        ));
   }
 }
