@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:mobileappproject/login.dart';
 
 class Profile extends StatelessWidget {
-
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-Profile({Key key,}) : super(key: key);
+  Profile({
+    Key key,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     String temp =
-        
         auth.currentUser.email == null ? 'Anonymous' : auth.currentUser.email;
     String image = auth.currentUser.photoURL == null
         ? 'http://handong.edu/site/handong/res/img/logo.png'
@@ -21,14 +21,8 @@ Profile({Key key,}) : super(key: key);
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.black,
-          leading: FlatButton(
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-              ),
-            ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
