@@ -9,25 +9,34 @@ import 'quiz.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
+Color maincolor = const Color.fromRGBO(86, 171, 190, 1.0);
+
 class SignInPage extends StatefulWidget {
   final String title = 'Sign In & Out';
+
   @override
   State<StatefulWidget> createState() => _SignInPageState();
 }
+
 class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      backgroundColor: maincolor,
       body: Builder(builder: (BuildContext context) {
         return ListView(
           padding: EdgeInsets.all(8),
           scrollDirection: Axis.vertical,
           children: <Widget>[
-            Image.network('http://handong.edu/site/handong/res/img/logo.png'),
-             _OtherProvidersSignInSection(),
+            SizedBox(height: 200),
+            Container(
+                height: 80,
+                child: Image.network(
+                  'https://ifh.cc/g/b7RiPf.png',
+                )),
+            SizedBox(height: 200),
+            _OtherProvidersSignInSection(),
             _AnonymouslySignInSection(),
-           
           ],
         );
       }),
@@ -44,10 +53,10 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
   bool _success;
   String _userID;
   User user;
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Padding(
+    return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,14 +66,16 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                   alignment: Alignment.center,
                   child: SignInButtonBuilder(
                     text: "Guest",
+                    textColor: Colors.grey,
                     icon: Icons.person_outline,
-                    backgroundColor: Colors.grey,
+                    iconColor: Colors.grey,
+                    backgroundColor: Colors.white,
                     onPressed: () async {
                       await _signInAnonymously();
 
                       Navigator.pushReplacementNamed(
-                          context,
-                          '/home',
+                        context,
+                        '/home',
                       );
                     },
                   ),
@@ -85,7 +96,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                   ),
                 )
               ],
-            )));
+            ));
   }
 
   Future _signInAnonymously() async {
@@ -117,31 +128,23 @@ class _OtherProvidersSignInSection extends StatefulWidget {
 class _OtherProvidersSignInSectionState
     extends State<_OtherProvidersSignInSection> {
   GoogleSignInAccount googleUser;
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.only(top: 8.0),
-                alignment: Alignment.center,
-                child: SignInButton(
-                  Buttons.GoogleDark,
-                  text: "Google",
-                  onPressed: () async {
-                    await _signInWithGoogle();
-                    Navigator.pushReplacementNamed(
-                      context,
-                      '/home',
-                    );
-                  },
-                ),
-              ),
-            ],
-          )),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.center,
+          child: SignInButton(
+            Buttons.GoogleDark,
+            text: "Google",
+            onPressed: () async {
+              _signInWithGoogle();
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -168,6 +171,7 @@ class _OtherProvidersSignInSectionState
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Sign In ${user.uid} with Google"),
       ));
+      Navigator.pushNamed(context, '/home');
     } catch (e) {
       print(e);
 
