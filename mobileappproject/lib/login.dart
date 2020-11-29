@@ -24,9 +24,7 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       backgroundColor: maincolor,
       body: Builder(builder: (BuildContext context) {
-        return ListView(
-          padding: EdgeInsets.all(8),
-          scrollDirection: Axis.vertical,
+        return Column(
           children: <Widget>[
             SizedBox(height: 200),
             Container(
