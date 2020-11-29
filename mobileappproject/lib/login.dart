@@ -140,11 +140,7 @@ class _OtherProvidersSignInSectionState
             Buttons.GoogleDark,
             text: "Google",
             onPressed: () async {
-              await _signInWithGoogle();
-              Navigator.pushReplacementNamed(
-                context,
-                '/home',
-              );
+              _signInWithGoogle();
             },
           ),
         ),
@@ -175,6 +171,7 @@ class _OtherProvidersSignInSectionState
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Sign In ${user.uid} with Google"),
       ));
+      Navigator.pushNamed(context, '/home');
     } catch (e) {
       print(e);
 
