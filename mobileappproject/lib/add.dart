@@ -20,21 +20,27 @@ class _Add extends State<Add> {
   String username;
   //_Add({this.id});
   bool isSwitched = false;
-  String problem = "";
-  String answer = "";
-
+  String problemVal = "";
+  String answerVal = "";
+  String multi1Val = "";
+  String multi2Val = "";
+  String multi3Val = "";
+  String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
     final ImagePicker _picker = ImagePicker();
+    final _valueList = ['토익', '토플'];
+    var _selectedVal = '토익';
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final problemController = TextEditingController(text: problem);
-    final answerController = TextEditingController(text: answer);
-    final multi1Controller = TextEditingController();
-    final multi2Controller = TextEditingController();
-    final multi3Controller = TextEditingController();
-    final multiAnswerController = TextEditingController();
+    List <String> multipleAnswers= new List<String>();
+    final problemController = TextEditingController(text: problemVal);
+    final answerController = TextEditingController(text: answerVal);
+    final multi1Controller = TextEditingController(text: multi1Val);
+    final multi2Controller = TextEditingController(text: multi2Val);
+    final multi3Controller = TextEditingController(text: multi3Val);
+    final multiAnswerController = TextEditingController(text: multiAnswerVal);
 
     bool isMultiple = false;
     Future<void> _addPathToDatabase(String text) async {
@@ -82,16 +88,21 @@ class _Add extends State<Add> {
           Text('다른 사용자들에게 문제 공유'),
           Switch(
               value: isSwitched,
-              onChanged: (value) {
-                setState(() {
+              onChanged: (value) async{
+                 setState(() {
                   isSwitched = value;
-                  problem = problemController.text;
-                  answer = answerController.text;
+                  problemVal = problemController.text;
+                  answerVal = answerController.text;
+                  multi1Val = multi1Controller.text;
+                  multi2Val = multi2Controller.text;
+                  multi3Val = multi3Controller.text;
+                  multiAnswerVal = multiAnswerController.text;
                 });
               },
               activeTrackColor: Colors.blueAccent,
               activeColor: Colors.blue),
         ]));
+        
     Widget multipleChoice = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(children: [
@@ -135,7 +146,9 @@ class _Add extends State<Add> {
                   borderSide: new BorderSide(),
                 ),
               ),
+           
             ),
+            
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -153,6 +166,24 @@ class _Add extends State<Add> {
           ),
           isShared
         ]));
+    Widget probCategory = Container(
+      child: Center(child: DropdownButton(
+        value: _selectedVal,
+        items: _valueList.map(
+          (value) {
+            return DropdownMenuItem (
+              value: value,
+              child: Text(value),);
+          
+          },
+        ).toList(),
+        onChanged: (value){
+          setState((){
+            _selectedVal = value;
+          });
+        }
+      ),)
+    );
     Widget problemSection = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -186,6 +217,7 @@ class _Add extends State<Add> {
         ]
         )
         );
+        
     Widget answerSection = Container(
       padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
       child: Column(
@@ -222,7 +254,7 @@ class _Add extends State<Add> {
         ),
       ),
       onPressed: () {
-        firestore.collection('problem').add({
+        firestore.collection('users').doc(_auth.currentUser.uid).collection('collectionPath').add({
           'problemtext': problemController.text,
           'answer': answerController.text,
           'picture': imageString,
@@ -263,13 +295,13 @@ class _Add extends State<Add> {
         ),
         body: TabBarView(children: [ 
           Container(
-            child: ListView(children: [ problemSection, answerSection, submitButton],)
+            child: ListView(children: [ problemSection, answerSection, probCategory,submitButton],)
           ),
          
            Container(
-            child: ListView(children: [ problemSection, multipleChoice, submitButton],)
+            child: ListView(children: [ problemSection, multipleChoice,probCategory, submitButton],)
           ),
-          ],
+        ]
         ),
       ),
       )
