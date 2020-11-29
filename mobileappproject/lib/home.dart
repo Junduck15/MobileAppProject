@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           ),
           new BottomNavigationBarItem(
             icon: Icon(Icons.description),
-            title: Text('퀴즈풀기'),
+            title: Text('Quiz'),
           ),
           new BottomNavigationBarItem(
             icon: Icon(Icons.question_answer),
