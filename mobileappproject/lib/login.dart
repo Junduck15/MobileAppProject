@@ -70,7 +70,6 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                     backgroundColor: Colors.white,
                     onPressed: () async {
                       await _signInAnonymously();
-
                       Navigator.pushReplacementNamed(
                         context,
                         '/home',
@@ -110,7 +109,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
       ));
     }
 
-    return Future.delayed(Duration(seconds: 3));
+    return Future.delayed(Duration(seconds: 1));
   }
 }
 
