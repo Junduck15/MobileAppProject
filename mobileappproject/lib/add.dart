@@ -152,6 +152,7 @@ class _Add extends State<Add> {
     }
 
     Widget _body = FutureBuilder<DocumentSnapshot>(
+     
       future: FirebaseFirestore.instance
           .collection("users")
           .doc(_auth.currentUser.uid)
@@ -390,8 +391,7 @@ class _Add extends State<Add> {
                             onPressed: () {
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
-                                  answerController.text != "" &&
-                                  problemType != null) {
+                                  answerController.text != "") {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
