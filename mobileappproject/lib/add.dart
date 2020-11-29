@@ -110,12 +110,37 @@ class _Add extends State<Add> {
               activeColor: Colors.blue),
         ]));
 
+    void _showDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("문제 그룹 생성"),
+            content: Text("생성할 문제 그룹 이름을 입력해주세요."),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("생성"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text("취소"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     Widget _ProblemTypeSection(BuildContext context) {
       return Row(
         children: [
           Expanded(
               child: Container(
-                width: 300,
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: FormField<String>(
                   builder: (FormFieldState<String> state) {
@@ -155,9 +180,9 @@ class _Add extends State<Add> {
               ),
           ),
           Container(
-            width: 30,
+            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
             child: RaisedButton(
-              color: Colors.blue,
+              color: maincolor,
               child: Text(
                 '+',
                 style: TextStyle(
@@ -165,13 +190,12 @@ class _Add extends State<Add> {
                 ),
               ),
               onPressed: (){
-
+                _showDialog();
               },
             ),
           ),
         ],
       );
-        ;
     }
 
     Widget _body = FutureBuilder<DocumentSnapshot>(
