@@ -21,7 +21,7 @@ Profile({Key key,}) : super(key: key);
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.black,
-          leading: TextButton(
+          leading: FlatButton(
             child: Text(
               'Cancel',
               style: TextStyle(

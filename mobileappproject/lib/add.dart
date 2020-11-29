@@ -111,44 +111,67 @@ class _Add extends State<Add> {
         ]));
 
     Widget _ProblemTypeSection(BuildContext context) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: FormField<String>(
-          builder: (FormFieldState<String> state) {
-            return InputDecorator(
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0))),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButtonFormField<String>(
-                  hint: Text("문제 그룹 선택해주세요."),
-                  value: problemType,
-                  isDense: true,
-                  onChanged: (newValue) {
-                    setState(() {
-                      problemType = newValue;
-                      problemVal = problemController.text;
-                      answerVal = answerController.text;
-                      multi1Val = multi1Controller.text;
-                      multi2Val = multi2Controller.text;
-                      multi3Val = multi3Controller.text;
-                      multiAnswerVal = multiAnswerController.text;
-                    });
-                  },
-                  items: problemTypes.map((dynamic value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+      return Row(
+        children: [
+          Expanded(
+              child: Container(
+                width: 300,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: FormField<String>(
+                  builder: (FormFieldState<String> state) {
+                    return InputDecorator(
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0))),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButtonFormField<String>(
+                          hint: Text("문제 그룹 선택해주세요."),
+                          value: problemType,
+                          isDense: true,
+                          onChanged: (newValue) {
+                            setState(() {
+                              problemType = newValue;
+                              problemVal = problemController.text;
+                              answerVal = answerController.text;
+                              multi1Val = multi1Controller.text;
+                              multi2Val = multi2Controller.text;
+                              multi3Val = multi3Controller.text;
+                              multiAnswerVal = multiAnswerController.text;
+                            });
+                          },
+                          items: problemTypes.map((dynamic value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          validator: (value) =>
+                          value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                        ),
+                      ),
                     );
-                  }).toList(),
-                  validator: (value) =>
-                      value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                  },
                 ),
               ),
-            );
-          },
-        ),
+          ),
+          Container(
+            width: 30,
+            child: RaisedButton(
+              color: Colors.blue,
+              child: Text(
+                '+',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: (){
+
+              },
+            ),
+          ),
+        ],
       );
+        ;
     }
 
     Widget _body = FutureBuilder<DocumentSnapshot>(
@@ -164,7 +187,9 @@ class _Add extends State<Add> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          problemTypes = snapshot.data.data()["problemTypes"];
+          snapshot.data.data()["problemTypes"] != null
+              ? problemTypes = snapshot.data.data()["problemTypes"]
+              : problemTypes = [];
         }
 
         return Form(
