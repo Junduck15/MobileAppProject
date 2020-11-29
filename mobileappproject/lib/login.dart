@@ -56,45 +56,45 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  alignment: Alignment.center,
-                  child: SignInButtonBuilder(
-                    text: "Guest",
-                    textColor: Colors.grey,
-                    icon: Icons.person_outline,
-                    iconColor: Colors.grey,
-                    backgroundColor: Colors.white,
-                    onPressed: () async {
-                      await _signInAnonymously();
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/home',
-                      );
-                    },
-                  ),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(top: 8.0),
+              alignment: Alignment.center,
+              child: SignInButtonBuilder(
+                text: "Guest",
+                textColor: Colors.grey,
+                icon: Icons.person_outline,
+                iconColor: Colors.grey,
+                backgroundColor: Colors.white,
+                onPressed: () async {
+                  await _signInAnonymously();
+                  Navigator.pushReplacementNamed(
+                    context,
+                    '/home',
+                  );
+                },
+              ),
+            ),
+            Visibility(
+              visible: _success == null ? false : true,
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  _success == null
+                      ? ''
+                      : (_success
+                          ? 'Successfully signed in, uid: ' + _userID
+                          : 'Sign in failed'),
+                  style: TextStyle(color: Colors.red),
                 ),
-                Visibility(
-                  visible: _success == null ? false : true,
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      _success == null
-                          ? ''
-                          : (_success
-                              ? 'Successfully signed in, uid: ' + _userID
-                              : 'Sign in failed'),
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                )
-              ],
-            ));
+              ),
+            )
+          ],
+        ));
   }
 
   Future _signInAnonymously() async {
@@ -187,11 +187,18 @@ class _OtherProvidersSignInSectionState
 
 Future<void> addUser(String uid) {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  return users
-      .doc(uid)
-      .set({
-    "problemTypes" : [],
-  })
-      .then((value) => print("User Added"))
-      .catchError((error) => print("Failed to add user: $error"));
+  users.doc(uid).get().then((doc) {
+    if (doc.exists) {
+
+    }
+    else {
+      return users
+          .doc(uid)
+          .set({
+
+      })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    }
+  });
 }

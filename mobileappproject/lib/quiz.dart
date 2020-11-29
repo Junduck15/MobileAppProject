@@ -51,6 +51,8 @@ class Quiz extends StatefulWidget {
 }
 
 class _Quiz extends State<Quiz> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  
   List<Problem> problemList;
   List<String> answerList = [];
   String problemType;
@@ -58,6 +60,7 @@ class _Quiz extends State<Quiz> {
   String order;
   int quizNumber = 0;
   int index = 0;
+  bool isShuffle = true;
   final _answerController = TextEditingController();
 
   _Quiz({
@@ -82,8 +85,19 @@ class _Quiz extends State<Quiz> {
   }
 
   Widget _Body(BuildContext context) {
-    CollectionReference problems =
-        FirebaseFirestore.instance.collection('problem');
+    Query problems;
+
+    switch (order) {
+      case "Random" :
+        problems = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection(problemType);
+        break;
+      case "Newer" :
+        problems = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection(problemType).orderBy("createdTime", descending: true).limit(quizNumber);
+        break;
+      case "Older" :
+        problems = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection(problemType).orderBy("createdTime", descending: false).limit(quizNumber);
+        break;
+    }
 
     return StreamBuilder<QuerySnapshot>(
       stream: problems.snapshots(),
@@ -96,9 +110,20 @@ class _Quiz extends State<Quiz> {
           return LinearProgressIndicator();
         }
 
-        problemList = snapshot.data.docs
-            .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
-            .toList();
+        if (order == "Random" && isShuffle) {
+          isShuffle = false;
+          problemList = snapshot.data.docs
+              .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
+              .toList()..shuffle();
+          if (problemList.length > quizNumber){
+            problemList = problemList.sublist(0, quizNumber);
+          }
+        }
+        else {
+          problemList = snapshot.data.docs
+              .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
+              .toList();
+        }
 
         return Column(
           children: [
@@ -129,12 +154,17 @@ class _Quiz extends State<Quiz> {
               ),
             ),
             Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               height: 50,
               child: TextField(
                 controller: _answerController,
                 decoration: InputDecoration(
                   filled: true,
-                  labelText: '답',
+                  labelText: "답을 입력해주세요.",
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
                 ),
               ),
             ),
