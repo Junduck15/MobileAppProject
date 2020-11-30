@@ -18,11 +18,8 @@ class _Add extends State<Add> {
   List<dynamic> problemTypes = [];
   String problemType;
   bool isMultiple;
-  //String id;
   var imageString;
   String username;
-
-  //_Add({this.id});
   bool isSwitched = false;
   String problemVal = "";
   String answerVal = "";
@@ -137,7 +134,7 @@ class _Add extends State<Add> {
                       .doc(_auth.currentUser.uid)
                       .update({
                     "problemTypes":
-                    FieldValue.arrayUnion([newTypeController.text]),
+                        FieldValue.arrayUnion([newTypeController.text]),
                   });
                   Navigator.pop(context);
                 },
@@ -437,7 +434,8 @@ class _Add extends State<Add> {
                                 'picture': imageString,
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
-                                 'createdTime' : FieldValue.serverTimestamp(),
+                                'createdTime': FieldValue.serverTimestamp(),
+                                'isMultiple' : false
                               });
                               firestore
                                   .collection('users')
@@ -449,14 +447,14 @@ class _Add extends State<Add> {
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Added(
-                                          problem: problemController.text,
-                                          answer: answerController.text,
-                                          isMul: false)),
-                                );
+                                Navigator.of(context).pushReplacement(
+                                    new MaterialPageRoute(
+                                        settings:
+                                            const RouteSettings(name: '/added'),
+                                        builder: (context) => new Added(
+                                            problem: problemController.text,
+                                            answer: answerController.text,
+                                            isMul: false)));
                               }
                             },
                           ),
@@ -511,7 +509,8 @@ class _Add extends State<Add> {
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
                                 'multipleWrongAnswers': multipleWrongAnswers,
-                                'createdTime' : FieldValue.serverTimestamp(),
+                                'createdTime': FieldValue.serverTimestamp(),
+                                 'isMultiple' : true
                               });
                               firestore
                                   .collection('users')
