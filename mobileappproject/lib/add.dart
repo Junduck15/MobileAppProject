@@ -216,36 +216,39 @@ class _Add extends State<Add> {
       );
     }
 
-    Widget _body = FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection("users")
-          .doc(_auth.currentUser.uid)
-          .get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text("Something went wrong");
-        }
+    Widget _body(BuildContext context) {
+      return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(_auth.currentUser.uid)
+            .snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text("Something went wrong");
+          }
 
-        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+          }
+
           snapshot.data.data()["problemTypes"] != null
               ? problemTypes = snapshot.data.data()["problemTypes"]
               : problemTypes = [];
-        }
 
-        return Form(
-          // key: _formKey,
-          child: Column(
-            children: [
-              _ProblemTypeSection(context),
-              SizedBox(
-                height: 30,
-              ),
-            ],
-          ),
-        );
-      },
-    );
+          return Form(
+            // key: _formKey,
+            child: Column(
+              children: [
+                _ProblemTypeSection(context),
+                SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
 
     Widget multipleChoice = Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
@@ -409,7 +412,7 @@ class _Add extends State<Add> {
                         SizedBox(
                           height: 30,
                         ),
-                        _body,
+                        _body(context),
                         SizedBox(
                           height: 30,
                         ),
@@ -477,7 +480,7 @@ class _Add extends State<Add> {
                         SizedBox(
                           height: 30,
                         ),
-                        _body,
+                        _body(context),
                         SizedBox(
                           height: 30,
                         ),
