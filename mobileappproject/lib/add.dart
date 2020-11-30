@@ -435,6 +435,7 @@ class _Add extends State<Add> {
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
                                 'createdTime': FieldValue.serverTimestamp(),
+                                'isMultiple' : false
                               });
                               firestore
                                   .collection('users')
@@ -509,6 +510,7 @@ class _Add extends State<Add> {
                                 'isShared': isSwitched,
                                 'multipleWrongAnswers': multipleWrongAnswers,
                                 'createdTime': FieldValue.serverTimestamp(),
+                                 'isMultiple' : true
                               });
                               firestore
                                   .collection('users')
