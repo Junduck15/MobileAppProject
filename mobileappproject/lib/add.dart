@@ -437,13 +437,13 @@ class _Add extends State<Add> {
                                 'createdTime': FieldValue.serverTimestamp(),
                                 'isMultiple' : false
                               });
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid)
-                                  .update({
-                                "problemTypes":
-                                    FieldValue.arrayUnion([_selectedVal]),
-                              });
+                              //firestore
+                              //    .collection('users')
+                              //    .doc(_auth.currentUser.uid)
+                              //   .update({
+                              //  "problemTypes":
+                              //      FieldValue.arrayUnion([problemType]),
+                              //});
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
