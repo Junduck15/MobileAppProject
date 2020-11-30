@@ -135,7 +135,10 @@ class _Add extends State<Add> {
                       .update({
                     "problemTypes":
                         FieldValue.arrayUnion([newTypeController.text]),
-                  });
+                  }
+                  )
+                  ;
+                  firestore.collection('users').doc(_auth.currentUser.uid).collection('problemType');
                   Navigator.pop(context);
                 },
               ),
@@ -442,7 +445,7 @@ class _Add extends State<Add> {
                                   .doc(_auth.currentUser.uid)
                                   .update({
                                 "problemTypes":
-                                    FieldValue.arrayUnion([_selectedVal]),
+                                    FieldValue.arrayUnion([problemType]),
                               });
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
@@ -504,7 +507,7 @@ class _Add extends State<Add> {
                                   .collection(_selectedVal)
                                   .add({
                                 'problemtext': problemController.text,
-                                'multipleAnswer': multiAnswerController.text,
+                                'answer': multiAnswerController.text,
                                 'picture': imageString,
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
