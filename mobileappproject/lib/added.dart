@@ -91,12 +91,10 @@ class Added extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-
-                  Navigator.pushReplacementNamed(
+                Navigator.popUntil(
                     context,
-                    '/home',
-                  );
-
+                    ModalRoute.withName('/home'),
+                );
                //Navigator.pop(context);
               },
             ))
