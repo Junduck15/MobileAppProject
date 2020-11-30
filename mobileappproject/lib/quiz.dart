@@ -11,6 +11,7 @@ class Problem {
   final bool isShared;
   final String picture;
   final String problemtext;
+  final List<dynamic> multipleWrongAnswers;
   final DocumentReference reference;
 
   Problem.fromMap(Map<String, dynamic> map, {this.reference})
@@ -24,6 +25,7 @@ class Problem {
         isShared = map['isShared'],
         picture = map['picture'],
         problemtext = map['problemtext'],
+        multipleWrongAnswers = map['multipleWrongAnswers'],
         problemID = reference.id;
 
   Problem.fromSnapshot(DocumentSnapshot snapshot)
@@ -153,21 +155,7 @@ class _Quiz extends State<Quiz> {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              height: 50,
-              child: TextField(
-                controller: _answerController,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: "답을 입력해주세요.",
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-              ),
-            ),
+            _Answer(context),
             Container(
               height: 10,
               child: Divider(),
@@ -256,5 +244,95 @@ class _Quiz extends State<Quiz> {
           problemList[index].picture,
         )
     );
+  }
+
+  Widget _Answer(BuildContext context) {
+    if (problemList[index].multipleWrongAnswers == null) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        height: 50,
+        child: TextField(
+          controller: _answerController,
+          decoration: InputDecoration(
+            filled: true,
+            labelText: "답을 입력해주세요.",
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+          ),
+        ),
+      );
+    }
+
+    problemList[index].multipleWrongAnswers.add(problemList[index].answer);
+
+    problemList[index].multipleWrongAnswers..shuffle();
+
+    final _choice1Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
+    final _choice2Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
+    final _choice3Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
+    final _choice4Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
+
+    return Container(
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+        child: Column(children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
+              controller: _choice1Controller,
+              enabled: false,
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: BorderSide(),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
+              controller: _choice2Controller,
+              enabled: false,
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: BorderSide(),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
+              controller: _choice3Controller,
+              enabled: false,
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: BorderSide(),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: TextField(
+              controller: _choice4Controller,
+              enabled: false,
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: BorderSide(),
+                ),
+              ),
+            ),
+          ),
+        ]));
   }
 }
