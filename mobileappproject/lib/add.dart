@@ -427,13 +427,14 @@ class _Add extends State<Add> {
                               firestore
                                   .collection('users')
                                   .doc(_auth.currentUser.uid)
-                                  .collection(_selectedVal)
+                                  .collection(problemType)
                                   .add({
                                 'problemtext': problemController.text,
                                 'answer': answerController.text,
                                 'picture': imageString,
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
+                                 'createdTime' : FieldValue.serverTimestamp(),
                               });
                               firestore
                                   .collection('users')
@@ -506,7 +507,8 @@ class _Add extends State<Add> {
                                 'picture': imageString,
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
-                                'multipleWrongAnswers': multipleWrongAnswers
+                                'multipleWrongAnswers': multipleWrongAnswers,
+                                'createdTime' : FieldValue.serverTimestamp(),
                               });
                               firestore
                                   .collection('users')
