@@ -91,11 +91,12 @@ class Added extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage()),
-                );
+
+                  Navigator.pushReplacementNamed(
+                    context,
+                    '/home',
+                  );
+
                //Navigator.pop(context);
               },
             ))
