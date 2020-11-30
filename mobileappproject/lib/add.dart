@@ -228,12 +228,12 @@ class _Add extends State<Add> {
             return Text("Something went wrong");
           }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data.data == null || snapshot.data.data()["problemTypes"] == null) {
+            problemTypes = problemTypes = [];
           }
-
-          snapshot.data.data()["problemTypes"] != null
-              ? problemTypes = snapshot.data.data()["problemTypes"]
-              : problemTypes = [];
+          else {
+            problemTypes = snapshot.data.data()["problemTypes"];
+          }
 
           return Form(
             // key: _formKey,
