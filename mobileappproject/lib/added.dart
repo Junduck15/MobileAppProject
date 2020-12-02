@@ -7,7 +7,9 @@ class Added extends StatelessWidget {
   final String problem;
   final String answer;
   final bool isMul;
-  const Added({Key key, this.problem, this.answer, this.isMul}) : super(key: key);
+  final AsyncSnapshot snap;
+  final String problemType;
+  const Added({Key key, this.problem, this.answer, this.isMul, this.snap, this.problemType}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Widget prob = Container(
@@ -72,7 +74,7 @@ class Added extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Edit(isMul : isMul),
+                      builder: (context) => Edit(isMul : isMul, snap : snap, problemType: problemType),
                     ));
               },
             )),

@@ -28,7 +28,7 @@ class _Add extends State<Add> {
   String multi3Val = "";
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  AsyncSnapshot snap;
   var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
@@ -135,10 +135,11 @@ class _Add extends State<Add> {
                       .update({
                     "problemTypes":
                         FieldValue.arrayUnion([newTypeController.text]),
-                  }
-                  )
-                  ;
-                  firestore.collection('users').doc(_auth.currentUser.uid).collection('problemType');
+                  });
+                  firestore
+                      .collection('users')
+                      .doc(_auth.currentUser.uid)
+                      .collection('problemType');
                   Navigator.pop(context);
                 },
               ),
@@ -228,11 +229,13 @@ class _Add extends State<Add> {
             return Text("Something went wrong");
           }
 
-          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data.data == null || snapshot.data.data()["problemTypes"] == null) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.data.data == null ||
+              snapshot.data.data()["problemTypes"] == null) {
             problemTypes = problemTypes = [];
-          }
-          else {
+          } else {
             problemTypes = snapshot.data.data()["problemTypes"];
+            snap = snapshot;
           }
 
           return Form(
@@ -438,9 +441,9 @@ class _Add extends State<Add> {
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
                                 'createdTime': FieldValue.serverTimestamp(),
-                                'isMultiple' : false
+                                'isMultiple': false
                               });
-                                           if (_formKey.currentState.validate() &&
+                              if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
                                 Navigator.of(context).pushReplacement(
@@ -450,7 +453,9 @@ class _Add extends State<Add> {
                                         builder: (context) => new Added(
                                             problem: problemController.text,
                                             answer: answerController.text,
-                                            isMul: false)));
+                                            isMul: false,
+                                            snap: snap,
+                                            problemType : problemType)));
                               }
                             },
                           ),
@@ -506,7 +511,7 @@ class _Add extends State<Add> {
                                 'isShared': isSwitched,
                                 'multipleWrongAnswers': multipleWrongAnswers,
                                 'createdTime': FieldValue.serverTimestamp(),
-                                 'isMultiple' : true
+                                'isMultiple': true
                               });
                               firestore
                                   .collection('users')
