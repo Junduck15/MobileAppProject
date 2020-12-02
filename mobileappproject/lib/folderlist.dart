@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:mobileappproject/main.dart';
+import 'package:mobileappproject/problems_infolder.dart';
 import 'dart:io';
 import 'package:path/path.dart';
 
@@ -23,6 +24,7 @@ class FolderPage extends StatefulWidget {
 class _FolderPageState extends State<FolderPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<dynamic> problemTypes = [];
+  int a;
 
   @override
   Widget build(BuildContext context) {
@@ -55,21 +57,23 @@ class _FolderPageState extends State<FolderPage> {
                   child: Column(children: <Widget>[
         SizedBox(height: 20.0),
         Container(
-          child: FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
+          child: StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
                 .collection("users")
                 .doc(_auth.currentUser.uid)
-                .get(),
+                .snapshots(),
             builder: (BuildContext context,
                 AsyncSnapshot<DocumentSnapshot> snapshot) {
               if (snapshot.hasError) {
                 return Text("Something went wrong");
               }
 
-              if (snapshot.connectionState == ConnectionState.done) {
-                snapshot.data.data()["problemTypes"] != null
-                    ? problemTypes = snapshot.data.data()["problemTypes"]
-                    : problemTypes = [];
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.data.data == null ||
+                  snapshot.data.data()["problemTypes"] == null) {
+                problemTypes = problemTypes = [];
+              } else {
+                problemTypes = snapshot.data.data()["problemTypes"];
               }
 
               return GridView.builder(
@@ -81,50 +85,58 @@ class _FolderPageState extends State<FolderPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                       padding: EdgeInsets.only(bottom: 5),
-                      child: Card(
-                    //color: Colors.grey[900],
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: maincolor, width: 2),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  (problemTypes[index]),
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                ),
-                                SizedBox(height: 10.0),
-                                Divider(height: 1.0,color : maincolor,indent: 10, endIndent: 10,),
-                                SizedBox(height: 15.0),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('    문제 수 : ', style: TextStyle(fontSize: 17,)),
-
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      child: GestureDetector(
+                          onTap: () => {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                          builder: (context) =>
+                          Problems_infolderPage( foldername : problemTypes[index],
+                          )),
+                          )},
+                          child: Card(
+                        //color: Colors.grey[900],
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(color: maincolor, width: 2),
+                          borderRadius: BorderRadius.circular(5),
                         ),
-                      ],
-                    ),
-                  ));
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      (problemTypes[index]),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 2,
+                                    ),
+                                    SizedBox(height: 10.0),
+                                    Divider(height: 1.0,color : maincolor,indent: 10, endIndent: 10,),
+                                    SizedBox(height: 15.0),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('    문제 수 : ', style: TextStyle(fontSize: 17,)),
+                                          problemCount(context, problemTypes[index]),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )));
                 },
                 itemCount: problemTypes.length,
               );
@@ -140,6 +152,23 @@ class _FolderPageState extends State<FolderPage> {
         child: Icon(Icons.add),
         backgroundColor: maincolor,
       ),
+    );
+  }
+
+  Widget problemCount(BuildContext context, String type) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').doc(_auth.currentUser.uid).collection(type).snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text("Error");
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting){
+          return Text("Loading");
+        }
+
+        return Text(snapshot.data.docs.length.toString(),style: TextStyle(fontSize: 17,),);
+      },
     );
   }
 }
