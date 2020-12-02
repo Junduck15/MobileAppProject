@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -89,22 +90,28 @@ class _Add extends State<Add> {
     Widget isShared = Container(
         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: Row(children: [
-          Text('다른 사용자들에게 문제 공유'),
-          Switch(
-              value: isSwitched,
-              onChanged: (value) async {
-                setState(() {
-                  isSwitched = value;
-                  problemVal = problemController.text;
-                  answerVal = answerController.text;
-                  multi1Val = multi1Controller.text;
-                  multi2Val = multi2Controller.text;
-                  multi3Val = multi3Controller.text;
-                  multiAnswerVal = multiAnswerController.text;
-                });
-              },
-              activeTrackColor: Colors.blueAccent,
-              activeColor: Colors.blue),
+          Text(
+            '다른 사용자들에게 문제 공유  ',
+            style: TextStyle(fontSize: 15.5),
+          ),
+          Transform.scale(
+              scale: 1.3,
+              child: Switch(
+                value: isSwitched,
+                onChanged: (value) async {
+                  setState(() {
+                    isSwitched = value;
+                    problemVal = problemController.text;
+                    answerVal = answerController.text;
+                    multi1Val = multi1Controller.text;
+                    multi2Val = multi2Controller.text;
+                    multi3Val = multi3Controller.text;
+                    multiAnswerVal = multiAnswerController.text;
+                  });
+                },
+                activeTrackColor: Colors.blueAccent,
+                activeColor: Colors.blue,
+              )),
         ]));
 
     void _showDialog() {
@@ -160,7 +167,7 @@ class _Add extends State<Add> {
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: FormField<String>(
                 builder: (FormFieldState<String> state) {
                   return InputDecorator(
@@ -169,7 +176,7 @@ class _Add extends State<Add> {
                             borderRadius: BorderRadius.circular(5.0))),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButtonFormField<String>(
-                        hint: Text("문제 그룹 선택해주세요."),
+                        hint: Text("문제 그룹을 선택해주세요."),
                         value: problemType,
                         isDense: true,
                         onChanged: (newValue) {
@@ -199,20 +206,23 @@ class _Add extends State<Add> {
             ),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-            child: RaisedButton(
-              color: maincolor,
-              child: Text(
-                '+',
-                style: TextStyle(
-                  color: Colors.white,
+              width: 80,
+              height: 70,
+              alignment: Alignment.center,
+              padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+              child: Column(children: <Widget>[
+                FlatButton(
+                  child: Icon(
+                  Icons.add,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    _showDialog();
+                  },
                 ),
-              ),
-              onPressed: () {
-                _showDialog();
-              },
-            ),
-          ),
+                SizedBox(height: 5,),
+                Text('그룹 추가',style: TextStyle(fontSize: 13,),)
+              ])),
         ],
       );
     }
@@ -254,8 +264,15 @@ class _Add extends State<Add> {
     }
 
     Widget multipleChoice = Container(
-        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
-        child: Column(children: [
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Text(
+            '정답 입력',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
+          ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: TextField(
@@ -264,7 +281,7 @@ class _Add extends State<Add> {
                 labelText: "오답1",
                 fillColor: Colors.white,
                 border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
+                  borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(),
                 ),
               ),
@@ -278,7 +295,7 @@ class _Add extends State<Add> {
                 labelText: "오답2",
                 fillColor: Colors.white,
                 border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
+                  borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(),
                 ),
               ),
@@ -292,82 +309,104 @@ class _Add extends State<Add> {
                 labelText: "오답3",
                 fillColor: Colors.white,
                 border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
+                  borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(),
                 ),
               ),
             ),
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 30),
             child: TextField(
               controller: multiAnswerController,
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
                 fillColor: Colors.white,
                 border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
+                  borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(),
                 ),
               ),
             ),
           ),
+          Divider(
+            height: 1,
+            color: Colors.grey,
+          ),
           isShared
         ]));
 
     Widget problemSection = Container(
-        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+        padding: EdgeInsets.symmetric(horizontal: 20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('문제'),
+          Text(
+            '문제 입력',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
+          ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 3),
             child: TextField(
               controller: problemController,
               decoration: new InputDecoration(
                 labelText: "문제를 입력해주세요.",
                 fillColor: Colors.black,
                 border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
+                  borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(),
                 ),
               ),
             ),
           ),
           Container(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-                icon: Icon(Icons.picture_as_pdf),
-                onPressed: () async {
-                  await getImage();
-                }),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 1.0,
+            //alignment: Alignment.bottomCenter,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  //SizedBox(width: 40,),
+                  IconButton(
+                      icon: Icon(Icons.picture_as_pdf),
+                      onPressed: () async {
+                        await getImage();
+                      }),
+                  Text('사진 불러오기'),
+                ]),
           ),
         ]));
 
     Widget answerSection = Container(
-      padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('정답'),
+          Text(
+            '정답 입력',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
+          ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 30),
             child: TextField(
               controller: answerController,
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
                 fillColor: Colors.white,
                 border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
+                  borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(),
                 ),
               ),
             ),
           ),
-          isShared
+          Divider(
+            height: 1,
+            color: Colors.grey,
+          ),
+          isShared,
         ],
       ),
     );
@@ -377,7 +416,7 @@ class _Add extends State<Add> {
           elevation: 0,
           //backgroundColor: Colors.white,
           title: Text(
-            '문제 입력',
+            '새로운 문제 등록',
             style: TextStyle(color: Colors.white),
           )),
       body: DefaultTabController(
@@ -390,7 +429,9 @@ class _Add extends State<Add> {
                 labelColor: Colors.black,
                 indicatorColor: Color.fromRGBO(86, 171, 190, 1.0),
                 tabs: [
-                  Tab(text: "주관식"),
+                  Tab(
+                    text: "주관식",
+                  ),
                   Tab(text: "객관식"),
                 ],
               ),
@@ -408,16 +449,13 @@ class _Add extends State<Add> {
                           height: 30,
                         ),
                         problemSection,
-                        SizedBox(
-                          height: 30,
-                        ),
                         answerSection,
                         SizedBox(
-                          height: 30,
+                          height: 10,
                         ),
                         _body(context),
                         SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -472,12 +510,9 @@ class _Add extends State<Add> {
                           height: 30,
                         ),
                         problemSection,
-                        SizedBox(
-                          height: 30,
-                        ),
                         multipleChoice,
                         SizedBox(
-                          height: 30,
+                          height: 10,
                         ),
                         _body(context),
                         SizedBox(
@@ -485,14 +520,17 @@ class _Add extends State<Add> {
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: RaisedButton(
-                            color: Colors.blue,
-                            child: Text(
-                              '문제 등록',
-                              style: TextStyle(
-                                color: Colors.white,
+                          child: Container(
+                            height: 50,
+                            child: RaisedButton(
+                              color: maincolor,
+                              child: Text(
+                                '문제 등록',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 19,
+                                ),
                               ),
-                            ),
                             onPressed: () {
                               List<String> multipleWrongAnswers =
                                   new List<String>();
@@ -537,7 +575,7 @@ class _Add extends State<Add> {
                                 );
                               }
                             },
-                          ),
+                          )),
                         ),
                       ],
                     ),

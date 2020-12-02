@@ -11,6 +11,7 @@ class Problem {
   final bool isShared;
   final String picture;
   final String problemtext;
+  final List<dynamic> multipleWrongAnswers;
   final DocumentReference reference;
 
   Problem.fromMap(Map<String, dynamic> map, {this.reference})
@@ -24,6 +25,7 @@ class Problem {
         isShared = map['isShared'],
         picture = map['picture'],
         problemtext = map['problemtext'],
+        multipleWrongAnswers = map['multipleWrongAnswers'],
         problemID = reference.id;
 
   Problem.fromSnapshot(DocumentSnapshot snapshot)
@@ -61,7 +63,10 @@ class _Quiz extends State<Quiz> {
   int quizNumber = 0;
   int index = 0;
   bool isShuffle = true;
+  bool isFirst = true;
   final _answerController = TextEditingController();
+  String multipleAnswer;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _Quiz({
     this.problemType,
@@ -73,6 +78,7 @@ class _Quiz extends State<Quiz> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         elevation: 0,
         title: Text(
@@ -99,150 +105,182 @@ class _Quiz extends State<Quiz> {
         break;
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: problems.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return LinearProgressIndicator();
-        }
-
-        if (order == "Random" && isShuffle) {
-          isShuffle = false;
-          problemList = snapshot.data.docs
-              .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
-              .toList()..shuffle();
-          if (problemList.length > quizNumber){
-            problemList = problemList.sublist(0, quizNumber);
+    if(isFirst) {
+      isFirst = false;
+      return FutureBuilder<QuerySnapshot>(
+        future: problems.get(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
           }
-        }
-        else {
-          problemList = snapshot.data.docs
-              .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
-              .toList();
-        }
 
-        return Column(
-          children: [
-            Container(
-              height: 10,
-              child: Divider(),
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return LinearProgressIndicator();
+          }
+
+          if (order == "Random" && isShuffle) {
+            isShuffle = false;
+            problemList = snapshot.data.docs
+                .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
+                .toList()..shuffle();
+            if (problemList.length > quizNumber){
+              problemList = problemList.sublist(0, quizNumber);
+            }
+          }
+          else if (order != "Random") {
+            problemList = snapshot.data.docs
+                .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
+                .toList();
+          }
+
+          return _Sections(context);
+        },
+      );
+    }
+
+    return _Sections(context);
+  }
+
+  Widget _Sections(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          height: 10,
+          child: Divider(),
+        ),
+        Container(
+          height: 30,
+          child: Text(
+            (index + 1).toString() + '/' + problemList.length.toString(),
+            maxLines: 1,
+            style: TextStyle(
+              fontSize: 20,
             ),
-            Container(
-              height: 30,
-              child: Text(
-                (index + 1).toString() + '/' + problemList.length.toString(),
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: 20,
-                ),
+          ),
+        ),
+        _Picture(context),
+        Expanded(
+          child: Container(
+            child: Text(
+              problemList[index].problemtext,
+              maxLines: 5,
+              style: TextStyle(
+                fontSize: 20,
               ),
             ),
-            _Picture(context),
-            Expanded(
-              child: Container(
-                child: Text(
-                  problemList[index].problemtext,
-                  maxLines: 5,
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
+          ),
+        ),
+        _Answer(context),
+        Container(
+          height: 10,
+          child: Divider(),
+        ),
+        Container(
+          height: 50,
+          child: ButtonBar(
+            children: <Widget>[
+              FlatButton(
+                child: Text('이전'),
+                onPressed: () {
+                  if (index > 0) {
+                    setState(() {
+                      if (problemList[index].multipleWrongAnswers == null) {
+                        if (index < answerList.length) {
+                          answerList[index] = _answerController.text;
+                        }
+                        else {
+                          answerList.add(_answerController.text);
+                        }
+                      }
+                      else {
+                        if (index < answerList.length) {
+                          answerList[index] = multipleAnswer;
+                        }
+                        else {
+                          answerList.add(multipleAnswer);
+                        }
+                      }
+
+                      index--;
+                      if (problemList[index].multipleWrongAnswers == null) {
+                        _answerController.text = answerList[index];
+                      }
+                      else {
+                        multipleAnswer = answerList[index];
+                      }
+                    });
+                  }
+                  else {
+                    final snackBar = SnackBar(
+                      content: Text('처음 문제입니다!'),
+                      action: SnackBarAction(
+                        label: '확인',
+                        onPressed: () {
+                        },
+                      ),
+                    );
+                    _scaffoldKey.currentState.showSnackBar(snackBar);
+                  }
+                },
               ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              height: 50,
-              child: TextField(
-                controller: _answerController,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: "답을 입력해주세요.",
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 10,
-              child: Divider(),
-            ),
-            Container(
-              height: 50,
-              child: ButtonBar(
-                children: <Widget>[
-                  FlatButton(
-                    child: Text('이전'),
-                    onPressed: () {
-                      if (index > 0) {
-                        setState(() {
-                          if (index < answerList.length) {
-                            answerList[index] = _answerController.text;
-                          }
-                          else {
-                            answerList.add(_answerController.text);
-                          }
-                          index--;
+              FlatButton(
+                child: Text('다음'),
+                onPressed: () {
+                  if (index < problemList.length - 1) {
+                    setState(() {
+                      if (problemList[index].multipleWrongAnswers == null) {
+                        if (index < answerList.length) {
+                          answerList[index] = _answerController.text;
+                        }
+                        else {
+                          answerList.add(_answerController.text);
+                        }
+                      }
+                      else {
+                        if (index < answerList.length) {
+                          answerList[index] = multipleAnswer;
+                        }
+                        else {
+                          answerList.add(multipleAnswer);
+                        }
+                      }
+
+                      index++;
+                      if (problemList[index].multipleWrongAnswers == null) {
+                        if (index < answerList.length) {
                           _answerController.text = answerList[index];
-                        });
+                        }
+                        else {
+                          _answerController.text = "";
+                        }
                       }
                       else {
-                        final snackBar = SnackBar(
-                          content: Text('처음 문제입니다!'),
-                          action: SnackBarAction(
-                            label: '확인',
-                            onPressed: () {
-                            },
-                          ),
-                        );
-                        Scaffold.of(context).showSnackBar(snackBar);
+                        if (index < answerList.length) {
+                          multipleAnswer = answerList[index];
+                        }
+                        else {
+                          multipleAnswer = null;
+                        }
                       }
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('다음'),
-                    onPressed: () {
-                      if (index < problemList.length - 1) {
-                        setState(() {
-                          if (index < answerList.length) {
-                            answerList[index] = _answerController.text;
-                          }
-                          else {
-                            answerList.add(_answerController.text);
-                          }
-                          index++;
-                          if (index < answerList.length) {
-                            _answerController.text = answerList[index];
-                          }
-                          else {
-                            _answerController.text = "";
-                          }
-                        });
-                      }
-                      else {
-                        final snackBar = SnackBar(
-                          content: Text('마지막 문제입니다!'),
-                          action: SnackBarAction(
-                            label: '확인',
-                            onPressed: () {
-                            },
-                          ),
-                        );
-                        Scaffold.of(context).showSnackBar(snackBar);
-                      }
-                    },
-                  ),
-                ],
+                    });
+                  }
+                  else {
+                    final snackBar = SnackBar(
+                      content: Text('마지막 문제입니다!'),
+                      action: SnackBarAction(
+                        label: '확인',
+                        onPressed: () {
+                        },
+                      ),
+                    );
+                    _scaffoldKey.currentState.showSnackBar(snackBar);
+                  }
+                },
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -256,5 +294,132 @@ class _Quiz extends State<Quiz> {
           problemList[index].picture,
         )
     );
+  }
+
+  Widget _Answer(BuildContext context) {
+    if (problemList[index].multipleWrongAnswers == null) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        height: 50,
+        child: TextField(
+          controller: _answerController,
+          decoration: InputDecoration(
+            filled: true,
+            labelText: "답을 입력해주세요.",
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if(!problemList[index].multipleWrongAnswers.contains(problemList[index].answer)){
+      problemList[index].multipleWrongAnswers.add(problemList[index].answer);
+      problemList[index].multipleWrongAnswers..shuffle();
+    }
+
+    final _choice1Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
+    final _choice2Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
+    final _choice3Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
+    final _choice4Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
+
+    return Container(
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+        child: Column(children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  multipleAnswer = _choice1Controller.text;
+                });
+              },
+              borderRadius: BorderRadius.circular(20.0),
+              child: TextField(
+                controller: _choice1Controller,
+                enabled: false,
+                decoration: InputDecoration(
+                  fillColor: Colors.blue,
+                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[0],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  multipleAnswer = _choice2Controller.text;
+                });
+              },
+              borderRadius: BorderRadius.circular(20.0),
+              child: TextField(
+                controller: _choice2Controller,
+                enabled: false,
+                decoration: InputDecoration(
+                  fillColor: Colors.blue,
+                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[1],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  multipleAnswer = _choice3Controller.text;
+                });
+              },
+              borderRadius: BorderRadius.circular(20.0),
+              child: TextField(
+                controller: _choice3Controller,
+                enabled: false,
+                decoration: InputDecoration(
+                  fillColor: Colors.blue,
+                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[2],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  multipleAnswer = _choice4Controller.text;
+                });
+              },
+              borderRadius: BorderRadius.circular(20.0),
+              child: TextField(
+                controller: _choice4Controller,
+                enabled: false,
+                decoration: InputDecoration(
+                  fillColor: Colors.blue,
+                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[3],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ]));
   }
 }

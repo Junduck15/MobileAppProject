@@ -1,9 +1,13 @@
+import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'quiz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:mobileappproject/login.dart';
 
 class QuizMenu extends StatefulWidget {
   _QuizMenu createState() => _QuizMenu();
@@ -33,11 +37,12 @@ class _QuizMenu extends State<QuizMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(
         elevation: 0,
         title: Text(
-          '퀴즈',
-          style: TextStyle(color: Colors.black),
+          'Quiz',
+          style: TextStyle(color: Colors.white,fontSize: 25),
         ),
       ),
       body: _Body(context),
@@ -87,30 +92,34 @@ class _QuizMenu extends State<QuizMenu> {
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
-                child: RaisedButton(
-                  color: Colors.blue,
-                  child: Text(
-                    '퀴즈 시작',
-                    style: TextStyle(
-                      color: Colors.white,
+                child: Container(
+                  height: 50,
+                  child: RaisedButton(
+                    color: maincolor,
+                    child: Text(
+                      '퀴즈 시작',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 19,
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Quiz(
-                            problemType: problemType,
-                            difficulty: difficulty,
-                            order: order,
-                            quizNumber: int.parse(_quizNumberController.text),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Quiz(
+                              problemType: problemType,
+                              difficulty: difficulty,
+                              order: order,
+                              quizNumber: int.parse(_quizNumberController.text),
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                  },
-                ),
+                        );
+                      }
+                    },
+                  ),
+                )
               ),
             ],
           ),
@@ -124,31 +133,43 @@ class _QuizMenu extends State<QuizMenu> {
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: FormField<String>(
         builder: (FormFieldState<String> state) {
-          return InputDecorator(
-            decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0))),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButtonFormField<String>(
-                hint: Text("문제 그룹 선택해주세요."),
-                value: problemType,
-                isDense: true,
-                onChanged: (newValue) {
-                  setState(() {
-                    problemType = newValue;
-                  });
-                },
-                items: problemTypes.map((dynamic value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                validator: (value) =>
-                    value == null ? '문제 그룹를 선택하지 않았습니다.' : null,
-              ),
-            ),
-          );
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                    '문제 그룹',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                SizedBox(height: 10,),
+                InputDecorator(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0))),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButtonFormField<String>(
+                      hint: Text("문제 그룹을 선택해주세요."),
+                      value: problemType,
+                      isDense: true,
+                      onChanged: (newValue) {
+                        setState(() {
+                          problemType = newValue;
+                        });
+                      },
+                      items: problemTypes.map((dynamic value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      validator: (value) =>
+                          value == null ? '문제 그룹을 선택하지 않았습니다.' : null,
+                    ),
+                  ),
+                )
+              ]);
         },
       ),
     );
@@ -159,13 +180,24 @@ class _QuizMenu extends State<QuizMenu> {
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: FormField<String>(
         builder: (FormFieldState<String> state) {
-          return InputDecorator(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+            Text(
+            '문제 난이도',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
+          ),
+          SizedBox(height: 10,),
+          InputDecorator(
             decoration: InputDecoration(
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0))),
+                    borderRadius: BorderRadius.circular(10.0))),
             child: DropdownButtonHideUnderline(
               child: DropdownButtonFormField<String>(
-                hint: Text("출제 문제를 선택해주세요."),
+                hint: Text("문제의 난이도를 선택해주세요."),
                 value: difficulty,
                 isDense: true,
                 onChanged: (newValue) {
@@ -183,6 +215,8 @@ class _QuizMenu extends State<QuizMenu> {
                     value == null ? '출제 문제를 선택하지 않았습니다.' : null,
               ),
             ),
+          )
+          ]
           );
         },
       ),
@@ -194,10 +228,21 @@ class _QuizMenu extends State<QuizMenu> {
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: FormField<String>(
         builder: (FormFieldState<String> state) {
-          return InputDecorator(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+            Text(
+            '문제 정렬 기준',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
+          ),
+          SizedBox(height: 10,),
+          InputDecorator(
             decoration: InputDecoration(
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
+                borderRadius: BorderRadius.circular(10.0),
               ),
             ),
             child: DropdownButtonHideUnderline(
@@ -220,6 +265,8 @@ class _QuizMenu extends State<QuizMenu> {
                     value == null ? '문제 순서를 선택하지 않았습니다.' : null,
               ),
             ),
+          )
+          ]
           );
         },
       ),
@@ -229,12 +276,23 @@ class _QuizMenu extends State<QuizMenu> {
   Widget _QuizNumberSection(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
-      child: TextFormField(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+        Text(
+        '총 문제 수',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 17,
+        ),
+      ),
+      SizedBox(height: 10,),
+      TextFormField(
         decoration: InputDecoration(
           labelText: "문제 수를 입력해주세요.",
           fillColor: Colors.white,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.0),
+            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -246,6 +304,8 @@ class _QuizMenu extends State<QuizMenu> {
           }
           return null;
         },
+      )
+      ]
       ),
     );
   }

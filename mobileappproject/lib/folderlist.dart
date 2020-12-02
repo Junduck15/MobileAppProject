@@ -41,6 +41,7 @@ class _FolderPageState extends State<FolderPage> {
             icon: Icon(
               Icons.perm_identity,
               color: Colors.white,
+              size: 28,
               semanticLabel: 'menu',
             ),
             onPressed: () {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'edit.dart';
+import 'package:mobileappproject/login.dart';
 
 class Added extends StatelessWidget {
   final String problem;
@@ -85,9 +86,9 @@ class Added extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               padding: EdgeInsets.fromLTRB(40, 5, 40, 5),
-              color: Colors.blue,
+              color: maincolor,
               child: Text(
-                '돌아가기',
+                '확인',
                 style: TextStyle(
                   color: Colors.white,
                 ),
@@ -107,21 +108,26 @@ class Added extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: maincolor,
           title: Text(
-            '문제 확인',
-            style: TextStyle(color: Colors.black),
+            '등록된 문제 확인',
+            style: TextStyle(color: Colors.white),
           ),
+            actions: <Widget>[
+              IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Edit(isMul : isMul),
+                  ));
+            },
+
+          )],
         ),
         body: ListView(
           children: <Widget>[
-            Container(
-                margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
-                child: Text('문제등록됨!')),
-            const Divider(
-              color: Colors.grey,
-              height: 1.0,
-            ),
             Container(
                 margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
                 child: Text('등록된 문제')),
