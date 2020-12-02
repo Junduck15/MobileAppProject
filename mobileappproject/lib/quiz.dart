@@ -81,6 +81,32 @@ class _Quiz extends State<Quiz> {
       key: _scaffoldKey,
       appBar: AppBar(
         elevation: 0,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: (){
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      content: Text("퀴즈를 종료하시겠습니까?"),
+                      actions: [
+                        FlatButton(
+                          child: Text("종료"),
+                          onPressed: () {
+                            Navigator.popUntil(context, ModalRoute.withName('/home'),);
+                          },
+                        ),
+                        FlatButton(
+                          child: Text("계속 풀기"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            },
+        ),
         title: Text(
           '퀴즈',
           style: TextStyle(color: Colors.black),
