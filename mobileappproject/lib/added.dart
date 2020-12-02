@@ -8,7 +8,9 @@ class Added extends StatelessWidget {
   final String problem;
   final String answer;
   final bool isMul;
-  const Added({Key key, this.problem, this.answer, this.isMul}) : super(key: key);
+  final AsyncSnapshot snap;
+  final String problemType;
+  const Added({Key key, this.problem, this.answer, this.isMul, this.snap, this.problemType}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Widget prob = Container(
@@ -55,6 +57,28 @@ class Added extends StatelessWidget {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Container(
+            margin: EdgeInsets.only(right: 10),
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              padding: EdgeInsets.fromLTRB(40, 5, 40, 5),
+              color: Colors.blue,
+              child: Text(
+                '문제 수정',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Edit(isMul : isMul, snap : snap, problemType: problemType),
+                    ));
+              },
+            )),
         Container(
             margin: EdgeInsets.only(left: 10),
             child: RaisedButton(

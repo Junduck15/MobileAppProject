@@ -34,6 +34,29 @@ class _QuizMenu extends State<QuizMenu> {
   final _quizNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  _navigateAndResetInputs(BuildContext context) async {
+    FocusScope.of(context).unfocus();
+
+    final result = await  Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Quiz(
+          problemType: problemType,
+          difficulty: difficulty,
+          order: order,
+          quizNumber: int.parse(_quizNumberController.text),
+        ),
+      ),
+    );
+
+    setState(() {
+      problemType = null;
+      difficulty = null;
+      order = null;
+      _quizNumberController.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,17 +128,7 @@ class _QuizMenu extends State<QuizMenu> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Quiz(
-                              problemType: problemType,
-                              difficulty: difficulty,
-                              order: order,
-                              quizNumber: int.parse(_quizNumberController.text),
-                            ),
-                          ),
-                        );
+                        _navigateAndResetInputs(context);
                       }
                     },
                   ),

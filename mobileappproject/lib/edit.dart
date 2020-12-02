@@ -11,16 +11,19 @@ import 'added.dart';
 
 class Edit extends StatefulWidget {
   final isMul;
-  _Edit createState() => _Edit(isMul: isMul);
-  const Edit({Key key, this.isMul}) : super(key: key);
+  final AsyncSnapshot snap;
+  final String problemType;
+  _Edit createState() => _Edit(isMul: isMul, snap : snap, problemType : problemType);
+  const Edit({Key key, this.isMul, this.snap, this.problemType}) : super(key: key);
 }
 
 class _Edit extends State<Edit> {
   bool isMul;
-  _Edit({this.isMul});
+  AsyncSnapshot snap;
+  String problemType;
+  _Edit({this.isMul, this.snap, this.problemType});
   File _image;
   List<dynamic> problemTypes = [];
-  String problemType;
 
   //String id;
   var imageString;
@@ -333,157 +336,159 @@ class _Edit extends State<Edit> {
             '문제 수정',
             style: TextStyle(color: Colors.white),
           )),
-      body: isMul == false
-          ? Column(
-              children: [
-                Container(
-                    child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    children: [
-                      SizedBox(
-                        height: 30,
-                      ),
-                      problemSection,
-                      SizedBox(
-                        height: 30,
-                      ),
-                      answerSection,
-                      SizedBox(
-                        height: 30,
-                      ),
-                      _body,
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: RaisedButton(
-                          color: maincolor,
-                          child: Text(
-                            '문제 등록',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          onPressed: () {
-                            firestore
-                                .collection('users')
-                                .doc(_auth.currentUser.uid)
-                                .collection(_selectedVal)
-                                .add({
-                              'problemtext': problemController.text,
-                              'answer': answerController.text,
-                              'picture': imageString,
-                              'creator': _auth.currentUser.uid,
-                              'isShared': isSwitched,
-                            });
-                            firestore
-                                .collection('users')
-                                .doc(_auth.currentUser.uid)
-                                .update({
-                              "problemTypes":
-                                  FieldValue.arrayUnion([_selectedVal]),
-                            });
-                            if (_formKey.currentState.validate() &&
-                                problemController.text != "" &&
-                                answerController.text != "") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Added(
-                                        problem: problemController.text,
-                                        answer: answerController.text)),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-              ],
-            )
-          : Column(
-              children: [
-                Container(
-                    child: Form(
-                  key: _formKeyMulti,
-                  child: ListView(
-                    children: [
-                      SizedBox(
-                        height: 30,
-                      ),
-                      problemSection,
-                      SizedBox(
-                        height: 30,
-                      ),
-                      multipleChoice,
-                      SizedBox(
-                        height: 30,
-                      ),
-                      _body,
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: RaisedButton(
-                          color: Colors.blue,
-                          child: Text(
-                            '문제 등록',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          onPressed: () {
-                            List<String> multipleWrongAnswers =
-                                new List<String>();
-                            multipleWrongAnswers.add(multi1Controller.text);
-                            multipleWrongAnswers.add(multi2Controller.text);
-                            multipleWrongAnswers.add(multi3Controller.text);
-                            firestore
-                                .collection('users')
-                                .doc(_auth.currentUser.uid)
-                                .collection(_selectedVal)
-                                .add({
-                              'problemtext': problemController.text,
-                              'multipleAnswer': multiAnswerController.text,
-                              'picture': imageString,
-                              'creator': _auth.currentUser.uid,
-                              'isShared': isSwitched,
-                              'multipleWrongAnswers': multipleWrongAnswers
-                            });
-                            firestore
-                                .collection('users')
-                                .doc(_auth.currentUser.uid)
-                                .update({
-                              "problemTypes":
-                                  FieldValue.arrayUnion([_selectedVal]),
-                            });
-                            if (_formKeyMulti.currentState.validate() &&
-                                problemController.text != "" &&
-                                multi1Controller.text != "" &&
-                                multi2Controller.text != "" &&
-                                multi3Controller.text != "" &&
-                                multiAnswerController.text != "" &&
-                                problemType != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Added(
-                                        problem: problemController.text,
-                                        answer: multiAnswerController.text)),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-              ],
-            ),
+      body: isMul == false?
+      Column (children: [Text('hi')],):
+      Column(children: [Text('bye')],)
+          // ? Column(
+          //     children: [
+          //       Container(
+          //           child: Form(
+          //         key: _formKey,
+          //         child: ListView(
+          //           children: [
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             problemSection,
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             answerSection,
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             _body,
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             Container(
+          //               padding: EdgeInsets.symmetric(horizontal: 20),
+          //               child: RaisedButton(
+          //                 color: maincolor,
+          //                 child: Text(
+          //                   '문제 등록',
+          //                   style: TextStyle(
+          //                     color: Colors.white,
+          //                   ),
+          //                 ),
+          //                 onPressed: () {
+          //                   firestore
+          //                       .collection('users')
+          //                       .doc(_auth.currentUser.uid)
+          //                       .collection(_selectedVal)
+          //                       .add({
+          //                     'problemtext': problemController.text,
+          //                     'answer': answerController.text,
+          //                     'picture': imageString,
+          //                     'creator': _auth.currentUser.uid,
+          //                     'isShared': isSwitched,
+          //                   });
+          //                   firestore
+          //                       .collection('users')
+          //                       .doc(_auth.currentUser.uid)
+          //                       .update({
+          //                     "problemTypes":
+          //                         FieldValue.arrayUnion([_selectedVal]),
+          //                   });
+          //                   if (_formKey.currentState.validate() &&
+          //                       problemController.text != "" &&
+          //                       answerController.text != "") {
+          //                     Navigator.push(
+          //                       context,
+          //                       MaterialPageRoute(
+          //                           builder: (context) => Added(
+          //                               problem: problemController.text,
+          //                               answer: answerController.text)),
+          //                     );
+          //                   }
+          //                 },
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       )),
+          //     ],
+          //   )
+          // : Column(
+          //     children: [
+          //       Container(
+          //           child: Form(
+          //         key: _formKeyMulti,
+          //         child: ListView(
+          //           children: [
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             problemSection,
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             multipleChoice,
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             _body,
+          //             SizedBox(
+          //               height: 30,
+          //             ),
+          //             Container(
+          //               padding: EdgeInsets.symmetric(horizontal: 20),
+          //               child: RaisedButton(
+          //                 color: Colors.blue,
+          //                 child: Text(
+          //                   '문제 등록',
+          //                   style: TextStyle(
+          //                     color: Colors.white,
+          //                   ),
+          //                 ),
+          //                 onPressed: () {
+          //                   List<String> multipleWrongAnswers =
+          //                       new List<String>();
+          //                   multipleWrongAnswers.add(multi1Controller.text);
+          //                   multipleWrongAnswers.add(multi2Controller.text);
+          //                   multipleWrongAnswers.add(multi3Controller.text);
+          //                   firestore
+          //                       .collection('users')
+          //                       .doc(_auth.currentUser.uid)
+          //                       .collection(_selectedVal)
+          //                       .add({
+          //                     'problemtext': problemController.text,
+          //                     'multipleAnswer': multiAnswerController.text,
+          //                     'picture': imageString,
+          //                     'creator': _auth.currentUser.uid,
+          //                     'isShared': isSwitched,
+          //                     'multipleWrongAnswers': multipleWrongAnswers
+          //                   });
+          //                   firestore
+          //                       .collection('users')
+          //                       .doc(_auth.currentUser.uid)
+          //                       .update({
+          //                     "problemTypes":
+          //                         FieldValue.arrayUnion([_selectedVal]),
+          //                   });
+          //                   if (_formKeyMulti.currentState.validate() &&
+          //                       problemController.text != "" &&
+          //                       multi1Controller.text != "" &&
+          //                       multi2Controller.text != "" &&
+          //                       multi3Controller.text != "" &&
+          //                       multiAnswerController.text != "" &&
+          //                       problemType != null) {
+          //                     Navigator.push(
+          //                       context,
+          //                       MaterialPageRoute(
+          //                           builder: (context) => Added(
+          //                               problem: problemController.text,
+          //                               answer: multiAnswerController.text)),
+          //                     );
+          //                   }
+          //                 },
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       )),
+          //     ],
+          //   ),
     );
   }
 }

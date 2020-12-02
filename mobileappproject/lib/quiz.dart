@@ -3,37 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-
-class Problem {
-  final String problemID;
-  final String answer;
-  final String creator;
-  final bool isShared;
-  final String picture;
-  final String problemtext;
-  final List<dynamic> multipleWrongAnswers;
-  final DocumentReference reference;
-
-  Problem.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map != null),
-        assert(map['answer'] != null),
-        assert(map['creator'] != null),
-        assert(map['isShared'] != null),
-        assert(map['problemtext'] != null),
-        answer = map['answer'],
-        creator = map['creator'],
-        isShared = map['isShared'],
-        picture = map['picture'],
-        problemtext = map['problemtext'],
-        multipleWrongAnswers = map['multipleWrongAnswers'],
-        problemID = reference.id;
-
-  Problem.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data(), reference: snapshot.reference);
-
-  @override
-  String toString() => "$problemtext:$answer>";
-}
+import 'package:mobileappproject/models/problemModel.dart';
 
 class Quiz extends StatefulWidget {
   final String problemType;
@@ -81,6 +51,32 @@ class _Quiz extends State<Quiz> {
       key: _scaffoldKey,
       appBar: AppBar(
         elevation: 0,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: (){
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      content: Text("퀴즈를 종료하시겠습니까?"),
+                      actions: [
+                        FlatButton(
+                          child: Text("종료"),
+                          onPressed: () {
+                            Navigator.popUntil(context, ModalRoute.withName('/home'),);
+                          },
+                        ),
+                        FlatButton(
+                          child: Text("계속 풀기"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            },
+        ),
         title: Text(
           '퀴즈',
           style: TextStyle(color: Colors.black),
