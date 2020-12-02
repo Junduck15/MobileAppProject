@@ -34,6 +34,9 @@ class _Add extends State<Add> {
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
 
+  var _problemWritten = false;
+  var _answerWritten = false;
+
   @override
   Widget build(BuildContext context) {
     final ImagePicker _picker = ImagePicker();
@@ -213,15 +216,22 @@ class _Add extends State<Add> {
               child: Column(children: <Widget>[
                 FlatButton(
                   child: Icon(
-                  Icons.add,
+                    Icons.add,
                     size: 30,
                   ),
                   onPressed: () {
                     _showDialog();
                   },
                 ),
-                SizedBox(height: 5,),
-                Text('그룹 추가',style: TextStyle(fontSize: 13,),)
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '그룹 추가',
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),
+                )
               ])),
         ],
       );
@@ -265,7 +275,7 @@ class _Add extends State<Add> {
 
     Widget multipleChoice = Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
             '정답 입력',
             style: TextStyle(
@@ -275,8 +285,14 @@ class _Add extends State<Add> {
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: TextField(
+            child: TextFormField(
               controller: multi1Controller,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '문제 등록을 위해 오답을 입력하시오.';
+                }
+                return null;
+              },
               decoration: new InputDecoration(
                 labelText: "오답1",
                 fillColor: Colors.white,
@@ -289,8 +305,14 @@ class _Add extends State<Add> {
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: TextField(
+            child: TextFormField(
               controller: multi2Controller,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '문제 등록을 위해 오답을 입력하시오.';
+                }
+                return null;
+              },
               decoration: new InputDecoration(
                 labelText: "오답2",
                 fillColor: Colors.white,
@@ -303,8 +325,14 @@ class _Add extends State<Add> {
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: TextField(
+            child: TextFormField(
               controller: multi3Controller,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '문제 등록을 위해 오답을 입력하시오.';
+                }
+                return null;
+              },
               decoration: new InputDecoration(
                 labelText: "오답3",
                 fillColor: Colors.white,
@@ -317,8 +345,14 @@ class _Add extends State<Add> {
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 30),
-            child: TextField(
+            child: TextFormField(
               controller: multiAnswerController,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '문제 등록을 위해 정답을 입력하시오.';
+                }
+                return null;
+              },
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
                 fillColor: Colors.white,
@@ -348,8 +382,14 @@ class _Add extends State<Add> {
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 3),
-            child: TextField(
+            child: TextFormField(
               controller: problemController,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '문제 등록을 위해 문제를 입력하시오.';
+                }
+                return null;
+              },
               decoration: new InputDecoration(
                 labelText: "문제를 입력해주세요.",
                 fillColor: Colors.black,
@@ -390,8 +430,14 @@ class _Add extends State<Add> {
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 30),
-            child: TextField(
+            child: TextFormField(
               controller: answerController,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '문제등록을 위해 정답을 입력해주시오.';
+                }
+                return null;
+              },
               decoration: new InputDecoration(
                 labelText: "정답을 입력해주세요.",
                 fillColor: Colors.white,
@@ -493,7 +539,7 @@ class _Add extends State<Add> {
                                             answer: answerController.text,
                                             isMul: false,
                                             snap: snap,
-                                            problemType : problemType)));
+                                            problemType: problemType)));
                               }
                             },
                           ),
@@ -521,61 +567,66 @@ class _Add extends State<Add> {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Container(
-                            height: 50,
-                            child: RaisedButton(
-                              color: maincolor,
-                              child: Text(
-                                '문제 등록',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 19,
+                              height: 50,
+                              child: RaisedButton(
+                                color: maincolor,
+                                child: Text(
+                                  '문제 등록',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 19,
+                                  ),
                                 ),
-                              ),
-                            onPressed: () {
-                              List<String> multipleWrongAnswers =
-                                  new List<String>();
-                              multipleWrongAnswers.add(multi1Controller.text);
-                              multipleWrongAnswers.add(multi2Controller.text);
-                              multipleWrongAnswers.add(multi3Controller.text);
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid)
-                                  .collection(_selectedVal)
-                                  .add({
-                                'problemtext': problemController.text,
-                                'answer': multiAnswerController.text,
-                                'picture': imageString,
-                                'creator': _auth.currentUser.uid,
-                                'isShared': isSwitched,
-                                'multipleWrongAnswers': multipleWrongAnswers,
-                                'createdTime': FieldValue.serverTimestamp(),
-                                'isMultiple': true
-                              });
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid)
-                                  .update({
-                                "problemTypes":
-                                    FieldValue.arrayUnion([_selectedVal]),
-                              });
-                              if (_formKeyMulti.currentState.validate() &&
-                                  problemController.text != "" &&
-                                  multi1Controller.text != "" &&
-                                  multi2Controller.text != "" &&
-                                  multi3Controller.text != "" &&
-                                  multiAnswerController.text != "" &&
-                                  problemType != null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Added(
-                                          problem: problemController.text,
-                                          answer: multiAnswerController.text,
-                                          isMul: true)),
-                                );
-                              }
-                            },
-                          )),
+                                onPressed: () {
+                                  List<String> multipleWrongAnswers =
+                                      new List<String>();
+                                  multipleWrongAnswers
+                                      .add(multi1Controller.text);
+                                  multipleWrongAnswers
+                                      .add(multi2Controller.text);
+                                  multipleWrongAnswers
+                                      .add(multi3Controller.text);
+                                  firestore
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .collection(_selectedVal)
+                                      .add({
+                                    'problemtext': problemController.text,
+                                    'answer': multiAnswerController.text,
+                                    'picture': imageString,
+                                    'creator': _auth.currentUser.uid,
+                                    'isShared': isSwitched,
+                                    'multipleWrongAnswers':
+                                        multipleWrongAnswers,
+                                    'createdTime': FieldValue.serverTimestamp(),
+                                    'isMultiple': true
+                                  });
+                                  firestore
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .update({
+                                    "problemTypes":
+                                        FieldValue.arrayUnion([_selectedVal]),
+                                  });
+                                  if (_formKeyMulti.currentState.validate() &&
+                                      problemController.text != "" &&
+                                      multi1Controller.text != "" &&
+                                      multi2Controller.text != "" &&
+                                      multi3Controller.text != "" &&
+                                      multiAnswerController.text != "" &&
+                                      problemType != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Added(
+                                              problem: problemController.text,
+                                              answer:
+                                                  multiAnswerController.text,
+                                              isMul: true)),
+                                    );
+                                  }
+                                },
+                              )),
                         ),
                       ],
                     ),
