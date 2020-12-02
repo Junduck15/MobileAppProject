@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:mobileappproject/models/problemModel.dart';
+import 'package:mobileappproject/quizResult.dart';
 
 class Quiz extends StatefulWidget {
   final String problemType;
@@ -19,14 +20,19 @@ class Quiz extends StatefulWidget {
     this.quizNumber,
   }) : super(key: key);
 
-  _Quiz createState() => _Quiz(problemType: problemType, difficulty: difficulty, order: order, quizNumber: quizNumber);
+  _Quiz createState() => _Quiz(
+      problemType: problemType,
+      difficulty: difficulty,
+      order: order,
+      quizNumber: quizNumber);
 }
 
 class _Quiz extends State<Quiz> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  
+
   List<Problem> problemList;
-  List<String> answerList = [];
+  List<String> answerList;
+  List<int> indexOfNoAnswer = [];
   String problemType;
   String difficulty;
   String order;
@@ -45,6 +51,26 @@ class _Quiz extends State<Quiz> {
     this.quizNumber,
   });
 
+  _initAnswerList() {
+    answerList = List.filled(quizNumber, "");
+  }
+
+  _moveProblem(int toIndex) {
+    setState(() {
+      if (problemList[index].multipleWrongAnswers == null) {
+        answerList[index] = _answerController.text;
+      } else {
+        answerList[index] = multipleAnswer;
+      }
+      index = toIndex;
+      if (problemList[index].multipleWrongAnswers == null) {
+        _answerController.text = answerList[index];
+      } else {
+        multipleAnswer = answerList[index];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,30 +78,34 @@ class _Quiz extends State<Quiz> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: (){
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      content: Text("퀴즈를 종료하시겠습니까?"),
-                      actions: [
-                        FlatButton(
-                          child: Text("종료"),
-                          onPressed: () {
-                            Navigator.popUntil(context, ModalRoute.withName('/home'),);
-                          },
-                        ),
-                        FlatButton(
-                          child: Text("계속 풀기"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
-                  });
-            },
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Text("퀴즈를 종료하시겠습니까?"),
+                  actions: [
+                    FlatButton(
+                      child: Text("종료"),
+                      onPressed: () {
+                        Navigator.popUntil(
+                          context,
+                          ModalRoute.withName('/home'),
+                        );
+                      },
+                    ),
+                    FlatButton(
+                      child: Text("계속 풀기"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         ),
         title: Text(
           '퀴즈',
@@ -90,19 +120,33 @@ class _Quiz extends State<Quiz> {
     Query problems;
 
     switch (order) {
-      case "Random" :
-        problems = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection(problemType);
+      case "Random":
+        problems = FirebaseFirestore.instance
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection(problemType);
         break;
-      case "Newer" :
-        problems = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection(problemType).orderBy("createdTime", descending: true).limit(quizNumber);
+      case "Newer":
+        problems = FirebaseFirestore.instance
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection(problemType)
+            .orderBy("createdTime", descending: true)
+            .limit(quizNumber);
         break;
-      case "Older" :
-        problems = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection(problemType).orderBy("createdTime", descending: false).limit(quizNumber);
+      case "Older":
+        problems = FirebaseFirestore.instance
+            .collection('users')
+            .doc(auth.currentUser.uid)
+            .collection(problemType)
+            .orderBy("createdTime", descending: false)
+            .limit(quizNumber);
         break;
     }
 
-    if(isFirst) {
+    if (isFirst) {
       isFirst = false;
+      _initAnswerList();
       return FutureBuilder<QuerySnapshot>(
         future: problems.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -117,15 +161,17 @@ class _Quiz extends State<Quiz> {
           if (order == "Random" && isShuffle) {
             isShuffle = false;
             problemList = snapshot.data.docs
-                .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
-                .toList()..shuffle();
-            if (problemList.length > quizNumber){
+                .map((DocumentSnapshot document) =>
+                    Problem.fromSnapshot(document))
+                .toList()
+                  ..shuffle();
+            if (problemList.length > quizNumber) {
               problemList = problemList.sublist(0, quizNumber);
             }
-          }
-          else if (order != "Random") {
+          } else if (order != "Random") {
             problemList = snapshot.data.docs
-                .map((DocumentSnapshot document) => Problem.fromSnapshot(document))
+                .map((DocumentSnapshot document) =>
+                    Problem.fromSnapshot(document))
                 .toList();
           }
 
@@ -180,39 +226,14 @@ class _Quiz extends State<Quiz> {
                 onPressed: () {
                   if (index > 0) {
                     setState(() {
-                      if (problemList[index].multipleWrongAnswers == null) {
-                        if (index < answerList.length) {
-                          answerList[index] = _answerController.text;
-                        }
-                        else {
-                          answerList.add(_answerController.text);
-                        }
-                      }
-                      else {
-                        if (index < answerList.length) {
-                          answerList[index] = multipleAnswer;
-                        }
-                        else {
-                          answerList.add(multipleAnswer);
-                        }
-                      }
-
-                      index--;
-                      if (problemList[index].multipleWrongAnswers == null) {
-                        _answerController.text = answerList[index];
-                      }
-                      else {
-                        multipleAnswer = answerList[index];
-                      }
+                      _moveProblem(index-1);
                     });
-                  }
-                  else {
+                  } else {
                     final snackBar = SnackBar(
                       content: Text('처음 문제입니다!'),
                       action: SnackBarAction(
                         label: '확인',
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                       ),
                     );
                     _scaffoldKey.currentState.showSnackBar(snackBar);
@@ -220,53 +241,86 @@ class _Quiz extends State<Quiz> {
                 },
               ),
               FlatButton(
+                child: Text("채점하기"),
+                onPressed: () {
+                  if (problemList[index].multipleWrongAnswers == null) {
+                    answerList[index] = _answerController.text;
+                  } else {
+                    answerList[index] = multipleAnswer;
+                  }
+                  if (answerList.contains("")) {
+                    int cur = 0;
+                    indexOfNoAnswer = [];
+                    while (answerList.indexOf("", cur) != -1) {
+                      indexOfNoAnswer.add(answerList.indexOf("", cur) + 1);
+                      cur = answerList.indexOf("", cur) + 1;
+                    }
+                    String alertIndexOfNoAnswer = indexOfNoAnswer.join("번, ") + "번";
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Text("$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
+                          actions: [
+                            FlatButton(
+                              child: Text("채점"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => QuizResult(
+                                      problemList: problemList,
+                                      answerList: answerList,
+                                      problemType: problemType,
+                                      difficulty: difficulty,
+                                      order: order,
+                                      quizNumber: quizNumber,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            FlatButton(
+                              child: Text("계속 풀기"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _moveProblem(indexOfNoAnswer[0] - 1);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                  else {
+                   Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizResult(
+                          problemList: problemList,
+                          answerList: answerList,
+                          problemType: problemType,
+                          difficulty: difficulty,
+                          order: order,
+                          quizNumber: quizNumber,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              FlatButton(
                 child: Text('다음'),
                 onPressed: () {
                   if (index < problemList.length - 1) {
-                    setState(() {
-                      if (problemList[index].multipleWrongAnswers == null) {
-                        if (index < answerList.length) {
-                          answerList[index] = _answerController.text;
-                        }
-                        else {
-                          answerList.add(_answerController.text);
-                        }
-                      }
-                      else {
-                        if (index < answerList.length) {
-                          answerList[index] = multipleAnswer;
-                        }
-                        else {
-                          answerList.add(multipleAnswer);
-                        }
-                      }
-
-                      index++;
-                      if (problemList[index].multipleWrongAnswers == null) {
-                        if (index < answerList.length) {
-                          _answerController.text = answerList[index];
-                        }
-                        else {
-                          _answerController.text = "";
-                        }
-                      }
-                      else {
-                        if (index < answerList.length) {
-                          multipleAnswer = answerList[index];
-                        }
-                        else {
-                          multipleAnswer = null;
-                        }
-                      }
-                    });
-                  }
-                  else {
+                    _moveProblem(index+1);
+                  } else {
                     final snackBar = SnackBar(
                       content: Text('마지막 문제입니다!'),
                       action: SnackBarAction(
                         label: '확인',
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                       ),
                     );
                     _scaffoldKey.currentState.showSnackBar(snackBar);
@@ -288,8 +342,7 @@ class _Quiz extends State<Quiz> {
         height: 200,
         child: Image.network(
           problemList[index].picture,
-        )
-    );
+        ));
   }
 
   Widget _Answer(BuildContext context) {
@@ -311,15 +364,21 @@ class _Quiz extends State<Quiz> {
       );
     }
 
-    if(!problemList[index].multipleWrongAnswers.contains(problemList[index].answer)){
+    if (!problemList[index]
+        .multipleWrongAnswers
+        .contains(problemList[index].answer)) {
       problemList[index].multipleWrongAnswers.add(problemList[index].answer);
       problemList[index].multipleWrongAnswers..shuffle();
     }
 
-    final _choice1Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
-    final _choice2Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
-    final _choice3Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
-    final _choice4Controller = TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
+    final _choice1Controller =
+        TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
+    final _choice2Controller =
+        TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
+    final _choice3Controller =
+        TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
+    final _choice4Controller =
+        TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
 
     return Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
@@ -338,7 +397,8 @@ class _Quiz extends State<Quiz> {
                 enabled: false,
                 decoration: InputDecoration(
                   fillColor: Colors.blue,
-                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[0],
+                  filled: multipleAnswer ==
+                      problemList[index].multipleWrongAnswers[0],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide(),
@@ -361,7 +421,8 @@ class _Quiz extends State<Quiz> {
                 enabled: false,
                 decoration: InputDecoration(
                   fillColor: Colors.blue,
-                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[1],
+                  filled: multipleAnswer ==
+                      problemList[index].multipleWrongAnswers[1],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide(),
@@ -384,7 +445,8 @@ class _Quiz extends State<Quiz> {
                 enabled: false,
                 decoration: InputDecoration(
                   fillColor: Colors.blue,
-                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[2],
+                  filled: multipleAnswer ==
+                      problemList[index].multipleWrongAnswers[2],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide(),
@@ -407,7 +469,8 @@ class _Quiz extends State<Quiz> {
                 enabled: false,
                 decoration: InputDecoration(
                   fillColor: Colors.blue,
-                  filled: multipleAnswer == problemList[index].multipleWrongAnswers[3],
+                  filled: multipleAnswer ==
+                      problemList[index].multipleWrongAnswers[3],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide(),
