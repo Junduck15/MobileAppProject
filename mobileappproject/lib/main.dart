@@ -59,8 +59,6 @@ class _AppState extends State<App> {
     return MyApp();
   }
 }
-
-// TODO: Convert ShrineApp to stateful widget (104)
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

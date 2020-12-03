@@ -577,6 +577,7 @@ class _Add extends State<Add> {
                                   .collection(problemType)
                                   .add({
                                 'problemtext': problemController.text,
+                                'problemtype' : problemType,
                                 'answer': answerController.text,
                                 'picture': imageString,
                                 'creator': _auth.currentUser.uid,
@@ -588,6 +589,7 @@ class _Add extends State<Add> {
                                 firestore.collection(problemCategory).add({
                                   'problemtext': problemController.text,
                                   'answer': answerController.text,
+                                  'problemtype' : problemType,
                                   'picture': imageString,
                                   'creator': _auth.currentUser.uid,
                                   'isShared': isSwitched,
@@ -667,6 +669,7 @@ class _Add extends State<Add> {
                                     'answer': multiAnswerController.text,
                                     'picture': imageString,
                                     'creator': _auth.currentUser.uid,
+                                    'problemtype' : problemType,
                                     'isShared': isSwitched,
                                     'multipleWrongAnswers':
                                         multipleWrongAnswers,
@@ -675,6 +678,7 @@ class _Add extends State<Add> {
                                   });
                                   if (isSwitched) {
                                     firestore.collection(problemCategory).add({
+                                      'problemtype' : problemType,
                                       'problemtext': problemController.text,
                                       'answer': answerController.text,
                                       'picture': imageString,

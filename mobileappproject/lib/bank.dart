@@ -14,6 +14,7 @@ class _BankPage extends State<BankPage> {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
     Query query = FirebaseFirestore.instance.collection('생활영어');
     Query query2 = FirebaseFirestore.instance.collection('토익');
     Query query3 = FirebaseFirestore.instance.collection('토플');
@@ -83,6 +84,113 @@ class _BankPage extends State<BankPage> {
                                                         style: TextStyle(
                                                           fontSize: 17,
                                                         )),
+                                                Container(
+                                                  child: FlatButton(
+                                                    child: Text("담기"),
+                                                    onPressed: () {
+                                                       firestore
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .update({
+                                    "problemTypes":
+                                        FieldValue.arrayUnion([stream.data.docs[index][
+                                                                  'problemtype']]),
+                                  });
+                                                      stream.data.docs[index][
+                                                                  'isMultiple'] ==
+                                                              false
+                                                          ? firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index][
+                                                                  'problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            })
+                                                          : firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index]
+                                                                  ['problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'multipleWrongAnswers': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'multipleWrongAnswers'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            });
+                                                    },
+                                                  ),
+                                                )
                                               ]))
                                     ])));
                       });
@@ -152,12 +260,119 @@ class _BankPage extends State<BankPage> {
                                                         style: TextStyle(
                                                           fontSize: 17,
                                                         )),
+                                               Container(
+                                                  child: FlatButton(
+                                                    child: Text("담기"),
+                                                    onPressed: () {
+                                                       firestore
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .update({
+                                    "problemTypes":
+                                        FieldValue.arrayUnion([stream.data.docs[index][
+                                                                  'problemtype']]),
+                                  });
+                                                      stream.data.docs[index][
+                                                                  'isMultiple'] ==
+                                                              false
+                                                          ? firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index][
+                                                                  'problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            })
+                                                          : firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index]
+                                                                  ['problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'multipleWrongAnswers': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'multipleWrongAnswers'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            });
+                                                    },
+                                                  ),
+                                                )
                                               ]))
                                     ])));
                       });
               }))
     ]));
-        Widget _toefl = Container(
+    Widget _toefl = Container(
         child: Column(children: <Widget>[
       SizedBox(height: 20.0),
       Container(
@@ -221,12 +436,120 @@ class _BankPage extends State<BankPage> {
                                                         style: TextStyle(
                                                           fontSize: 17,
                                                         )),
+                                               Container(
+                                                  child: FlatButton(
+                                                    child: Text("담기"),
+                                                    onPressed: () {
+                                                       firestore
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .update({
+                                    "problemTypes":
+                                        FieldValue.arrayUnion([stream.data.docs[index][
+                                                                  'problemtype']]),
+                                  });
+                                                      stream.data.docs[index][
+                                                                  'isMultiple'] ==
+                                                              false
+                                                          ? firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index][
+                                                                  'problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            })
+                                                          : firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index]
+                                                                  ['problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'multipleWrongAnswers': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'multipleWrongAnswers'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            });
+                                                    },
+                                                  ),
+                                                
+                                                )
                                               ]))
                                     ])));
                       });
               }))
     ]));
-        Widget _extra = Container(
+    Widget _extra = Container(
         child: Column(children: <Widget>[
       SizedBox(height: 20.0),
       Container(
@@ -290,6 +613,113 @@ class _BankPage extends State<BankPage> {
                                                         style: TextStyle(
                                                           fontSize: 17,
                                                         )),
+                                                Container(
+                                                  child: FlatButton(
+                                                    child: Text("담기"),
+                                                    onPressed: () {
+                                                       firestore
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .update({
+                                    "problemTypes":
+                                        FieldValue.arrayUnion([stream.data.docs[index][
+                                                                  'problemtype']]),
+                                  });
+                                                      stream.data.docs[index][
+                                                                  'isMultiple'] ==
+                                                              false
+                                                          ? firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index][
+                                                                  'problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            })
+                                                          : firestore
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(_auth
+                                                                  .currentUser
+                                                                  .uid)
+                                                              .collection(stream
+                                                                      .data
+                                                                      .docs[index]
+                                                                  ['problemtype'])
+                                                              .add({
+                                                              'problemtext': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'problemtext'],
+                                                              'answer': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['answer'],
+                                                              'multipleWrongAnswers': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  'multipleWrongAnswers'],
+                                                              'picture': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['picture'],
+                                                              'creator': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['creator'],
+                                                              'isShared': stream
+                                                                          .data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['isShared'],
+                                                              'createdTime':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                              'isMultiple':
+                                                                  false
+                                                            });
+                                                    },
+                                                  ),
+                                                )
                                               ]))
                                     ])));
                       });
@@ -305,9 +735,16 @@ class _BankPage extends State<BankPage> {
         body: SafeArea(
             child: SingleChildScrollView(
                 child: Column(
-                  children: [Container(child:
-                  Text("토익")),_toeic,Text("생활영어"),_lifeEng,Text("토플"),_toefl,Text("기타"),_extra],
-                    
-))));
+          children: [
+            Container(child: Text("토익")),
+            _toeic,
+            Text("생활영어"),
+            _lifeEng,
+            Text("토플"),
+            _toefl,
+            Text("기타"),
+            _extra
+          ],
+        ))));
   }
 }
