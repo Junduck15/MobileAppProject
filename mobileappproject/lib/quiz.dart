@@ -355,9 +355,9 @@ class _Quiz extends State<Quiz> {
           decoration: InputDecoration(
             filled: true,
             labelText: "답을 입력해주세요.",
-            fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5.0),
+              borderRadius: BorderRadius.circular(20.0),
+              borderSide: BorderSide(),
             ),
           ),
         ),
