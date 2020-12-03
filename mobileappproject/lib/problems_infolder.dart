@@ -40,6 +40,20 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
             widget.foldername,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
+            actions: <Widget>[
+              Builder(builder: (context) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    semanticLabel: 'delete product',
+                  ),
+                  onPressed: () {
+                      //Navigator.pop(context);
+                      deleteDoc(widget.foldername);
+                  },
+                );
+              }),
+            ]
         ),
         body: SafeArea(
             child: SingleChildScrollView(
@@ -179,4 +193,16 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                   }))
         ])))));
   }
+
+  void deleteDoc(String fname) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser.uid)
+        .collection('hello')
+        .doc()
+        .delete();
+
+    print(fname);
+  }
+
 }
