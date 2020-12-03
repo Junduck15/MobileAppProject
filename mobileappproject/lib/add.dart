@@ -15,8 +15,10 @@ class Add extends StatefulWidget {
 }
 
 class _Add extends State<Add> {
+  List<String> problemCategories = ["생활영어", "토플", "토익", "회화"];
   File _image;
   List<dynamic> problemTypes = [];
+  String problemCategory;
   String problemType;
   bool isMultiple;
   var imageString;
@@ -30,10 +32,9 @@ class _Add extends State<Add> {
   String multiAnswerVal = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
   AsyncSnapshot snap;
-  var _selectedVal = '토익';
   final _formKey = GlobalKey<FormState>();
   final _formKeyMulti = GlobalKey<FormState>();
-
+  String category = "temp";
   var _problemWritten = false;
   var _answerWritten = false;
 
@@ -91,7 +92,7 @@ class _Add extends State<Add> {
     }
 
     Widget isShared = Container(
-        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
         child: Row(children: [
           Text(
             '다른 사용자들에게 문제 공유  ',
@@ -165,12 +166,65 @@ class _Add extends State<Add> {
       );
     }
 
+    Widget _problemCategory = Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: FormField<String>(
+        builder: (FormFieldState<String> state) {
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  '문제 분류',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                InputDecorator(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0))),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButtonFormField<String>(
+                      hint: Text("문제 카테고리를 선택해주세요."),
+                      value: problemCategory,
+                      isDense: true,
+                      onChanged: (newValue) {
+                        setState(() {
+                          problemCategory = newValue;
+                          problemVal = problemController.text;
+                          answerVal = answerController.text;
+                          multi1Val = multi1Controller.text;
+                          multi2Val = multi2Controller.text;
+                          multi3Val = multi3Controller.text;
+                          multiAnswerVal = multiAnswerController.text;
+                        });
+                      },
+                      items: problemCategories.map((dynamic value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      validator: (value) =>
+                          value == null ? '문제 카테고리를 선택하지 않았습니다.' : null,
+                    ),
+                  ),
+                )
+              ]);
+        },
+      ),
+    );
+
     Widget _ProblemTypeSection(BuildContext context) {
       return Row(
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: FormField<String>(
                 builder: (FormFieldState<String> state) {
                   return InputDecorator(
@@ -367,7 +421,7 @@ class _Add extends State<Add> {
             height: 1,
             color: Colors.grey,
           ),
-          isShared
+         
         ]));
 
     Widget problemSection = Container(
@@ -452,7 +506,7 @@ class _Add extends State<Add> {
             height: 1,
             color: Colors.grey,
           ),
-          isShared,
+        
         ],
       ),
     );
@@ -496,10 +550,13 @@ class _Add extends State<Add> {
                         ),
                         problemSection,
                         answerSection,
+                        _problemCategory,
+                        
                         SizedBox(
                           height: 10,
                         ),
                         _body(context),
+                        isShared,
                         SizedBox(
                           height: 20,
                         ),
@@ -527,6 +584,17 @@ class _Add extends State<Add> {
                                 'createdTime': FieldValue.serverTimestamp(),
                                 'isMultiple': false
                               });
+                              if (isSwitched) {
+                                firestore.collection(problemCategory).add({
+                                  'problemtext': problemController.text,
+                                  'answer': answerController.text,
+                                  'picture': imageString,
+                                  'creator': _auth.currentUser.uid,
+                                  'isShared': isSwitched,
+                                  'createdTime': FieldValue.serverTimestamp(),
+                                  'isMultiple': false
+                                });
+                              }
                               if (_formKey.currentState.validate() &&
                                   problemController.text != "" &&
                                   answerController.text != "") {
@@ -544,6 +612,7 @@ class _Add extends State<Add> {
                             },
                           ),
                         ),
+                      
                       ],
                     ),
                   )),
@@ -557,10 +626,13 @@ class _Add extends State<Add> {
                         ),
                         problemSection,
                         multipleChoice,
+                        _problemCategory,
+                        
                         SizedBox(
                           height: 10,
                         ),
                         _body(context),
+                        isShared,
                         SizedBox(
                           height: 30,
                         ),
@@ -589,7 +661,7 @@ class _Add extends State<Add> {
                                   firestore
                                       .collection('users')
                                       .doc(_auth.currentUser.uid)
-                                      .collection(_selectedVal)
+                                      .collection(problemType)
                                       .add({
                                     'problemtext': problemController.text,
                                     'answer': multiAnswerController.text,
@@ -601,12 +673,26 @@ class _Add extends State<Add> {
                                     'createdTime': FieldValue.serverTimestamp(),
                                     'isMultiple': true
                                   });
+                                  if (isSwitched) {
+                                    firestore.collection(problemCategory).add({
+                                      'problemtext': problemController.text,
+                                      'answer': answerController.text,
+                                      'picture': imageString,
+                                      'creator': _auth.currentUser.uid,
+                                      'isShared': isSwitched,
+                                      'multipleWrongAnswers':
+                                          multipleWrongAnswers,
+                                      'createdTime':
+                                          FieldValue.serverTimestamp(),
+                                      'isMultiple': false
+                                    });
+                                  }
                                   firestore
                                       .collection('users')
                                       .doc(_auth.currentUser.uid)
                                       .update({
                                     "problemTypes":
-                                        FieldValue.arrayUnion([_selectedVal]),
+                                        FieldValue.arrayUnion([problemType]),
                                   });
                                   if (_formKeyMulti.currentState.validate() &&
                                       problemController.text != "" &&
@@ -628,6 +714,7 @@ class _Add extends State<Add> {
                                 },
                               )),
                         ),
+                        
                       ],
                     ),
                   )),
