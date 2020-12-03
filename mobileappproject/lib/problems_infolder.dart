@@ -48,7 +48,7 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                     semanticLabel: 'delete product',
                   ),
                   onPressed: () {
-                      //Navigator.pop(context);
+                      Navigator.pop(context);
                       deleteDoc(widget.foldername);
                   },
                 );
@@ -194,15 +194,14 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
         ])))));
   }
 
-  void deleteDoc(String fname) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(_auth.currentUser.uid)
-        .collection('hello')
-        .doc()
-        .delete();
+  void deleteDoc(String foldername) {
+    FirebaseFirestore.instance.collection('users').doc(_auth.currentUser.uid).collection(foldername).get().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs){
+        ds.reference.delete();
+      }
+    }
 
-    print(fname);
+    );
   }
 
 }
