@@ -15,7 +15,7 @@ class Add extends StatefulWidget {
 }
 
 class _Add extends State<Add> {
-  List<String> problemCategories = ["생활영어", "토플", "토익", "회화"];
+  List<String> problemCategories = ["생활영어", "토플", "토익", "기타"];
   File _image;
   List<dynamic> problemTypes = [];
   String problemCategory;
