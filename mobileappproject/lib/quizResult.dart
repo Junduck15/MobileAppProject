@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileappproject/quizResultDetail.dart';
 import 'models/problemModel.dart';
 
 class QuizResult extends StatefulWidget {
@@ -78,15 +79,29 @@ class _QuizResult extends State<QuizResult> {
 
   Widget problemTile(int index) {
     int displayIndex = index + 1;
+    bool isWrong = (problemList[index].answer != answerList[index]);
     return ListTile(
       onTap: () {
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizResultDetail(
+              problemList: problemList,
+              answerList: answerList,
+              problemType: problemType,
+              difficulty: difficulty,
+              order: order,
+              quizNumber: quizNumber,
+              index: index,
+            ),
+          ),
+        );
       },
       leading: Text("$displayIndex번"),
       title: Text(
-        problemList[index].answer == answerList[index] ? "맞음" : "틀림",
+         isWrong ? "틀림" : "맞음",
         style: TextStyle(
-          color: problemList[index].answer == answerList[index] ? Colors.blue : Colors.red,
+          color: isWrong ? Colors.red : Colors.blue,
         ),
       ),
       subtitle: Text(
