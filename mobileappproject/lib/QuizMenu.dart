@@ -69,6 +69,7 @@ class _QuizMenu extends State<QuizMenu> {
         ),
       ),
       body: _Body(context),
+
     );
   }
 
@@ -113,6 +114,7 @@ class _QuizMenu extends State<QuizMenu> {
               SizedBox(
                 height: 30,
               ),
+              MyStatefulWidget(),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -322,4 +324,69 @@ class _QuizMenu extends State<QuizMenu> {
       ),
     );
   }
+
 }
+
+String a = 10.toString();
+String b = 20.toString();
+String c = 30.toString();
+
+enum SingingCharacter { a, b, c }
+
+class MyStatefulWidget extends StatefulWidget {
+  MyStatefulWidget({Key key}) : super(key: key);
+
+  @override
+  _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  SingingCharacter _character = SingingCharacter.a;
+
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ListTile(
+            title: const Text('10개'),
+            leading: Radio(
+              value: SingingCharacter.a,
+              groupValue: _character,
+              onChanged: (SingingCharacter value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('20개'),
+            leading: Radio(
+              value: SingingCharacter.b,
+              groupValue: _character,
+              onChanged: (SingingCharacter value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('30개'),
+            leading: Radio(
+              value: SingingCharacter.c,
+              groupValue: _character,
+              onChanged: (SingingCharacter value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
