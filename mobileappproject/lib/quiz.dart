@@ -51,8 +51,9 @@ class _Quiz extends State<Quiz> {
     this.quizNumber,
   });
 
-  _initAnswerList() {
+  _initAnswerList(int quizNumber) {
     answerList = List.filled(quizNumber, "");
+    this.quizNumber = quizNumber;
   }
 
   _moveProblem(int toIndex) {
@@ -146,7 +147,6 @@ class _Quiz extends State<Quiz> {
 
     if (isFirst) {
       isFirst = false;
-      _initAnswerList();
       return FutureBuilder<QuerySnapshot>(
         future: problems.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -174,7 +174,7 @@ class _Quiz extends State<Quiz> {
                     Problem.fromSnapshot(document))
                 .toList();
           }
-
+          _initAnswerList(snapshot.data.size);
           return _Sections(context);
         },
       );
