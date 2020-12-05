@@ -1,5 +1,7 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileappproject/quizResultDetail.dart';
+import 'models/indicator.dart';
 import 'models/problemModel.dart';
 
 class QuizResult extends StatefulWidget {
@@ -33,10 +35,14 @@ class _QuizResult extends State<QuizResult> {
 
   List<Problem> problemList;
   List<String> answerList;
+  List<bool> scoringList;
   String problemType;
   String difficulty;
   String order;
   int quizNumber = 0;
+  int wrongNumber = 0;
+  int rightNumber = 0;
+  int touchedIndex;
 
   _QuizResult({
     this.problemList,
@@ -47,8 +53,20 @@ class _QuizResult extends State<QuizResult> {
     this.quizNumber,
   });
 
+  _scoring() {
+    scoringList = [];
+    wrongNumber = 0;
+    rightNumber = 0;
+    for (var index = 0; index < problemList.length; index++) {
+      bool isWrong = (problemList[index].answer != answerList[index]);
+      isWrong ? wrongNumber++ : rightNumber++;
+      scoringList.add(isWrong);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _scoring();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -62,24 +80,126 @@ class _QuizResult extends State<QuizResult> {
   }
 
   Widget _body(BuildContext context) {
-    return ListView.builder(
-      itemCount: 2 * problemList.length - 1,
-      itemBuilder: (BuildContext context, int index) {
-        switch (index % 2) {
-          case 0:
-            return problemTile(((index) / 2).round());
-            break;
-          case 1:
-            return Divider();
-            break;
-        }
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+      AspectRatio(
+      aspectRatio: 1.3,
+      child: Card(
+        color: Colors.white,
+        child: Row(
+          children: <Widget>[
+            const SizedBox(
+              height: 18,
+            ),
+            Expanded(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: PieChart(
+                  PieChartData(
+                      pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+                        setState(() {
+                          if (pieTouchResponse.touchInput is FlLongPressEnd ||
+                              pieTouchResponse.touchInput is FlPanEnd) {
+                            touchedIndex = -1;
+                          } else {
+                            touchedIndex = pieTouchResponse.touchedSectionIndex;
+                          }
+                        });
+                      }),
+                      borderData: FlBorderData(
+                        show: false,
+                      ),
+                      sectionsSpace: 0,
+                      centerSpaceRadius: 40,
+                      sections: circularChartSections(),
+                  ),
+                ),
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Indicator(
+                  color: Colors.blue,
+                  text: '맞음',
+                  isSquare: true,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Indicator(
+                  color: Colors.red,
+                  text: '틀림',
+                  isSquare: true,
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+              ],
+            ),
+            const SizedBox(
+              width: 28,
+            ),
+          ],
+        ),
+      ),
+    ),
+        Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: 2 * problemList.length - 1,
+              itemBuilder: (BuildContext context, int index) {
+                switch (index % 2) {
+                  case 0:
+                    return problemTile(((index) / 2).round());
+                    break;
+                  case 1:
+                    return Divider();
+                    break;
+                }
+              },
+            ),
+        ),
+      ],
     );
+  }
+
+  List<PieChartSectionData> circularChartSections() {
+    return List.generate(2, (i) {
+      final isTouched = i == touchedIndex;
+      final double fontSize = isTouched ? 22 : 16;
+      final double radius = isTouched ? 70 : 60;
+
+      switch (i) {
+        case 0:
+          return PieChartSectionData(
+            color: Colors.red,
+            value: (wrongNumber / quizNumber) * 100,
+            title: '$wrongNumber문제',
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
+          );
+        case 1:
+          return PieChartSectionData(
+            color: Colors.blue,
+            value: (rightNumber / quizNumber) * 100,
+            title: '$rightNumber문제',
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
+          );
+        default:
+          return null;
+      }
+    });
   }
 
   Widget problemTile(int index) {
     int displayIndex = index + 1;
-    bool isWrong = (problemList[index].answer != answerList[index]);
     return ListTile(
       onTap: () {
         Navigator.push(
@@ -99,9 +219,9 @@ class _QuizResult extends State<QuizResult> {
       },
       leading: Text("$displayIndex번"),
       title: Text(
-         isWrong ? "틀림" : "맞음",
+        scoringList[index] ? "틀림" : "맞음",
         style: TextStyle(
-          color: isWrong ? Colors.red : Colors.blue,
+          color: scoringList[index] ? Colors.red : Colors.blue,
         ),
       ),
       subtitle: Text(
