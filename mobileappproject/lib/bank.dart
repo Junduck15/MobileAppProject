@@ -10,8 +10,9 @@ class BankPage extends StatefulWidget {
 }
 
 class _BankPage extends State<BankPage> {
+  List<dynamic> problemTypes = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  String problemType;
   @override
   Widget build(BuildContext context) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -20,7 +21,235 @@ class _BankPage extends State<BankPage> {
     Query query3 = FirebaseFirestore.instance.collection('토플');
     Query query4 = FirebaseFirestore.instance.collection('기타');
 
-    Widget _lifeEng = Container(
+void _showDialog2() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          final newTypeController = TextEditingController();
+          return AlertDialog(
+            title: Text("문제 그룹 생성"),
+            content: Container(
+              height: 80,
+              child: Column(
+                children: [
+                  Text("생성할 문제 그룹 이름을 입력해주세요."),
+                  TextField(
+                    controller: newTypeController,
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("생성"),
+                onPressed: () {
+                  firestore
+                      .collection('users')
+                      .doc(_auth.currentUser.uid)
+                      .update({
+                    "problemTypes":
+                        FieldValue.arrayUnion([newTypeController.text]),
+                  });
+                  firestore
+                      .collection('users')
+                      .doc(_auth.currentUser.uid)
+                      .collection('problemType');
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text("취소"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    void _showDialog({pt}) {
+      print(pt);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("문제 그룹 지정"),
+            content: Container(
+              height: 80,
+              child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+              child: FormField<String>(
+                builder: (FormFieldState<String> state) {
+                  return InputDecorator(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButtonFormField<String>(
+                        hint: Text("문제 그룹을 선택해주세요."),
+                        value: pt,
+                        isDense: true,
+                        onChanged: (newValue) {
+                          setState(() {
+                            pt = newValue;
+                          });
+                        },
+                        items: problemTypes.map((dynamic value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        validator: (value) =>
+                            value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Container(
+              width: 80,
+              height: 70,
+              alignment: Alignment.center,
+              padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+              child: Column(children: <Widget>[
+                FlatButton(
+                  child: Icon(
+                    Icons.add,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    _showDialog2();
+                  },
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '그룹 추가',
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),
+                )
+              ])),
+        ],
+              )
+          ));
+        },
+      );
+    }
+
+    Widget _ProblemTypeSection(BuildContext context) {
+      return Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+              child: FormField<String>(
+                builder: (FormFieldState<String> state) {
+                  return InputDecorator(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButtonFormField<String>(
+                        hint: Text("문제 그룹을 선택해주세요."),
+                        value: problemType,
+                        isDense: true,
+                        onChanged: (newValue) {
+                          setState(() {
+                            problemType = newValue;
+                          });
+                        },
+                        items: problemTypes.map((dynamic value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        validator: (value) =>
+                            value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Container(
+              width: 80,
+              height: 70,
+              alignment: Alignment.center,
+              padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+              child: Column(children: <Widget>[
+                FlatButton(
+                  child: Icon(
+                    Icons.add,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    _showDialog2();
+                  },
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '그룹 추가',
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),
+                )
+              ])),
+        ],
+      );
+    }
+
+    Widget _body(BuildContext context) {
+      return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(_auth.currentUser.uid)
+            .snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text("Something went wrong");
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.data.data == null ||
+              snapshot.data.data()["problemTypes"] == null) {
+            problemTypes = [];
+          } else {
+            problemTypes = snapshot.data.data()["problemTypes"];
+          }
+
+          return Form(
+            // key: _formKey,
+            child: Column(
+              children: [
+                _ProblemTypeSection(context),
+                SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+
+
+
+    Widget _lifeEng (BuildContext context) { return Container(
         child: Column(children: <Widget>[
       SizedBox(height: 20.0),
       Container(
@@ -88,6 +317,7 @@ class _BankPage extends State<BankPage> {
                                                   child: FlatButton(
                                                     child: Text("담기"),
                                                     onPressed: () {
+                                                      
                                                        firestore
                                       .collection('users')
                                       .doc(_auth.currentUser.uid)
@@ -190,13 +420,13 @@ class _BankPage extends State<BankPage> {
                                                             });
                                                     },
                                                   ),
-                                                )
+                                                ),
                                               ]))
                                     ])));
                       });
               }))
-    ]));
-    Widget _toeic = Container(
+    ]));};
+    Widget _toeic (BuildContext context){ return Container(
         child: Column(children: <Widget>[
       SizedBox(height: 20.0),
       Container(
@@ -264,6 +494,7 @@ class _BankPage extends State<BankPage> {
                                                   child: FlatButton(
                                                     child: Text("담기"),
                                                     onPressed: () {
+                                                   
                                                        firestore
                                       .collection('users')
                                       .doc(_auth.currentUser.uid)
@@ -371,8 +602,8 @@ class _BankPage extends State<BankPage> {
                                     ])));
                       });
               }))
-    ]));
-    Widget _toefl = Container(
+    ]));}
+    Widget _toefl (BuildContext context){return Container(
         child: Column(children: <Widget>[
       SizedBox(height: 20.0),
       Container(
@@ -440,6 +671,7 @@ class _BankPage extends State<BankPage> {
                                                   child: FlatButton(
                                                     child: Text("담기"),
                                                     onPressed: () {
+                                                      
                                                        firestore
                                       .collection('users')
                                       .doc(_auth.currentUser.uid)
@@ -548,8 +780,8 @@ class _BankPage extends State<BankPage> {
                                     ])));
                       });
               }))
-    ]));
-    Widget _extra = Container(
+    ]));}
+    Widget _extra (BuildContext context) {return Container(
         child: Column(children: <Widget>[
       SizedBox(height: 20.0),
       Container(
@@ -617,6 +849,9 @@ class _BankPage extends State<BankPage> {
                                                   child: FlatButton(
                                                     child: Text("담기"),
                                                     onPressed: () {
+                                                      _showDialog(pt:stream.data
+                                                                    .docs[index]
+                                                                ['problemtype']);
                                                        firestore
                                       .collection('users')
                                       .doc(_auth.currentUser.uid)
@@ -624,10 +859,7 @@ class _BankPage extends State<BankPage> {
                                     "problemTypes":
                                         FieldValue.arrayUnion([stream.data.docs[index][
                                                                   'problemtype']]),
-                                  });
-                                                      stream.data.docs[index][
-                                                                  'isMultiple'] ==
-                                                              false
+                                  }); stream.data.docs[index]['isMultiple'] == false
                                                           ? firestore
                                                               .collection(
                                                                   'users')
@@ -724,7 +956,7 @@ class _BankPage extends State<BankPage> {
                                     ])));
                       });
               }))
-    ]));
+    ]));}
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -737,13 +969,14 @@ class _BankPage extends State<BankPage> {
                 child: Column(
           children: [
             Container(child: Text("토익")),
-            _toeic,
+            _toeic(context),
+           
             Text("생활영어"),
-            _lifeEng,
+            _lifeEng(context),
             Text("토플"),
-            _toefl,
+            _toefl(context),
             Text("기타"),
-            _extra
+            _extra(context)
           ],
         ))));
   }
