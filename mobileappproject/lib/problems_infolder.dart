@@ -82,156 +82,201 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                               SizedBox(
                                                 height: 20,
                                               ),
-                                              stream
-                                                              .data.docs[index]
+                                              stream.data.docs[index]
                                                           ['isMultiple'] ==
                                                       false
                                                   ? Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children : <Widget> [
-                                                  Container(
-                                                    height: 25.0,
-                                                    width: 65,
-                                                    color: Colors.transparent,
-                                                    child: new Container(
-                                                        decoration: new BoxDecoration(
-                                                            color: maincolor,
-                                                            borderRadius: BorderRadius.circular(5),
-                                                        ),
-                                                        child: new Center(
-                                                          child: new Text("주관식", style : TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-                                                        )
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 6,),
-                                                  Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children : <Widget> [
-                                                        Text('Q.',style : TextStyle(fontSize: 27,fontWeight: FontWeight.bold,color : maincolor,)),
-                                                        Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
-                                                            child : Text(
-                                                                stream.data
-                                                                    .docs[index]
-                                                                ['problemtext'],
-                                                                style: TextStyle(
-                                                                  fontSize: 17,
-                                                                ))
-                                                        )
-
-                                                      ]
-                                                  )
-
-
-                                                ]
-
-                                              )
-
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: <Widget>[
+                                                          Container(
+                                                            height: 25.0,
+                                                            width: 65,
+                                                            color: Colors
+                                                                .transparent,
+                                                            child:
+                                                                new Container(
+                                                                    decoration:
+                                                                        new BoxDecoration(
+                                                                      color:
+                                                                          Colors.orangeAccent,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                    ),
+                                                                    child:
+                                                                        new Center(
+                                                                      child: new Text(
+                                                                          "주관식",
+                                                                          style: TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontWeight: FontWeight.w500)),
+                                                                    )),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 6,
+                                                          ),
+                                                          Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: <
+                                                                  Widget>[
+                                                                Text('Q.',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          27,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color:
+                                                                          maincolor,
+                                                                    )),
+                                                                Flexible(
+                                                                    child: Padding(
+                                                                        padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                        child: Text(stream.data.docs[index]['problemtext'],
+                                                                            style: TextStyle(
+                                                                              fontSize: 17,
+                                                                            ))))
+                                                              ])
+                                                        ])
                                                   : Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: <Widget>[
-                                                        Container(
-                                                          height: 25.0,
-                                                          width: 65,
-                                                          color: Colors.transparent,
-                                                          child: new Container(
-                                                              decoration: new BoxDecoration(
-                                                                color: maincolor,
-                                                                borderRadius: BorderRadius.circular(5),
-                                                              ),
-                                                              child: new Center(
-                                                                child: new Text("객관식", style : TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-                                                              )
+                                                          Container(
+                                                            height: 25.0,
+                                                            width: 65,
+                                                            color: Colors
+                                                                .transparent,
+                                                            child:
+                                                                new Container(
+                                                                    decoration:
+                                                                        new BoxDecoration(
+                                                                      color:
+                                                                          Colors.lightGreen,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                    ),
+                                                                    child:
+                                                                        new Center(
+                                                                      child: new Text(
+                                                                          "객관식",
+                                                                          style: TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontWeight: FontWeight.w500)),
+                                                                    )),
                                                           ),
-                                                        ),
-                                                        SizedBox(height: 6,),
-                                                        Row(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children : <Widget> [
-                                                              Text('Q.',style : TextStyle(fontSize: 27,fontWeight: FontWeight.bold,color : maincolor,)),
-                                                              Flexible(
-                                                                child: Padding(
-                                                                    padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
-                                                                    child : Text(
-                                                                        stream.data
-                                                                            .docs[index]
-                                                                        ['problemtext'],
-                                                                        style: TextStyle(
-                                                                          fontSize: 17,
-                                                                        ))
-                                                                )
-                                                              )
-
-
-                                                            ]
-                                                        ),
-                                                        Padding(
-                                                            padding: EdgeInsets.fromLTRB(32, 9, 20, 10),
-                                                            child : Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children : <Widget> [
-                                                                SizedBox(
-                                                                  height: 15,
-                                                                ),
-                                                                Divider(
-                                                                  height: 1.0,
-                                                                  color: maincolor,
-                                                                  indent: 0,
-                                                                  endIndent: 0,
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 25,
-                                                                ),
-                                                                Text(
-                                                                    '1)  ' +
-                                                                        stream.data.docs[
-                                                                        index]
-                                                                        [
-                                                                        'multipleWrongAnswers'][0],
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
+                                                          SizedBox(
+                                                            height: 6,
+                                                          ),
+                                                          Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: <
+                                                                  Widget>[
+                                                                Text('Q.',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          27,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color:
+                                                                          maincolor,
                                                                     )),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Text(
-                                                                    '2)  ' +
-                                                                        stream.data.docs[
-                                                                        index]
-                                                                        [
-                                                                        'multipleWrongAnswers'][1],
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
-                                                                    )),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Text(
-                                                                    '3)  ' +
-                                                                        stream.data.docs[
-                                                                        index]
-                                                                        [
-                                                                        'multipleWrongAnswers'][2],
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
-                                                                    )),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Text(
-                                                                    '4)  ' +
-                                                                        stream.data.docs[
-                                                                        index]
-                                                                        [
-                                                                        'answer'],
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
-                                                                    )),
-                                                              ]
-                                                            ))
-
+                                                                Flexible(
+                                                                    child: Padding(
+                                                                        padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                        child: Text(stream.data.docs[index]['problemtext'],
+                                                                            style: TextStyle(
+                                                                              fontSize: 17,
+                                                                            ))))
+                                                              ]),
+                                                          Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .fromLTRB(
+                                                                          32,
+                                                                          9,
+                                                                          20,
+                                                                          10),
+                                                              child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    SizedBox(
+                                                                      height:
+                                                                          15,
+                                                                    ),
+                                                                    Divider(
+                                                                      height:
+                                                                          1.0,
+                                                                      color:
+                                                                          maincolor,
+                                                                      indent: 0,
+                                                                      endIndent:
+                                                                          0,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          25,
+                                                                    ),
+                                                                    Text(
+                                                                        '1)  ' +
+                                                                            stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                0],
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                        )),
+                                                                    SizedBox(
+                                                                      height: 8,
+                                                                    ),
+                                                                    Text(
+                                                                        '2)  ' +
+                                                                            stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                1],
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                        )),
+                                                                    SizedBox(
+                                                                      height: 8,
+                                                                    ),
+                                                                    Text(
+                                                                        '3)  ' +
+                                                                            stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                2],
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                        )),
+                                                                    SizedBox(
+                                                                      height: 8,
+                                                                    ),
+                                                                    Text(
+                                                                        '4)  ' +
+                                                                            stream.data.docs[index][
+                                                                                'answer'],
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                        )),
+                                                                  ]))
                                                         ])
                                             ]),
                                       )
@@ -240,7 +285,6 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                     );
                 }))
       ])))),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

@@ -134,7 +134,7 @@ class _FolderPageState extends State<FolderPage> {
               if (snapshot.connectionState == ConnectionState.waiting ||
                   snapshot.data.data == null ||
                   snapshot.data.data()["problemTypes"] == null) {
-                problemTypes = problemTypes = [];
+                problemTypes = [];
               } else {
                 problemTypes = snapshot.data.data()["problemTypes"];
               }
@@ -185,17 +185,21 @@ class _FolderPageState extends State<FolderPage> {
                                                 width: 18,
                                               ),
                                               Icon(Icons.collections_bookmark,
-                                                  size: 27, color: maincolor),
+                                                  size: 23, color: maincolor),
                                               SizedBox(
                                                 width: 10,
                                               ),
-                                              Text(
-                                                (problemTypes[index]),
-                                                style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w600,
+                                              Container(
+                                                width: 107,
+                                                child: Text(
+                                                  (problemTypes[index]),
+                                                  overflow: TextOverflow.clip,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  maxLines: 2,
                                                 ),
-                                                maxLines: 2,
                                               ),
                                               Expanded(
                                                   child: Row(
@@ -240,7 +244,7 @@ class _FolderPageState extends State<FolderPage> {
                 },
                 itemCount: problemTypes.length,
               );
-            },
+            }
           ),
         )
       ])))),
