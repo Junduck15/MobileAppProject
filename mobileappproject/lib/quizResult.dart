@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileappproject/quizResultDetail.dart';
 import 'models/indicator.dart';
 import 'models/problemModel.dart';
+import 'package:intl/intl.dart';
 
 class QuizResult extends StatefulWidget {
   final List<Problem> problemList;
@@ -11,6 +14,7 @@ class QuizResult extends StatefulWidget {
   final String difficulty;
   final String order;
   final int quizNumber;
+  final bool isDailyQuiz;
 
   const QuizResult({
     Key key,
@@ -20,6 +24,7 @@ class QuizResult extends StatefulWidget {
     this.difficulty,
     this.order,
     this.quizNumber,
+    this.isDailyQuiz,
   }) : super(key: key);
 
   _QuizResult createState() => _QuizResult(
@@ -28,7 +33,9 @@ class QuizResult extends StatefulWidget {
       problemType: problemType,
       difficulty: difficulty,
       order: order,
-      quizNumber: quizNumber);
+      quizNumber: quizNumber,
+      isDailyQuiz: isDailyQuiz,
+  );
 }
 
 class _QuizResult extends State<QuizResult> {
@@ -43,6 +50,8 @@ class _QuizResult extends State<QuizResult> {
   int wrongNumber = 0;
   int rightNumber = 0;
   int touchedIndex;
+  bool isDailyQuiz;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   _QuizResult({
     this.problemList,
@@ -51,6 +60,7 @@ class _QuizResult extends State<QuizResult> {
     this.difficulty,
     this.order,
     this.quizNumber,
+    this.isDailyQuiz,
   });
 
   _scoring() {
@@ -62,11 +72,29 @@ class _QuizResult extends State<QuizResult> {
       isWrong ? wrongNumber++ : rightNumber++;
       scoringList.add(isWrong);
     }
+    if (isDailyQuiz == true) {
+      Future<void> addDailyQuizRecord() {
+        CollectionReference dailyQuiz = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection('dailyQuiz');
+        return dailyQuiz
+            .add({
+          'score': (rightNumber / quizNumber) * 100,
+          'date': DateFormat.Md().format(DateTime.now()),
+        })
+            .then((value) => print("Daily Quiz Record Added"))
+            .catchError((error) => print("Failed to add Daily Quiz Record: $error"));
+      }
+      addDailyQuizRecord();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scoring();
   }
 
   @override
   Widget build(BuildContext context) {
-    _scoring();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

@@ -276,6 +276,7 @@ class _Quiz extends State<Quiz> {
                                       difficulty: difficulty,
                                       order: order,
                                       quizNumber: quizNumber,
+                                      isDailyQuiz: false,
                                     ),
                                   ),
                                 );
@@ -304,6 +305,7 @@ class _Quiz extends State<Quiz> {
                           difficulty: difficulty,
                           order: order,
                           quizNumber: quizNumber,
+                          isDailyQuiz: false,
                         ),
                       ),
                     );
