@@ -1,55 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:async';
 import 'package:mobileappproject/models/problemModel.dart';
 import 'package:mobileappproject/quizResult.dart';
 
-class Quiz extends StatefulWidget {
-  final String problemType;
-  final String difficulty;
-  final String order;
-  final int quizNumber;
+class DailyQuiz extends StatefulWidget {
 
-  const Quiz({
+  const DailyQuiz({
     Key key,
-    this.problemType,
-    this.difficulty,
-    this.order,
-    this.quizNumber,
   }) : super(key: key);
 
-  _Quiz createState() => _Quiz(
-      problemType: problemType,
-      difficulty: difficulty,
-      order: order,
-      quizNumber: quizNumber);
+  _DailyQuiz createState() => _DailyQuiz();
 }
 
-class _Quiz extends State<Quiz> {
+class _DailyQuiz extends State<DailyQuiz> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   List<Problem> problemList;
   List<String> answerList;
   List<int> indexOfNoAnswer = [];
-  String problemType;
-  String difficulty;
-  String order;
-  int quizNumber = 0;
+  String difficulty = "All";
+  int quizNumber = 10;
   int index = 0;
   bool isShuffle = true;
   bool isFirst = true;
   final _answerController = TextEditingController();
   String multipleAnswer;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  _Quiz({
-    this.problemType,
-    this.difficulty,
-    this.order,
-    this.quizNumber,
-  });
 
   _initAnswerList(int quizNumber) {
     answerList = List.filled(quizNumber, "");
@@ -85,7 +62,7 @@ class _Quiz extends State<Quiz> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  content: Text("퀴즈를 종료하시겠습니까?"),
+                  content: Text("퀴즈를 종료하시겠습니까?\n(종료하면 데일리 퀴즈는 0점으로 기록됩니다.)"),
                   actions: [
                     FlatButton(
                       child: Text("종료"),
@@ -109,7 +86,7 @@ class _Quiz extends State<Quiz> {
           },
         ),
         title: Text(
-          '퀴즈',
+          '데일리 퀴즈',
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -118,32 +95,10 @@ class _Quiz extends State<Quiz> {
   }
 
   Widget _Body(BuildContext context) {
-    Query problems;
-
-    switch (order) {
-      case "Random":
-        problems = FirebaseFirestore.instance
-            .collection('users')
-            .doc(auth.currentUser.uid)
-            .collection(problemType);
-        break;
-      case "Newer":
-        problems = FirebaseFirestore.instance
-            .collection('users')
-            .doc(auth.currentUser.uid)
-            .collection(problemType)
-            .orderBy("createdTime", descending: true)
-            .limit(quizNumber);
-        break;
-      case "Older":
-        problems = FirebaseFirestore.instance
-            .collection('users')
-            .doc(auth.currentUser.uid)
-            .collection(problemType)
-            .orderBy("createdTime", descending: false)
-            .limit(quizNumber);
-        break;
-    }
+    Query problems = FirebaseFirestore.instance
+        .collection('users')
+        .doc(auth.currentUser.uid)
+        .collection("토익");
 
     if (isFirst) {
       isFirst = false;
@@ -158,20 +113,20 @@ class _Quiz extends State<Quiz> {
             return LinearProgressIndicator();
           }
 
-          if (order == "Random" && isShuffle) {
+          if (isShuffle) {
             isShuffle = false;
             problemList = snapshot.data.docs
                 .map((DocumentSnapshot document) =>
-                    Problem.fromSnapshot(document))
+                Problem.fromSnapshot(document))
                 .toList()
-                  ..shuffle();
+              ..shuffle();
             if (problemList.length > quizNumber) {
               problemList = problemList.sublist(0, quizNumber);
             }
-          } else if (order != "Random") {
+          } else {
             problemList = snapshot.data.docs
                 .map((DocumentSnapshot document) =>
-                    Problem.fromSnapshot(document))
+                Problem.fromSnapshot(document))
                 .toList();
           }
           _initAnswerList(snapshot.data.size);
@@ -272,11 +227,11 @@ class _Quiz extends State<Quiz> {
                                     builder: (context) => QuizResult(
                                       problemList: problemList,
                                       answerList: answerList,
-                                      problemType: problemType,
+                                      problemType: "",
                                       difficulty: difficulty,
-                                      order: order,
+                                      order: "",
                                       quizNumber: quizNumber,
-                                      isDailyQuiz: false,
+                                      isDailyQuiz: true,
                                     ),
                                   ),
                                 );
@@ -295,17 +250,17 @@ class _Quiz extends State<Quiz> {
                     );
                   }
                   else {
-                   Navigator.pushReplacement(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => QuizResult(
                           problemList: problemList,
                           answerList: answerList,
-                          problemType: problemType,
+                          problemType: "",
                           difficulty: difficulty,
-                          order: order,
+                          order: "",
                           quizNumber: quizNumber,
-                          isDailyQuiz: false,
+                          isDailyQuiz: true,
                         ),
                       ),
                     );
@@ -374,13 +329,13 @@ class _Quiz extends State<Quiz> {
     }
 
     final _choice1Controller =
-        TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
+    TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
     final _choice2Controller =
-        TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
+    TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
     final _choice3Controller =
-        TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
+    TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
     final _choice4Controller =
-        TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
+    TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
 
     return Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
