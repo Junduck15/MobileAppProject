@@ -49,6 +49,13 @@ class _FolderPageState extends State<FolderPage> {
               ),
             ),
             actions: <Widget>[
+
+              FlatButton(
+                child: Text("취소"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
               FlatButton(
                 child: Text("생성"),
                 onPressed: () {
@@ -57,18 +64,12 @@ class _FolderPageState extends State<FolderPage> {
                       .doc(_auth.currentUser.uid)
                       .update({
                     "problemTypes":
-                        FieldValue.arrayUnion([newTypeController.text]),
+                    FieldValue.arrayUnion([newTypeController.text]),
                   });
                   firestore
                       .collection('users')
                       .doc(_auth.currentUser.uid)
                       .collection('problemType');
-                  Navigator.pop(context);
-                },
-              ),
-              FlatButton(
-                child: Text("취소"),
-                onPressed: () {
                   Navigator.pop(context);
                 },
               ),

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobileappproject/login.dart';
 
 class QuizRecordTab extends StatefulWidget {
   @override
@@ -16,7 +17,15 @@ class QuizRecordTabState extends State<QuizRecordTab> {
   final Color barBackgroundColor = Color(0xff72d8bf);
   final Duration animDuration = Duration(milliseconds: 250);
   final FirebaseAuth auth = FirebaseAuth.instance;
-  List<double> dailyQuizRecord = [0, 0, 0, 0, 0, 0, 0,];
+  List<double> dailyQuizRecord = [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ];
   List<dynamic> yyyyMMdd = [];
   List<dynamic> Md = [];
   List<dynamic> EEEE = [];
@@ -26,27 +35,39 @@ class QuizRecordTabState extends State<QuizRecordTab> {
   void initState() {
     super.initState();
     DateTime now = DateTime.now();
-    for(var i = 6; i >= 0; i--) {
-      yyyyMMdd.add(DateFormat("yyyyMMdd").format(DateTime(now.year, now.month, now.day - i)));
-      Md.add(DateFormat.Md().format(DateTime(now.year, now.month, now.day - i)));
-      EEEE.add(DateFormat.EEEE().format(DateTime(now.year, now.month, now.day - i)));
+    for (var i = 6; i >= 0; i--) {
+      yyyyMMdd.add(DateFormat("yyyyMMdd")
+          .format(DateTime(now.year, now.month, now.day - i)));
+      Md.add(
+          DateFormat.Md().format(DateTime(now.year, now.month, now.day - i)));
+      EEEE.add(
+          DateFormat.EEEE().format(DateTime(now.year, now.month, now.day - i)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection('dailyQuiz').where('date', isGreaterThan: DateFormat.Md().format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 7))).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(auth.currentUser.uid)
+          .collection('dailyQuiz')
+          .where('date',
+              isGreaterThan: DateFormat.Md().format(DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day - 7)))
+          .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
         }
 
         if (snapshot.connectionState == ConnectionState.active) {
-          for (var i = 0; i < snapshot.data.docs.length ; i++) {
+          for (var i = 0; i < snapshot.data.docs.length; i++) {
             Map<String, dynamic> data = snapshot.data.docs[i].data();
-            for (var j = 0; j <= 6 ; j++) {
-              if(data['date'] == Md[j]){
+            for (var j = 0; j <= 6; j++) {
+              if (data['date'] == Md[j]) {
                 dailyQuizRecord[j] = data['score'].toDouble();
                 break;
               }
@@ -54,59 +75,67 @@ class QuizRecordTabState extends State<QuizRecordTab> {
           }
         }
 
-        return AspectRatio(
-          aspectRatio: 1,
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            color: Color(0xff81e5cd),
-            child: Stack(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Text(
-                        '데일리 퀴즈 점수',
-                        style: TextStyle(
-                            color: Color(0xff0f4a3c),
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        '지난 일주일',
-                        style: TextStyle(
-                            color: Color(0xff379982),
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: BarChart(
-                            mainBarData(),
-                            swapAnimationDuration: animDuration,
+        return Container(
+            margin: EdgeInsets.all(20),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18)),
+                color: Colors.white,
+                child: Stack(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Text(
+                            '데일리 퀴즈 점수',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
-                        ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 15,),
+                            Text(
+                              '지난 일주일',
+                              style: TextStyle(
+                                  color: maincolor,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ]),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 7.0),
+                              child: BarChart(
+                                mainBarData(),
+                                swapAnimationDuration: animDuration,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        );
+              ),
+            ));
       },
     );
   }
@@ -116,14 +145,14 @@ class QuizRecordTabState extends State<QuizRecordTab> {
     double y, {
     bool isTouched = false,
     Color barColor = Colors.lightGreenAccent,
-    double width = 22,
+    double width = 23,
     List<int> showTooltips = const [],
   }) {
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
-          y: isTouched ? y/5 + 1 : y/5,
+          y: isTouched ? y / 5 + 1 : y / 5,
           colors: isTouched ? [Colors.limeAccent] : [barColor],
           width: width,
           backDrawRodData: BackgroundBarChartRodData(
@@ -140,19 +169,26 @@ class QuizRecordTabState extends State<QuizRecordTab> {
   List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
         switch (i) {
           case 0:
-            return makeGroupData(0, dailyQuizRecord[0], isTouched: i == touchedIndex);
+            return makeGroupData(0, dailyQuizRecord[0],
+                isTouched: i == touchedIndex);
           case 1:
-            return makeGroupData(1, dailyQuizRecord[1], isTouched: i == touchedIndex);
+            return makeGroupData(1, dailyQuizRecord[1],
+                isTouched: i == touchedIndex);
           case 2:
-            return makeGroupData(2, dailyQuizRecord[2], isTouched: i == touchedIndex);
+            return makeGroupData(2, dailyQuizRecord[2],
+                isTouched: i == touchedIndex);
           case 3:
-            return makeGroupData(3, dailyQuizRecord[3], isTouched: i == touchedIndex);
+            return makeGroupData(3, dailyQuizRecord[3],
+                isTouched: i == touchedIndex);
           case 4:
-            return makeGroupData(4, dailyQuizRecord[4], isTouched: i == touchedIndex);
+            return makeGroupData(4, dailyQuizRecord[4],
+                isTouched: i == touchedIndex);
           case 5:
-            return makeGroupData(5, dailyQuizRecord[5], isTouched: i == touchedIndex);
+            return makeGroupData(5, dailyQuizRecord[5],
+                isTouched: i == touchedIndex);
           case 6:
-            return makeGroupData(6, dailyQuizRecord[6], isTouched: i == touchedIndex);
+            return makeGroupData(6, dailyQuizRecord[6],
+                isTouched: i == touchedIndex);
           default:
             return null;
         }
@@ -195,7 +231,8 @@ class QuizRecordTabState extends State<QuizRecordTab> {
                   weekDay = DateFormat.EEEE().format(now);
                   break;
               }
-              return BarTooltipItem(weekDay + '\n' + ((rod.y - 1) * 5).round().toString() + '점',
+              return BarTooltipItem(
+                  weekDay + '\n' + ((rod.y - 1) * 5).round().toString() + '점',
                   TextStyle(color: Colors.yellow));
             }),
         touchCallback: (barTouchResponse) {
@@ -215,8 +252,8 @@ class QuizRecordTabState extends State<QuizRecordTab> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTextStyles: (value) => TextStyle(
-              color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 14),
-          margin: 16,
+              color: Colors.black54, fontWeight: FontWeight.w600, fontSize: 15),
+          margin: 10,
           getTitles: (double value) {
             final now = DateTime.now();
             switch (value.toInt()) {

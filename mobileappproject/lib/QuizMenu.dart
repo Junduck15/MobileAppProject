@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:mobileappproject/quizRecordTab.dart';
 import 'dart:async';
 import 'dailyQuiz.dart';
+import 'dailyQuiz.dart';
 import 'quiz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobileappproject/login.dart';
@@ -102,13 +103,13 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
           tabs: [
             Tab(
               icon: Icon(
-                Icons.edit_outlined,
+                Icons.edit,
                 color: Colors.white,
               ),
             ),
             Tab(
               icon: Icon(
-                Icons.description_outlined,
+                Icons.description,
                 color: Colors.white,
               ),
             ),
@@ -298,7 +299,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
-                  '문제 난이도',
+                  '문제 이해도',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 17,
@@ -309,11 +310,12 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
                 height: 10,
               ),
               Container(
+                width: 400,
                 child: Row(
                   children: <Widget>[
                     Expanded(
                       child: ListTile(
-                        contentPadding: EdgeInsets.zero,
+                        contentPadding: EdgeInsets.only(left:3),
                         title: Text(
                           '전체',
                           maxLines: 1,
@@ -399,6 +401,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
                 height: 10,
               ),
               Container(
+                width: 400,
                 child: Row(
                   children: <Widget>[
                     Expanded(
