@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'home.dart';
-import 'edit.dart';
 import 'package:mobileappproject/login.dart';
 
 class Added extends StatelessWidget {
@@ -12,13 +11,21 @@ class Added extends StatelessWidget {
   final bool isMul;
   final AsyncSnapshot snap;
   final String problemType;
-  const Added({Key key, this.problem, this.answer, this.isMul, this.snap, this.problemType}) : super(key: key);
+
+  const Added(
+      {Key key,
+      this.problem,
+      this.answer,
+      this.isMul,
+      this.snap,
+      this.problemType})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Widget prob = Container(
-      margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
-      child: Column(
-        children: [
+        margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
+        child: Column(children: [
           Center(
             child: Container(
                 decoration: BoxDecoration(
@@ -34,8 +41,8 @@ class Added extends StatelessWidget {
             height: 1.0,
           ),
         ]));
-        Widget answ = Container(
-               margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
+    Widget answ = Container(
+      margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
       child: Column(
         children: [
           Center(
@@ -60,28 +67,6 @@ class Added extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-            margin: EdgeInsets.only(right: 10),
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              padding: EdgeInsets.fromLTRB(40, 5, 40, 5),
-              color: Colors.blue,
-              child: Text(
-                '문제 수정',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Edit(isMul : isMul, snap : snap, problemType: problemType),
-                    ));
-              },
-            )),
-        Container(
             margin: EdgeInsets.only(left: 10),
             child: RaisedButton(
               shape: RoundedRectangleBorder(
@@ -97,10 +82,10 @@ class Added extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.popUntil(
-                    context,
-                    ModalRoute.withName('/home'),
+                  context,
+                  ModalRoute.withName('/home'),
                 );
-               //Navigator.pop(context);
+                //Navigator.pop(context);
               },
             ))
       ],
@@ -115,18 +100,6 @@ class Added extends StatelessWidget {
             '등록된 문제 확인',
             style: TextStyle(color: Colors.white),
           ),
-            actions: <Widget>[
-              IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Edit(isMul : isMul),
-                  ));
-            },
-
-          )],
         ),
         body: ListView(
           children: <Widget>[
@@ -135,9 +108,8 @@ class Added extends StatelessWidget {
                 child: Text('등록된 문제')),
             prob,
             Container(
-                margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
-                child: Text('정답')),
-                answ,
+                margin: EdgeInsets.fromLTRB(15, 10, 0, 15), child: Text('정답')),
+            answ,
             buttons
           ],
         ),
