@@ -18,7 +18,7 @@ class Problems_infolderPage extends StatefulWidget {
 
 class _Problems_infolderPage extends State<Problems_infolderPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  int a;
+  String dropdownValue = '최신순';
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +26,15 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
         .collection('users')
         .doc(_auth.currentUser.uid)
         .collection(widget.foldername);
+
+    switch (dropdownValue) {
+      case "최신순":
+        query = query.orderBy('createdTime', descending: false);
+        break;
+      case "오래된순":
+        query = query.orderBy('createdTime', descending: true);
+        break;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +47,33 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
           child: SingleChildScrollView(
               child: Container(
                   child: Column(children: <Widget>[
-        SizedBox(height: 20.0),
+                    SizedBox(height: 18,),
+        Container(
+          height: 40,
+          decoration: BoxDecoration(
+              color: Colors.grey[200], borderRadius: BorderRadius.circular(30)),
+          child: Padding(
+              padding:
+              const EdgeInsets.only(left: 25, right: 25),
+              child: DropdownButton<String>(
+                value: dropdownValue,
+                style: TextStyle(color: Colors.black, fontSize: 15),
+                underline: Container(),
+                onChanged: (String newValue) {
+                  setState(() {
+                    dropdownValue = newValue;
+                  });
+                },
+                items: <String>['최신순', '오래된순']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+          )),
+        SizedBox(height: 7.0),
         Container(
             child: StreamBuilder<QuerySnapshot>(
                 stream: query.snapshots(),
@@ -58,9 +93,8 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                       shrinkWrap: true,
                       itemCount: stream.data.size,
                       itemBuilder: (BuildContext context, int index) {
-                        a = index;
                         return Container(
-                            padding: EdgeInsets.only(top: 3),
+                            padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
                             child: Card(
                                 elevation: 0.0,
                                 shape: RoundedRectangleBorder(
@@ -74,7 +108,7 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                     children: [
                                       Padding(
                                         padding: EdgeInsets.fromLTRB(
-                                            20.0, 0.0, 20.0, 20.0),
+                                            20.0, 0.0, 15.0, 13.0),
                                         child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -99,8 +133,8 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                                                 new Container(
                                                                     decoration:
                                                                         new BoxDecoration(
-                                                                      color:
-                                                                          Colors.orangeAccent,
+                                                                      color: Colors
+                                                                          .orangeAccent,
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               5),
@@ -141,7 +175,39 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                                                             style: TextStyle(
                                                                               fontSize: 17,
                                                                             ))))
-                                                              ])
+                                                              ]),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(
+                                                                    stream
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                            [
+                                                                            'createdTime']
+                                                                        .toDate()
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        fontStyle:
+                                                                            FontStyle.italic)),
+                                                                Text(' 에 등록됨 ',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        color: Colors
+                                                                            .grey)),
+                                                              ]),
                                                         ])
                                                   : Column(
                                                       crossAxisAlignment:
@@ -157,8 +223,8 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                                                 new Container(
                                                                     decoration:
                                                                         new BoxDecoration(
-                                                                      color:
-                                                                          Colors.lightGreen,
+                                                                      color: Colors
+                                                                          .lightGreen,
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               5),
@@ -276,7 +342,39 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                                                           fontSize:
                                                                               17,
                                                                         )),
-                                                                  ]))
+                                                                  ])),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(
+                                                                    stream
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                            [
+                                                                            'createdTime']
+                                                                        .toDate()
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        fontStyle:
+                                                                            FontStyle.italic)),
+                                                                Text(' 에 등록됨 ',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        color: Colors
+                                                                            .grey)),
+                                                              ]),
                                                         ])
                                             ]),
                                       )

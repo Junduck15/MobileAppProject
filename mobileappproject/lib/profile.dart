@@ -12,27 +12,13 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String temp =
-    auth.currentUser.email == null ? 'Anonymous' : auth.currentUser.email;
+        auth.currentUser.email == null ? 'Anonymous' : auth.currentUser.email;
     String image = auth.currentUser.photoURL == null
         ? 'https://ifh.cc/g/PZ4pEO.png'
         : auth.currentUser.photoURL;
     return Scaffold(
       appBar: AppBar(
         title: Text('My Page', style: TextStyle(color: Colors.white)),
-        actions: <Widget>[
-          Column(children: <Widget>[
-            IconButton(
-                icon: Icon(
-                  Icons.exit_to_app,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  auth.signOut();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignInPage()));
-                }),
-          ])
-        ],
       ),
       body: SafeArea(
           child: Container(
@@ -45,7 +31,9 @@ class Profile extends StatelessWidget {
                     height: 180.0,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        fit: BoxFit.fitHeight, image: NetworkImage(image),),
+                        fit: BoxFit.fitHeight,
+                        image: NetworkImage(image),
+                      ),
                       borderRadius: BorderRadius.all(Radius.circular(100.0)),
                       color: Colors.transparent,
                     ),
@@ -57,22 +45,25 @@ class Profile extends StatelessWidget {
                     endIndent: 30,
                   ),
                   Container(
-                    margin: EdgeInsets.symmetric(vertical: 15),
-                      child: Row(
-                          children: <Widget>[
-                            SizedBox(width: 35,),
-                            Icon(
-                              Icons.person,
-                              color: maincolor,
-                            ),
-                            SizedBox(width: 20,),
-                            Text(
-                              auth.currentUser.uid,
-                              style: TextStyle(fontSize: 16,),
-                            ),
-                          ]
-                      )
-                  ),
+                      margin: EdgeInsets.symmetric(vertical: 15),
+                      child: Row(children: <Widget>[
+                        SizedBox(
+                          width: 35,
+                        ),
+                        Icon(
+                          Icons.person,
+                          color: maincolor,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          auth.currentUser.uid,
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ])),
                   Divider(
                     height: 1.5,
                     color: maincolor,
@@ -81,21 +72,24 @@ class Profile extends StatelessWidget {
                   ),
                   Container(
                       margin: EdgeInsets.symmetric(vertical: 15),
-                      child: Row(
-                          children: <Widget>[
-                            SizedBox(width: 35,),
-                            Icon(
-                              Icons.alternate_email,
-                              color: maincolor,
-                            ),
-                            SizedBox(width: 20,),
-                            Text(
-                              temp,
-                              style: TextStyle(fontSize: 16,),
-                            ),
-                          ]
-                      )
-                  ),
+                      child: Row(children: <Widget>[
+                        SizedBox(
+                          width: 35,
+                        ),
+                        Icon(
+                          Icons.alternate_email,
+                          color: maincolor,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          temp,
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ])),
                   Divider(
                     height: 1.5,
                     color: maincolor,
@@ -103,7 +97,8 @@ class Profile extends StatelessWidget {
                     endIndent: 30,
                   ),
                   Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                       width: 300,
                       child: Container(
                         height: 50,
@@ -118,17 +113,15 @@ class Profile extends StatelessWidget {
                           ),
                           onPressed: () {
                             auth.signOut();
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => SignInPage()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignInPage()));
                           },
                         ),
-                      )
-                  ),
+                      )),
                 ],
-              )
-          )
-      )
-      ,
+              ))),
     );
   }
 }

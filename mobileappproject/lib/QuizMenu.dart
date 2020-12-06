@@ -102,13 +102,13 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
           tabs: [
             Tab(
               icon: Icon(
-                Icons.edit_outlined,
+                Icons.edit,
                 color: Colors.white,
               ),
             ),
             Tab(
               icon: Icon(
-                Icons.description_outlined,
+                Icons.description,
                 color: Colors.white,
               ),
             ),

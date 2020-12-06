@@ -138,6 +138,12 @@ class _Add extends State<Add> {
             ),
             actions: <Widget>[
               FlatButton(
+                child: Text("취소"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
                 child: Text("생성"),
                 onPressed: () {
                   firestore
@@ -145,18 +151,12 @@ class _Add extends State<Add> {
                       .doc(_auth.currentUser.uid)
                       .update({
                     "problemTypes":
-                        FieldValue.arrayUnion([newTypeController.text]),
+                    FieldValue.arrayUnion([newTypeController.text]),
                   });
                   firestore
                       .collection('users')
                       .doc(_auth.currentUser.uid)
                       .collection('problemType');
-                  Navigator.pop(context);
-                },
-              ),
-              FlatButton(
-                child: Text("취소"),
-                onPressed: () {
                   Navigator.pop(context);
                 },
               ),
@@ -561,6 +561,7 @@ class _Add extends State<Add> {
                           height: 20,
                         ),
                         Container(
+                          height: 50,
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: RaisedButton(
                             color: maincolor,
@@ -568,6 +569,8 @@ class _Add extends State<Add> {
                               '문제 등록',
                               style: TextStyle(
                                 color: Colors.white,
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold
                               ),
                             ),
                             onPressed: () {
