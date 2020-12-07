@@ -20,16 +20,17 @@ class _BankPage extends State<BankPage> {
     Query query2 = FirebaseFirestore.instance.collection('토익');
     Query query3 = FirebaseFirestore.instance.collection('토플');
     Query query4 = FirebaseFirestore.instance.collection('기타');
-    
-    Future getprobtype() async { 
+
+    Future getprobtype() async {
       await firestore
-        .collection('users')
-        .doc(_auth.currentUser.uid)
-        .get()
-        .then((DocumentSnapshot ds) {
-      problemTypes = ds['problemTypes'];
-    });
+          .collection('users')
+          .doc(_auth.currentUser.uid)
+          .get()
+          .then((DocumentSnapshot ds) {
+        problemTypes = ds['problemTypes'];
+      });
     }
+
     void _showDialog2() {
       showDialog(
         context: context,
@@ -84,53 +85,55 @@ class _BankPage extends State<BankPage> {
         builder: (BuildContext context) {
           return AlertDialog(
               title: Text("문제 그룹 지정"),
-              actions: [ FlatButton(
-                      child: Text("담기"),
-                      onPressed: () {
-                        problemTypes.add(doc['problemtype']);
-                        firestore
-                            .collection('users')
-                            .doc(_auth.currentUser.uid)
-                            .update({
-                          "problemTypes": FieldValue.arrayUnion(problemTypes),
-                        });
-                        doc['isMultiple'] == false
-                            ? firestore
-                                .collection('users')
-                                .doc(_auth.currentUser.uid)
-                                .collection(problemType)
-                                .add({
-                                'problemtext': doc['problemtext'],
-                                'answer': doc['answer'],
-                                'picture': doc['picture'],
-                                'creator': doc['creator'],
-                                'isShared': doc['isShared'],
-                                'createdTime': FieldValue.serverTimestamp(),
-                                'isMultiple': false
-                              })
-                            : firestore
-                                .collection('users')
-                                .doc(_auth.currentUser.uid)
-                                .collection(doc['problemtype'])
-                                .add({
-                                'problemtext': doc['problemtext'],
-                                'answer': doc['answer'],
-                                'multipleWrongAnswers':
-                                    doc['multipleWrongAnswers'],
-                                'picture': doc['picture'],
-                                'creator': doc['creator'],
-                                'isShared': doc['isShared'],
-                                'createdTime': FieldValue.serverTimestamp(),
-                                'isMultiple': false
-                              });
-                      Navigator.pop(context);}),FlatButton(
-                child: Text("취소"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),],
-                      
-
+              actions: [
+                FlatButton(
+                    child: Text("담기"),
+                    onPressed: () {
+                      problemTypes.add(doc['problemtype']);
+                      firestore
+                          .collection('users')
+                          .doc(_auth.currentUser.uid)
+                          .update({
+                        "problemTypes": FieldValue.arrayUnion(problemTypes),
+                      });
+                      doc['isMultiple'] == false
+                          ? firestore
+                              .collection('users')
+                              .doc(_auth.currentUser.uid)
+                              .collection(problemType)
+                              .add({
+                              'problemtext': doc['problemtext'],
+                              'answer': doc['answer'],
+                              'picture': doc['picture'],
+                              'creator': doc['creator'],
+                              'isShared': doc['isShared'],
+                              'createdTime': FieldValue.serverTimestamp(),
+                              'isMultiple': false
+                            })
+                          : firestore
+                              .collection('users')
+                              .doc(_auth.currentUser.uid)
+                              .collection(doc['problemtype'])
+                              .add({
+                              'problemtext': doc['problemtext'],
+                              'answer': doc['answer'],
+                              'multipleWrongAnswers':
+                                  doc['multipleWrongAnswers'],
+                              'picture': doc['picture'],
+                              'creator': doc['creator'],
+                              'isShared': doc['isShared'],
+                              'createdTime': FieldValue.serverTimestamp(),
+                              'isMultiple': false
+                            });
+                      Navigator.pop(context);
+                    }),
+                FlatButton(
+                  child: Text("취소"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
               content: Container(
                   child: Column(
                 children: [
@@ -160,10 +163,9 @@ class _BankPage extends State<BankPage> {
                                     },
                                     items: problemTypes.map((dynamic value) {
                                       return DropdownMenuItem<String>(
-                                        
-                                        value: value,
-                                        child: Text(value, overflow: TextOverflow.fade
-                                      ));
+                                          value: value,
+                                          child: Text(value,
+                                              overflow: TextOverflow.fade));
                                     }).toList(),
                                     validator: (value) => value == null
                                         ? '문제 순서를 선택하지 않았습니다.'
@@ -202,8 +204,6 @@ class _BankPage extends State<BankPage> {
                           ])),
                     ],
                   )),
-                  
-                 
                 ],
               )));
         },
@@ -594,19 +594,36 @@ class _BankPage extends State<BankPage> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
-        body: SafeArea(
-            child: SingleChildScrollView(
-                child: Column(
-          children: [
-            Container(child: Text("토익")),
-            _toeic(context),
-            Text("생활영어"),
-            _lifeEng(context),
-            Text("토플"),
-            _toefl(context),
-            Text("기타"),
-            _extra(context)
-          ],
-        ))));
+        body: DefaultTabController(
+            length: 4,
+            child: Column(children: <Widget>[
+              Container(
+                constraints: BoxConstraints.expand(height: 50),
+                child: TabBar(
+                  labelColor: Colors.black,
+                  indicatorColor: Color.fromRGBO(86, 171, 190, 1.0),
+                  tabs: [
+                    Tab(
+                      text: "토익",
+                    ),
+                    Tab(text: "생활영어"),
+                    Tab(
+                      text: "토플",
+                    ),
+                    Tab(text: "기타"),
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                      child: TabBarView(
+                children: [
+                  SingleChildScrollView(child: _toeic(context)),
+                  SingleChildScrollView(child: _lifeEng(context)),
+                  SingleChildScrollView(child: _toefl(context)),
+                  SingleChildScrollView(child: _extra(context))
+                ],
+              )))
+            ])));
   }
 }

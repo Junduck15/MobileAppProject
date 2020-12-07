@@ -49,7 +49,6 @@ class _FolderPageState extends State<FolderPage> {
               ),
             ),
             actions: <Widget>[
-
               FlatButton(
                 child: Text("취소"),
                 onPressed: () {
