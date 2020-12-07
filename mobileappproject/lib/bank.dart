@@ -42,6 +42,7 @@ class _BankPage extends State<BankPage> {
               height: 80,
               child: Column(
                 children: [
+                  
                   Text("생성할 문제 그룹 이름을 입력해주세요."),
                   TextField(
                     controller: newTypeController,

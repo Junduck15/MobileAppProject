@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,10 @@ class _Add extends State<Add> {
   String category = "temp";
   var _problemWritten = false;
   var _answerWritten = false;
+  File pickedImage;
+  String translated = "";
+  String translated1 = "";
+  bool isImageLoaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -68,28 +73,28 @@ class _Add extends State<Add> {
       }
     }
 
-    Future<void> _uploadImageToFirebase(PickedFile image) async {
-      try {
-        int randomNumber = Random().nextInt(100000);
-        String imageLocation = 'image${randomNumber}.jpg';
+    // Future<void> _uploadImageToFirebase(PickedFile image) async {
+    //   try {
+    //     int randomNumber = Random().nextInt(100000);
+    //     String imageLocation = 'image${randomNumber}.jpg';
 
-        final Reference storageReference =
-            FirebaseStorage.instance.ref().child(imageLocation);
-        final UploadTask uploadTask =
-            storageReference.putFile(File(image.path));
-        await uploadTask.whenComplete(() => _addPathToDatabase(imageLocation));
-      } catch (e) {
-        print(e.message);
-      }
-    }
+    //     final Reference storageReference =
+    //         FirebaseStorage.instance.ref().child(imageLocation);
+    //     final UploadTask uploadTask =
+    //         storageReference.putFile(File(image.path));
+    //     await uploadTask.whenComplete(() => _addPathToDatabase(imageLocation));
+    //   } catch (e) {
+    //     print(e.message);
+    //   }
+    // }
 
-    getImage() async {
-      var image = await _picker.getImage(source: ImageSource.gallery);
-      setState(() {
-        _image = File(image.path);
-      });
-      _uploadImageToFirebase(image);
-    }
+    // getImage() async {
+    //   var image = await _picker.getImage(source: ImageSource.gallery);
+    //   setState(() {
+    //     _image = File(image.path);
+    //   });
+    //   _uploadImageToFirebase(image);
+    // }
 
     Widget isShared = Container(
         margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
@@ -151,7 +156,7 @@ class _Add extends State<Add> {
                       .doc(_auth.currentUser.uid)
                       .update({
                     "problemTypes":
-                    FieldValue.arrayUnion([newTypeController.text]),
+                        FieldValue.arrayUnion([newTypeController.text]),
                   });
                   firestore
                       .collection('users')
@@ -421,8 +426,76 @@ class _Add extends State<Add> {
             height: 1,
             color: Colors.grey,
           ),
-         
         ]));
+        Future readText() async {
+      FirebaseVisionImage ourImage = FirebaseVisionImage.fromFile(pickedImage);
+      TextRecognizer recognizeText = FirebaseVision.instance.textRecognizer();
+      VisionText readText = await recognizeText.processImage(ourImage);
+
+      for (TextBlock block in readText.blocks) {
+        for (TextLine line in block.lines) {
+          translated += line.text;
+          print(line.text);
+        }
+      }
+       setState(() {
+         translated1=translated;
+                          });
+      print(translated);
+    }
+    Future pickImage() async {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: Text("사진 읽어오기"),
+                content: Container(
+                  
+                  child: Column(
+                    children: [
+                      SizedBox(height: 50.0),
+                      isImageLoaded
+                          ? Center(
+                              child: Container(
+                                  height: 200.0,
+                                  width: 200.0,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: FileImage(pickedImage),
+                                          fit: BoxFit.cover))),
+                            )
+                          : Container(),
+                     
+                      FlatButton(
+                        child: Text('사진 불러오기'),
+                        onPressed: () async {
+                          var tempStore = await ImagePicker.pickImage(
+                              source: ImageSource.gallery);
+
+                          setState(() {
+                            pickedImage = tempStore;
+                            isImageLoaded = true;
+                          });
+                        },
+                      ),
+                    
+                    FlatButton(
+                        child: Text('텍스트로 변환하기'),
+                        onPressed: () async {
+                          translated="";
+                         await readText();
+                         problemVal = translated;
+                         Navigator.pop(context);
+                        },
+                      ),
+                      
+                    ],
+                  ),
+                ));
+          });
+    }
+
+    
 
     Widget problemSection = Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -460,12 +533,12 @@ class _Add extends State<Add> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   //SizedBox(width: 40,),
-                  IconButton(
-                      icon: Icon(Icons.picture_as_pdf),
-                      onPressed: () async {
-                        await getImage();
+                  FlatButton(
+                      child: Text('사진으로 문제입력'),
+                      onPressed: () {
+                        pickImage();
                       }),
-                  Text('사진 불러오기'),
+                  
                 ]),
           ),
         ]));
@@ -506,7 +579,6 @@ class _Add extends State<Add> {
             height: 1,
             color: Colors.grey,
           ),
-        
         ],
       ),
     );
@@ -551,7 +623,6 @@ class _Add extends State<Add> {
                         problemSection,
                         answerSection,
                         _problemCategory,
-                        
                         SizedBox(
                           height: 10,
                         ),
@@ -568,10 +639,9 @@ class _Add extends State<Add> {
                             child: Text(
                               '문제 등록',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold
-                              ),
+                                  color: Colors.white,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
                               firestore
@@ -580,7 +650,7 @@ class _Add extends State<Add> {
                                   .collection(problemType)
                                   .add({
                                 'problemtext': problemController.text,
-                                'problemtype' : problemType,
+                                'problemtype': problemType,
                                 'answer': answerController.text,
                                 'picture': imageString,
                                 'creator': _auth.currentUser.uid,
@@ -592,7 +662,7 @@ class _Add extends State<Add> {
                                 firestore.collection(problemCategory).add({
                                   'problemtext': problemController.text,
                                   'answer': answerController.text,
-                                  'problemtype' : problemType,
+                                  'problemtype': problemType,
                                   'picture': imageString,
                                   'creator': _auth.currentUser.uid,
                                   'isShared': isSwitched,
@@ -617,7 +687,6 @@ class _Add extends State<Add> {
                             },
                           ),
                         ),
-                      
                       ],
                     ),
                   )),
@@ -632,7 +701,6 @@ class _Add extends State<Add> {
                         problemSection,
                         multipleChoice,
                         _problemCategory,
-                        
                         SizedBox(
                           height: 10,
                         ),
@@ -672,7 +740,7 @@ class _Add extends State<Add> {
                                     'answer': multiAnswerController.text,
                                     'picture': imageString,
                                     'creator': _auth.currentUser.uid,
-                                    'problemtype' : problemType,
+                                    'problemtype': problemType,
                                     'isShared': isSwitched,
                                     'multipleWrongAnswers':
                                         multipleWrongAnswers,
@@ -681,7 +749,7 @@ class _Add extends State<Add> {
                                   });
                                   if (isSwitched) {
                                     firestore.collection(problemCategory).add({
-                                      'problemtype' : problemType,
+                                      'problemtype': problemType,
                                       'problemtext': problemController.text,
                                       'answer': answerController.text,
                                       'picture': imageString,
@@ -721,7 +789,6 @@ class _Add extends State<Add> {
                                 },
                               )),
                         ),
-                        
                       ],
                     ),
                   )),
