@@ -4,8 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobileappproject/login.dart';
 import 'package:mobileappproject/main.dart';
+import 'package:translator/translator.dart';
+
 
 import 'add.dart';
+
+String out = "Asd";
 
 class Problems_infolderPage extends StatefulWidget {
   final String foldername;
@@ -21,6 +25,7 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
   String dropdownValue = '최신순';
 
   @override
+
   Widget build(BuildContext context) {
     Query query = FirebaseFirestore.instance
         .collection('users')
@@ -35,6 +40,41 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
         query = query.orderBy('createdTime', descending: true);
         break;
     }
+
+
+     trans(String pro_text) async {
+      final translator = GoogleTranslator();
+
+      //final input = "Because the sports club was established _______ for the residents of the community, its monthly fee is a little higher than most other clubs.";
+
+      // prints Hello. Are you okay?
+
+      //var translation = await translator.translate("__________,a few errors in pronunciation, the speech the foreigner gave was perfect.", to: 'ko');
+      var translation = await translator.translate(pro_text, to: 'ko');
+
+      out = translation.toString();
+      print(translation);
+      print(out);
+      // prints Dart jest bardzo fajny!
+
+
+
+      return out;
+      // prints exemplo
+    }
+
+
+
+    void _hi(String pro_text) async{
+      String a = await trans(pro_text);
+      print('asd');
+      print(a);
+      setState(() {
+        out = a;
+      });
+      print(out);
+    }
+
 
     return Scaffold(
       appBar: AppBar(
@@ -148,6 +188,7 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                                                               fontWeight: FontWeight.w500)),
                                                                     )),
                                                           ),
+                                                          //Text(await trans()),
                                                           SizedBox(
                                                             height: 6,
                                                           ),
@@ -266,6 +307,14 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
                                                                               fontSize: 17,
                                                                             ))))
                                                               ]),
+                                                        RaisedButton(
+                                                          child: Text('aqqt'),
+                                                          onPressed: (){
+                                                            _hi(stream.data.docs[index]['problemtext']);
+                                                            print('aㅁㅇ'+out);
+                                                          },
+                                                        ),
+                                                        Text(out),
                                                           Padding(
                                                               padding:
                                                                   EdgeInsets

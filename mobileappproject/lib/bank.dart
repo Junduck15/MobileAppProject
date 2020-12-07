@@ -12,7 +12,7 @@ class BankPage extends StatefulWidget {
 class _BankPage extends State<BankPage> {
   List<dynamic> problemTypes = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  var problemType = '준석영어';
+  var problemType;
   @override
   Widget build(BuildContext context) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
