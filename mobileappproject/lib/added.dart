@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'home.dart';
 import 'package:mobileappproject/login.dart';
 
 class Added extends StatelessWidget {
+  
   final String problem;
   final String answer;
   final bool isMul;
