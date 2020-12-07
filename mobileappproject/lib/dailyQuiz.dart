@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobileappproject/login.dart';
 import 'package:mobileappproject/models/problemModel.dart';
 import 'package:mobileappproject/quizResult.dart';
 
 class DailyQuiz extends StatefulWidget {
-
   const DailyQuiz({
     Key key,
   }) : super(key: key);
@@ -27,6 +29,55 @@ class _DailyQuiz extends State<DailyQuiz> {
   final _answerController = TextEditingController();
   String multipleAnswer;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Timer timer;
+  int leftTime = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    timer = startTimeout(1);
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  startTimeout(int seconds) {
+    var duration = Duration(seconds: seconds);
+    return Timer.periodic(duration, checkChange);
+  }
+
+  void checkChange(Timer timer) async {
+    if (leftTime == 0) {
+      setState(() {
+        timer.cancel();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizResult(
+              problemList: problemList,
+              answerList: answerList,
+              problemType: "",
+              difficulty: difficulty,
+              order: "",
+              quizNumber: quizNumber,
+              isDailyQuiz: true,
+            ),
+          ),
+        );
+      });
+    } else {
+      setState(() {
+        leftTime--;
+      });
+    }
+  }
+
+  void handleTimeout() {
+    print('Quiz End');
+  }
 
   _initAnswerList(int quizNumber) {
     answerList = List.filled(quizNumber, "");
@@ -117,16 +168,16 @@ class _DailyQuiz extends State<DailyQuiz> {
             isShuffle = false;
             problemList = snapshot.data.docs
                 .map((DocumentSnapshot document) =>
-                Problem.fromSnapshot(document))
+                    Problem.fromSnapshot(document))
                 .toList()
-              ..shuffle();
+                  ..shuffle();
             if (problemList.length > quizNumber) {
               problemList = problemList.sublist(0, quizNumber);
             }
           } else {
             problemList = snapshot.data.docs
                 .map((DocumentSnapshot document) =>
-                Problem.fromSnapshot(document))
+                    Problem.fromSnapshot(document))
                 .toList();
           }
           _initAnswerList(snapshot.data.size);
@@ -155,6 +206,7 @@ class _DailyQuiz extends State<DailyQuiz> {
             ),
           ),
         ),
+        _Timer(context),
         _Picture(context),
         Expanded(
           child: Container(
@@ -181,7 +233,7 @@ class _DailyQuiz extends State<DailyQuiz> {
                 onPressed: () {
                   if (index > 0) {
                     setState(() {
-                      _moveProblem(index-1);
+                      _moveProblem(index - 1);
                     });
                   } else {
                     final snackBar = SnackBar(
@@ -210,12 +262,14 @@ class _DailyQuiz extends State<DailyQuiz> {
                       indexOfNoAnswer.add(answerList.indexOf("", cur) + 1);
                       cur = answerList.indexOf("", cur) + 1;
                     }
-                    String alertIndexOfNoAnswer = indexOfNoAnswer.join("번, ") + "번";
+                    String alertIndexOfNoAnswer =
+                        indexOfNoAnswer.join("번, ") + "번";
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          content: Text("$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
+                          content: Text(
+                              "$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
                           actions: [
                             FlatButton(
                               child: Text("채점"),
@@ -248,8 +302,7 @@ class _DailyQuiz extends State<DailyQuiz> {
                         );
                       },
                     );
-                  }
-                  else {
+                  } else {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -271,7 +324,7 @@ class _DailyQuiz extends State<DailyQuiz> {
                 child: Text('다음'),
                 onPressed: () {
                   if (index < problemList.length - 1) {
-                    _moveProblem(index+1);
+                    _moveProblem(index + 1);
                   } else {
                     final snackBar = SnackBar(
                       content: Text('마지막 문제입니다!'),
@@ -288,6 +341,52 @@ class _DailyQuiz extends State<DailyQuiz> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _Timer(BuildContext context) {
+    return Container(
+      height: 90,
+      child: AspectRatio(
+        aspectRatio: 1.2,
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          color: maincolor,
+          child: Stack(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Center(
+                      child: Icon(
+                        Icons.timer,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        (leftTime / 60).floor().toString() +
+                            '분 ' +
+                            (leftTime % 60).toString() +
+                            '초',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -329,13 +428,13 @@ class _DailyQuiz extends State<DailyQuiz> {
     }
 
     final _choice1Controller =
-    TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
+        TextEditingController(text: problemList[index].multipleWrongAnswers[0]);
     final _choice2Controller =
-    TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
+        TextEditingController(text: problemList[index].multipleWrongAnswers[1]);
     final _choice3Controller =
-    TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
+        TextEditingController(text: problemList[index].multipleWrongAnswers[2]);
     final _choice4Controller =
-    TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
+        TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
 
     return Container(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
