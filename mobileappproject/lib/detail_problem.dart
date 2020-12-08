@@ -83,8 +83,8 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                   semanticLabel: 'delete product',
                 ),
                 onPressed: () {
-                  //Navigator.pop(context);
-                  //deleteDoc(widget.itemid);
+                  Navigator.pop(context);
+                  deleteDoc(widget.foldername, widget.problemid);
                 },
               );
             }),
@@ -109,7 +109,7 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
 
               if (snapshot.data == null) {
                 return CircularProgressIndicator();
-              } else
+              } else {
                 return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -172,8 +172,40 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                                                             ))))
                                               ]),
                                           SizedBox(
-                                            height: 10,
+                                            height: 20,
                                           ),
+                                          Divider(
+                                            height: 1.0,
+                                            color: maincolor,
+                                            indent: 40,
+                                            endIndent: 20,
+                                          ),
+                                          SizedBox(
+                                            height: 25,
+                                          ),
+                                          Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text('A.',
+                                                    style: TextStyle(
+                                                      fontSize: 27,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: maincolor,
+                                                    )),
+                                                Flexible(
+                                                    child: Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      10, 9, 20, 15),
+                                                  child: Text(
+                                                      snapshot.data['answer'],
+                                                      style: TextStyle(
+                                                        fontSize: 17,
+                                                        color: Colors.redAccent,
+                                                      )),
+                                                ))
+                                              ]),
                                           Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.end,
@@ -233,7 +265,7 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                                                     child: Padding(
                                                         padding:
                                                             EdgeInsets.fromLTRB(
-                                                                10, 9, 20, 10),
+                                                                10, 9, 20, 15),
                                                         child: Text(
                                                             snapshot.data[
                                                                 'problemtext'],
@@ -286,65 +318,93 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                                                           color: Colors.grey,
                                                         )),
                                                   ])),
-                                          Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  32, 9, 20, 10),
-                                              child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Divider(
-                                                      height: 1.0,
-                                                      color: maincolor,
-                                                      indent: 0,
-                                                      endIndent: 0,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 25,
-                                                    ),
-                                                    Text(
-                                                        '1)  ' +
-                                                            snapshot.data[
-                                                                'multipleWrongAnswers'][0],
-                                                        style: TextStyle(
-                                                          fontSize: 17,
-                                                        )),
-                                                    SizedBox(
-                                                      height: 8,
-                                                    ),
-                                                    Text(
-                                                        '2)  ' +
-                                                            snapshot.data[
-                                                                'multipleWrongAnswers'][1],
-                                                        style: TextStyle(
-                                                          fontSize: 17,
-                                                        )),
-                                                    SizedBox(
-                                                      height: 8,
-                                                    ),
-                                                    Text(
-                                                        '3)  ' +
-                                                            snapshot.data[
-                                                                'multipleWrongAnswers'][2],
-                                                        style: TextStyle(
-                                                          fontSize: 17,
-                                                        )),
-                                                    SizedBox(
-                                                      height: 8,
-                                                    ),
-                                                    Text(
-                                                        '4)  ' +
-                                                            snapshot
-                                                                .data['answer'],
-                                                        style: TextStyle(
-                                                          fontSize: 17,
-                                                        )),
-                                                  ])),
                                           SizedBox(
                                             height: 10,
+                                          ),
+                                          Divider(
+                                            height: 1.0,
+                                            color: maincolor,
+                                            indent: 40,
+                                            endIndent: 20,
+                                          ),
+                                          SizedBox(
+                                            height: 25,
+                                          ),
+                                          Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text('A.',
+                                                    style: TextStyle(
+                                                      fontSize: 27,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: maincolor,
+                                                    )),
+                                                Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                10, 9, 20, 15),
+                                                        child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: <Widget>[
+                                                              Text(
+                                                                  '1)    ' +
+                                                                      snapshot.data[
+                                                                              'multipleWrongAnswers']
+                                                                          [0],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        17,
+                                                                  )),
+                                                              SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Text(
+                                                                  '2)   ' +
+                                                                      snapshot.data[
+                                                                              'multipleWrongAnswers']
+                                                                          [1],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        17,
+                                                                  )),
+                                                              SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Text(
+                                                                  '3)   ' +
+                                                                      snapshot.data[
+                                                                              'multipleWrongAnswers']
+                                                                          [2],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        17,
+                                                                  )),
+                                                              SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Text(
+                                                                  '4)   ' +
+                                                                      snapshot.data[
+                                                                          'answer'],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        17,
+                                                                    color: Colors
+                                                                        .redAccent,
+                                                                  )),
+                                                            ])))
+                                              ]),
+                                          SizedBox(
+                                            height: 20,
                                           ),
                                           Row(
                                               mainAxisAlignment:
@@ -368,6 +428,16 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                             ]),
                       )
                     ]);
+              }
             }));
+  }
+
+  void deleteDoc(String folder, String problemId) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser.uid)
+        .collection(folder)
+        .doc(problemId)
+        .delete();
   }
 }
