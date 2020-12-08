@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobileappproject/edit_problem.dart';
 import 'package:mobileappproject/login.dart';
 import 'package:mobileappproject/main.dart';
 import 'package:translator/translator.dart';
@@ -23,6 +24,12 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String out = "";
   String korean = "";
+  String problemtext;
+  String answer;
+  bool isMulti;
+  String mul1;
+  String mul2;
+  String mul3;
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +70,20 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                     semanticLabel: 'edit product',
                   ),
                   onPressed: () {
-                    //Navigator.push(
-                    //  context,
-                    //  MaterialPageRoute(
-                    //      builder: (context) => EditPage(
-                    //          itemid: widget.itemid,
-                    //          name: name,
-                    //          price: price,
-                    //          description: description));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Edit_ProblemPage(
+                              foldername: widget.foldername,
+                              problemid: widget.problemid,
+                              problem: problemtext,
+                              answer : answer,
+                            isMulti: isMulti,
+                            mul1: mul1,
+                            mul2: mul2,
+                            mul3: mul3,
+                          )),
+                    );
                   },
                 );
               },
@@ -110,6 +123,14 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
               if (snapshot.data == null) {
                 return CircularProgressIndicator();
               } else {
+                problemtext = snapshot.data['problemtext'];
+                answer = snapshot.data['answer'];
+                isMulti = snapshot.data['isMultiple'];
+                if (isMulti == true) {
+                  mul1 = snapshot.data['multipleWrongAnswers'][0];
+                  mul2 = snapshot.data['multipleWrongAnswers'][1];
+                  mul3 = snapshot.data['multipleWrongAnswers'][2];
+                }
                 return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
