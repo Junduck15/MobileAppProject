@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,19 +9,23 @@ import 'package:mobileappproject/models/problemModel.dart';
 import 'package:mobileappproject/quizResult.dart';
 
 class DailyQuiz extends StatefulWidget {
+  final List<dynamic> problemTypes;
   const DailyQuiz({
     Key key,
+    this.problemTypes,
   }) : super(key: key);
 
-  _DailyQuiz createState() => _DailyQuiz();
+  _DailyQuiz createState() => _DailyQuiz(problemTypes: problemTypes);
 }
 
 class _DailyQuiz extends State<DailyQuiz> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+  List<dynamic> problemTypes = [];
   List<Problem> problemList;
   List<String> answerList;
   List<int> indexOfNoAnswer = [];
+  String problemType;
   String difficulty = "All";
   int quizNumber = 10;
   int index = 0;
@@ -31,11 +36,17 @@ class _DailyQuiz extends State<DailyQuiz> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Timer timer;
   int leftTime = 10;
+  Random random = Random();
+
+  _DailyQuiz({
+    this.problemTypes,
+  });
 
   @override
   void initState() {
     super.initState();
     timer = startTimeout(1);
+    problemType = problemTypes[random.nextInt(problemTypes.length)];
   }
 
   @override
@@ -149,7 +160,7 @@ class _DailyQuiz extends State<DailyQuiz> {
     Query problems = FirebaseFirestore.instance
         .collection('users')
         .doc(auth.currentUser.uid)
-        .collection("토익");
+        .collection(problemType);
 
     if (isFirst) {
       isFirst = false;

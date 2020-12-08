@@ -84,7 +84,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DailyQuiz(),
+        builder: (context) => DailyQuiz(problemTypes: problemTypes,),
       ),
     );
 
