@@ -63,7 +63,7 @@ class _FolderPageState extends State<FolderPage> {
                       .doc(_auth.currentUser.uid)
                       .update({
                     "problemTypes":
-                    FieldValue.arrayUnion([newTypeController.text]),
+                        FieldValue.arrayUnion([newTypeController.text]),
                   });
                   firestore
                       .collection('users')
@@ -121,131 +121,132 @@ class _FolderPageState extends State<FolderPage> {
         SizedBox(height: 20.0),
         Container(
           child: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("users")
-                .doc(_auth.currentUser.uid)
-                .snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Text("Something went wrong");
-              }
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(_auth.currentUser.uid)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text("Something went wrong");
+                }
 
-              if (snapshot.connectionState == ConnectionState.waiting ||
-                  snapshot.data.data == null ||
-                  snapshot.data.data()["problemTypes"] == null) {
-                problemTypes = [];
-              } else {
-                problemTypes = snapshot.data.data()["problemTypes"];
-              }
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    snapshot.data.data == null ||
+                    snapshot.data.data()["problemTypes"] == null) {
+                  problemTypes = [];
+                } else {
+                  problemTypes = snapshot.data.data()["problemTypes"];
+                }
 
-              return GridView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: GestureDetector(
-                          onTap: () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Problems_infolderPage(
-                                            foldername: problemTypes[index],
-                                          )),
-                                )
-                              },
-                          child: Card(
-                            //color: Colors.grey[900],
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(color: maincolor, width: 2),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.0, 20.0, 0.0, 15.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: <Widget>[
-                                              SizedBox(
-                                                width: 18,
-                                              ),
-                                              Icon(Icons.collections_bookmark,
-                                                  size: 23, color: maincolor),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Container(
-                                                width: 107,
-                                                child: Text(
-                                                  (problemTypes[index]),
-                                                  overflow: TextOverflow.clip,
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                  maxLines: 2,
+                return GridView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: GestureDetector(
+                            onTap: () => {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Problems_infolderPage(
+                                              foldername: problemTypes[index],
+                                            )),
+                                  )
+                                },
+                            child: Card(
+                              //color: Colors.grey[900],
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(color: maincolor, width: 2),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.fromLTRB(
+                                          0.0, 20.0, 0.0, 15.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  width: 12,
                                                 ),
-                                              ),
-                                              Expanded(
-                                                  child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: <Widget>[
-                                                    _simplePopup(
-                                                        problemTypes[index]),
-                                                  ])),
-                                            ]),
-                                        SizedBox(height: 8.0),
-                                        Divider(
-                                          height: 1.0,
-                                          color: maincolor,
-                                          indent: 10,
-                                          endIndent: 10,
-                                        ),
-                                        SizedBox(height: 20.0),
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text('    문제 수 : ',
-                                                  style: TextStyle(
-                                                    fontSize: 17,
-                                                  )),
-                                              problemCount(
-                                                  context, problemTypes[index]),
-                                            ],
+                                                Icon(Icons.collections_bookmark,
+                                                    size: 23, color: maincolor),
+                                                SizedBox(
+                                                  width: 7,
+                                                ),
+                                                Container(
+                                                  width: 88,
+                                                  child: Text(
+                                                    (problemTypes[index]),
+                                                    overflow: TextOverflow.clip,
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                    child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .end,
+                                                            children: <Widget>[
+                                                      _simplePopup(
+                                                          problemTypes[index]),
+                                                    ])),
+                                              ]),
+                                          SizedBox(height: 8.0),
+                                          Divider(
+                                            height: 1.0,
+                                            color: maincolor,
+                                            indent: 10,
+                                            endIndent: 10,
                                           ),
-                                        ),
-                                      ],
+                                          SizedBox(height: 20.0),
+                                          Expanded(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text('    문제 수 : ',
+                                                    style: TextStyle(
+                                                      fontSize: 17,
+                                                    )),
+                                                problemCount(context,
+                                                    problemTypes[index]),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )));
-                },
-                itemCount: problemTypes.length,
-              );
-            }
-          ),
+                                ],
+                              ),
+                            )));
+                  },
+                  itemCount: problemTypes.length,
+                );
+              }),
         )
       ])))),
       //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

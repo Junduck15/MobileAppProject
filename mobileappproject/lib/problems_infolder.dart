@@ -32,10 +32,10 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
 
     switch (dropdownValue) {
       case "최신순":
-        query = query.orderBy('createdTime', descending: true);
+        query = query.orderBy('createdTime', descending: false );
         break;
       case "오래된순":
-        query = query.orderBy('createdTime', descending: false);
+        query = query.orderBy('createdTime', descending: true );
         break;
     }
 
