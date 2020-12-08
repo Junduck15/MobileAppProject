@@ -644,11 +644,10 @@ class _Add extends State<Add> {
                                   fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
-                              firestore
-                                  .collection('users')
-                                  .doc(_auth.currentUser.uid)
-                                  .collection(problemType)
-                                  .add({
+
+                              DocumentReference ref = FirebaseFirestore.instance.collection('users').doc(_auth.currentUser.uid)
+                                  .collection(problemType).doc();
+                              ref.set({
                                 'problemtext': problemController.text,
                                 'problemtype': problemType,
                                 'answer': answerController.text,
@@ -656,7 +655,8 @@ class _Add extends State<Add> {
                                 'creator': _auth.currentUser.uid,
                                 'isShared': isSwitched,
                                 'createdTime': FieldValue.serverTimestamp(),
-                                'isMultiple': false
+                                'isMultiple': false,
+                                'id' : ref.id,
                               });
                               if (isSwitched) {
                                 firestore.collection(problemCategory).add({
@@ -731,11 +731,10 @@ class _Add extends State<Add> {
                                       .add(multi2Controller.text);
                                   multipleWrongAnswers
                                       .add(multi3Controller.text);
-                                  firestore
-                                      .collection('users')
-                                      .doc(_auth.currentUser.uid)
-                                      .collection(problemType)
-                                      .add({
+
+                                  DocumentReference ref = FirebaseFirestore.instance.collection('users').doc(_auth.currentUser.uid)
+                                      .collection(problemType).doc();
+                                  ref.set({
                                     'problemtext': problemController.text,
                                     'answer': multiAnswerController.text,
                                     'picture': imageString,
@@ -745,7 +744,8 @@ class _Add extends State<Add> {
                                     'multipleWrongAnswers':
                                         multipleWrongAnswers,
                                     'createdTime': FieldValue.serverTimestamp(),
-                                    'isMultiple': true
+                                    'isMultiple': true,
+                                    'id' : ref.id,
                                   });
                                   if (isSwitched) {
                                     firestore.collection(problemCategory).add({
