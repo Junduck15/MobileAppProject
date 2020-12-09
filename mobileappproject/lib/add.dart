@@ -741,7 +741,8 @@ class _Add extends State<Add> {
                                     'id' : ref.id,
                                   });
                                   if (isSwitched) {
-                                    firestore.collection(problemCategory).add({
+                                    DocumentReference ref2 = FirebaseFirestore.instance.collection(problemCategory).doc();
+                                    ref2.set({
                                       'problemtype': problemType,
                                       'problemtext': problemController.text,
                                       'answer': answerController.text,
@@ -752,7 +753,8 @@ class _Add extends State<Add> {
                                           multipleWrongAnswers,
                                       'createdTime':
                                           FieldValue.serverTimestamp(),
-                                      'isMultiple': false
+                                      'isMultiple': true,
+                                      'id' : ref.id,
                                     });
                                   }
                                   firestore

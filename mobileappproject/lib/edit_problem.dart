@@ -131,6 +131,7 @@ class _Edit_ProblemPageState extends State<Edit_ProblemPage> {
                                           borderSide:
                                               BorderSide(color: Colors.grey),
                                         ),
+                                        labelText: '문제',
                                       ),
                                     ),
                                   ),
@@ -202,6 +203,7 @@ class _Edit_ProblemPageState extends State<Edit_ProblemPage> {
                                           borderSide:
                                               BorderSide(color: Colors.grey),
                                         ),
+                                        labelText: '문제',
                                       ),
                                     ),
                                   ),

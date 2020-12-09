@@ -84,7 +84,9 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DailyQuiz(problemTypes: problemTypes,),
+        builder: (context) => DailyQuiz(
+          problemTypes: problemTypes,
+        ),
       ),
     );
 
@@ -99,19 +101,31 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         bottom: TabBar(
+          indicatorColor: Colors.black38,
           controller: _tabController,
           tabs: [
             Tab(
-              icon: Icon(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+              Icon(
                 Icons.edit,
                 color: Colors.white,
               ),
-            ),
+                  SizedBox(width: 10,),
+                  Text('퀴즈 생성',style: TextStyle(color: Colors.white, fontSize: 17),)
+            ])),
             Tab(
-              icon: Icon(
-                Icons.description,
-                color: Colors.white,
-              ),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.description,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 9,),
+                      Text('DailyQuiz 결과',style: TextStyle(color: Colors.white, fontSize: 17),)
+                    ])
             ),
           ],
         ),
@@ -151,7 +165,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
                   _navigateAndMoveTab(context);
                 },
                 child: Text("Daily"),
-                backgroundColor: maincolor,
+                backgroundColor: Colors.orangeAccent,
               ),
             );
           }
@@ -161,8 +175,8 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
               onPressed: () {
                 _navigateAndMoveTab(context);
               },
-              child: Text("Daily"),
-              backgroundColor: maincolor,
+              child: Text("Daily\nQuiz", textAlign: TextAlign.center,style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),),
+              backgroundColor: Colors.deepOrangeAccent,
             ),
           );
         },
@@ -315,7 +329,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
                   children: <Widget>[
                     Expanded(
                       child: ListTile(
-                        contentPadding: EdgeInsets.only(left:3),
+                        contentPadding: EdgeInsets.only(left: 3),
                         title: Text(
                           '전체',
                           maxLines: 1,

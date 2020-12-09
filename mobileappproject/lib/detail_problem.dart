@@ -57,7 +57,7 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-            'Detail',
+            '문제',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           actions: <Widget>[

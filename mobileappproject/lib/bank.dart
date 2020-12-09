@@ -13,6 +13,7 @@ class _BankPage extends State<BankPage> {
   List<dynamic> problemTypes = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var problemType;
+
   @override
   Widget build(BuildContext context) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -42,7 +43,6 @@ class _BankPage extends State<BankPage> {
               height: 80,
               child: Column(
                 children: [
-                  
                   Text("생성할 문제 그룹 이름을 입력해주세요."),
                   TextField(
                     controller: newTypeController,
@@ -88,7 +88,13 @@ class _BankPage extends State<BankPage> {
               title: Text("문제 그룹 지정"),
               actions: [
                 FlatButton(
-                    child: Text("담기"),
+                  child: Text("취소", style: TextStyle(fontSize: 16, color: Colors.black38),),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                FlatButton(
+                    child: Text("담기", style: TextStyle(fontSize: 16),),
                     onPressed: () {
                       problemTypes.add(doc['problemtype']);
                       firestore
@@ -97,25 +103,25 @@ class _BankPage extends State<BankPage> {
                           .update({
                         "problemTypes": FieldValue.arrayUnion(problemTypes),
                       });
+                      DocumentReference ref = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(_auth.currentUser.uid)
+                          .collection(problemType)
+                          .doc();
+
                       doc['isMultiple'] == false
-                          ? firestore
-                              .collection('users')
-                              .doc(_auth.currentUser.uid)
-                              .collection(problemType)
-                              .add({
+                          ? ref.set({
                               'problemtext': doc['problemtext'],
                               'answer': doc['answer'],
                               'picture': doc['picture'],
                               'creator': doc['creator'],
                               'isShared': doc['isShared'],
                               'createdTime': FieldValue.serverTimestamp(),
-                              'isMultiple': false
+                              'isMultiple': false,
+                              'problemtype': problemType,
+                              'id': ref.id,
                             })
-                          : firestore
-                              .collection('users')
-                              .doc(_auth.currentUser.uid)
-                              .collection(doc['problemtype'])
-                              .add({
+                          : ref.set({
                               'problemtext': doc['problemtext'],
                               'answer': doc['answer'],
                               'multipleWrongAnswers':
@@ -124,18 +130,15 @@ class _BankPage extends State<BankPage> {
                               'creator': doc['creator'],
                               'isShared': doc['isShared'],
                               'createdTime': FieldValue.serverTimestamp(),
-                              'isMultiple': false
+                              'isMultiple': false,
+                              'problemtype': problemType,
+                              'id': ref.id,
                             });
                       Navigator.pop(context);
                     }),
-                FlatButton(
-                  child: Text("취소"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
               ],
               content: Container(
+                height: 150,
                   child: Column(
                 children: [
                   Container(
@@ -169,7 +172,7 @@ class _BankPage extends State<BankPage> {
                                               overflow: TextOverflow.fade));
                                     }).toList(),
                                     validator: (value) => value == null
-                                        ? '문제 순서를 선택하지 않았습니다.'
+                                        ? '문제 그룹을 선택하지 않았습니다.'
                                         : null,
                                   ),
                                 ),
@@ -179,10 +182,10 @@ class _BankPage extends State<BankPage> {
                         ),
                       ),
                       Container(
-                          width: 80,
+                          width: 70,
                           height: 70,
                           alignment: Alignment.center,
-                          padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                          padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
                           child: Column(children: <Widget>[
                             FlatButton(
                               child: Icon(
@@ -249,59 +252,303 @@ class _BankPage extends State<BankPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                20.0, 0.0, 0.0, 15.0),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  stream.data.docs[index]
-                                                              ['isMultiple'] ==
-                                                          false
-                                                      ? Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          ))
-                                                      : Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          )),
-                                                  Container(
-                                                    child: FlatButton(
-                                                      child: Text("담기"),
-                                                      onPressed: () {
-                                                        firestore
-                                                            .collection('users')
-                                                            .doc(_auth
-                                                                .currentUser
-                                                                .uid)
-                                                            .get()
-                                                            .then(
-                                                                (DocumentSnapshot
-                                                                    ds) {
-                                                          problemTypes = ds[
-                                                              'problemTypes'];
-                                                          print(problemTypes);
-                                                        });
-                                                        _body(
-                                                            context,
-                                                            stream.data
-                                                                .docs[index]);
-                                                      },
-                                                    ),
-                                                  ),
-                                                ]))
+                                          padding: EdgeInsets.fromLTRB(
+                                              20.0, 0.0, 15.0, 13.0),
+                                          child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                stream.data.docs[index]
+                                                            ['isMultiple'] ==
+                                                        false
+                                                    ? Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                                    : Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            32,
+                                                                            9,
+                                                                            20,
+                                                                            10),
+                                                                child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                      ),
+                                                                      Divider(
+                                                                        height:
+                                                                            1.0,
+                                                                        color:
+                                                                            maincolor,
+                                                                        indent:
+                                                                            0,
+                                                                        endIndent:
+                                                                            0,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            25,
+                                                                      ),
+                                                                      Text(
+                                                                          '1)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  0],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '2)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  1],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '3)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  2],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '4)  ' +
+                                                                              stream.data.docs[index][
+                                                                                  'answer'],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                    ])),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                              ]),
+                                        )
                                       ])));
                         });
                 }))
@@ -347,59 +594,303 @@ class _BankPage extends State<BankPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                20.0, 0.0, 0.0, 15.0),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  stream.data.docs[index]
-                                                              ['isMultiple'] ==
-                                                          false
-                                                      ? Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          ))
-                                                      : Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          )),
-                                                  Container(
-                                                    child: FlatButton(
-                                                      child: Text("담기"),
-                                                      onPressed: () {
-                                                        firestore
-                                                            .collection('users')
-                                                            .doc(_auth
-                                                                .currentUser
-                                                                .uid)
-                                                            .get()
-                                                            .then(
-                                                                (DocumentSnapshot
-                                                                    ds) {
-                                                          problemTypes = ds[
-                                                              'problemTypes'];
-                                                          print(problemTypes);
-                                                        });
-                                                        _body(
-                                                            context,
-                                                            stream.data
-                                                                .docs[index]);
-                                                      },
-                                                    ),
-                                                  )
-                                                ]))
+                                          padding: EdgeInsets.fromLTRB(
+                                              20.0, 0.0, 15.0, 13.0),
+                                          child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                stream.data.docs[index]
+                                                            ['isMultiple'] ==
+                                                        false
+                                                    ? Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                                    : Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            32,
+                                                                            9,
+                                                                            20,
+                                                                            10),
+                                                                child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                      ),
+                                                                      Divider(
+                                                                        height:
+                                                                            1.0,
+                                                                        color:
+                                                                            maincolor,
+                                                                        indent:
+                                                                            0,
+                                                                        endIndent:
+                                                                            0,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            25,
+                                                                      ),
+                                                                      Text(
+                                                                          '1)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  0],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '2)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  1],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '3)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  2],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '4)  ' +
+                                                                              stream.data.docs[index][
+                                                                                  'answer'],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                    ])),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                              ]),
+                                        )
                                       ])));
                         });
                 }))
@@ -444,59 +935,303 @@ class _BankPage extends State<BankPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                20.0, 0.0, 0.0, 15.0),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  stream.data.docs[index]
-                                                              ['isMultiple'] ==
-                                                          false
-                                                      ? Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          ))
-                                                      : Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          )),
-                                                  Container(
-                                                    child: FlatButton(
-                                                      child: Text("담기"),
-                                                      onPressed: () {
-                                                        firestore
-                                                            .collection('users')
-                                                            .doc(_auth
-                                                                .currentUser
-                                                                .uid)
-                                                            .get()
-                                                            .then(
-                                                                (DocumentSnapshot
-                                                                    ds) {
-                                                          problemTypes = ds[
-                                                              'problemTypes'];
-                                                          print(problemTypes);
-                                                        });
-                                                        _body(
-                                                            context,
-                                                            stream.data
-                                                                .docs[index]);
-                                                      },
-                                                    ),
-                                                  )
-                                                ]))
+                                          padding: EdgeInsets.fromLTRB(
+                                              20.0, 0.0, 15.0, 13.0),
+                                          child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                stream.data.docs[index]
+                                                            ['isMultiple'] ==
+                                                        false
+                                                    ? Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                                    : Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            32,
+                                                                            9,
+                                                                            20,
+                                                                            10),
+                                                                child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                      ),
+                                                                      Divider(
+                                                                        height:
+                                                                            1.0,
+                                                                        color:
+                                                                            maincolor,
+                                                                        indent:
+                                                                            0,
+                                                                        endIndent:
+                                                                            0,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            25,
+                                                                      ),
+                                                                      Text(
+                                                                          '1)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  0],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '2)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  1],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '3)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  2],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '4)  ' +
+                                                                              stream.data.docs[index][
+                                                                                  'answer'],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                    ])),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                              ]),
+                                        )
                                       ])));
                         });
                 }))
@@ -538,50 +1273,306 @@ class _BankPage extends State<BankPage> {
                                   clipBehavior: Clip.antiAlias,
                                   child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                20.0, 0.0, 0.0, 15.0),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  stream.data.docs[index]
-                                                              ['isMultiple'] ==
-                                                          false
-                                                      ? Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          ))
-                                                      : Text(
-                                                          '문제. ' +
-                                                              stream.data.docs[
-                                                                      index][
-                                                                  'problemtext'],
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                          )),
-                                                  Container(
-                                                    child: FlatButton(
-                                                      child: Text("담기"),
-                                                      onPressed: () async {
-                                                        await getprobtype();
-                                                        _body(
-                                                            context,
-                                                            stream.data
-                                                                .docs[index]);
-                                                      },
-                                                    ),
-                                                  )
-                                                ]))
+                                          padding: EdgeInsets.fromLTRB(
+                                              20.0, 0.0, 15.0, 13.0),
+                                          child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                stream.data.docs[index]
+                                                            ['isMultiple'] ==
+                                                        false
+                                                    ? Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                                    : Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text('Q.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            27,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            maincolor,
+                                                                      )),
+                                                                  Flexible(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                                                          child: Text(stream.data.docs[index]['problemtext'],
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                              ))))
+                                                                ]),
+                                                            Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            32,
+                                                                            9,
+                                                                            20,
+                                                                            10),
+                                                                child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                      ),
+                                                                      Divider(
+                                                                        height:
+                                                                            1.0,
+                                                                        color:
+                                                                            maincolor,
+                                                                        indent:
+                                                                            0,
+                                                                        endIndent:
+                                                                            0,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            25,
+                                                                      ),
+                                                                      Text(
+                                                                          '1)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  0],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '2)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  1],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '3)  ' +
+                                                                              stream.data.docs[index]['multipleWrongAnswers'][
+                                                                                  2],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            8,
+                                                                      ),
+                                                                      Text(
+                                                                          '4)  ' +
+                                                                              stream.data.docs[index][
+                                                                                  'answer'],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                          )),
+                                                                    ])),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                      stream.data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'creator'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontStyle:
+                                                                              FontStyle.italic)),
+                                                                  Text(' 가 등록 ',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey)),
+                                                                ]),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 30),
+                                                              width: 330,
+                                                              child:
+                                                                  RaisedButton(
+                                                                color:
+                                                                    maincolor,
+                                                                child: Text(
+                                                                  "담기",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                onPressed: () {
+                                                                  firestore
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(_auth
+                                                                          .currentUser
+                                                                          .uid)
+                                                                      .get()
+                                                                      .then((DocumentSnapshot
+                                                                          ds) {
+                                                                    problemTypes =
+                                                                        ds['problemTypes'];
+                                                                    print(
+                                                                        problemTypes);
+                                                                  });
+                                                                  _body(
+                                                                      context,
+                                                                      stream.data
+                                                                              .docs[
+                                                                          index]);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ])
+                                              ]),
+                                        )
                                       ])));
                         });
                 }))
