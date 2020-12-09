@@ -86,21 +86,21 @@ class _Quiz extends State<Quiz> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  content: Text("퀴즈를 종료하시겠습니까?"),
+                  content: Text("퀴즈를 종료하시겠습니까?", style: TextStyle(fontSize: 17),),
                   actions: [
                     FlatButton(
-                      child: Text("종료"),
+                      child: Text("취소", style: TextStyle(fontSize: 16, color: Colors.black38),),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text("종료", style: TextStyle(fontSize: 16),),
                       onPressed: () {
                         Navigator.popUntil(
                           context,
                           ModalRoute.withName('/home'),
                         );
-                      },
-                    ),
-                    FlatButton(
-                      child: Text("계속 풀기"),
-                      onPressed: () {
-                        Navigator.pop(context);
                       },
                     ),
                   ],
@@ -188,22 +188,8 @@ class _Quiz extends State<Quiz> {
     return SafeArea(
         child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: 10,
-          child: Divider(),
-        ),
-        Container(
-          height: 30,
-          child: Text(
-            (index + 1).toString() + '/' + problemList.length.toString(),
-            maxLines: 1,
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-        ),
         _Picture(context),
         Padding(
           padding: EdgeInsets.fromLTRB(35.0, 30.0, 35.0, .0),
@@ -218,7 +204,7 @@ class _Quiz extends State<Quiz> {
                         color: maincolor,
                       )),
                   SizedBox(
-                    height: 10,
+                    height: 15,
                   ),
                   SingleChildScrollView(
                       child: Container(
@@ -233,16 +219,33 @@ class _Quiz extends State<Quiz> {
           ),
         ),
         _Answer(context),
-        Container(
-          height: 10,
-          child: Divider(),
-        ),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 10),
+            height: 40,
+            child: Text(
+              (index + 1).toString() + '/' + problemList.length.toString(),
+              maxLines: 1,
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54),
+            ),
+          ),
+        ]),
         Container(
           height: 50,
           child: ButtonBar(
+            alignment: MainAxisAlignment.center,
             children: <Widget>[
               FlatButton(
-                child: Text('이전'),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                  Icon(Icons.keyboard_arrow_left, size: 35,color: maincolor,),
+                  Text('이전 문제', style: TextStyle(fontSize: 17,color: maincolor,)),
+                ]),
                 onPressed: () {
                   if (index > 0) {
                     setState(() {
@@ -260,81 +263,90 @@ class _Quiz extends State<Quiz> {
                   }
                 },
               ),
-              FlatButton(
-                child: Text("채점하기"),
-                onPressed: () {
-                  if (problemList[index].multipleWrongAnswers == null) {
-                    answerList[index] = _answerController.text;
-                  } else {
-                    answerList[index] = multipleAnswer;
-                  }
-                  if (answerList.contains("")) {
-                    int cur = 0;
-                    indexOfNoAnswer = [];
-                    while (answerList.indexOf("", cur) != -1) {
-                      indexOfNoAnswer.add(answerList.indexOf("", cur) + 1);
-                      cur = answerList.indexOf("", cur) + 1;
+              Container(
+                width: 150,
+                child: FlatButton(
+                  child: Text("채점하기", style: TextStyle(color: Colors.black38)),
+                  onPressed: () {
+                    if (problemList[index].multipleWrongAnswers == null) {
+                      answerList[index] = _answerController.text;
+                    } else {
+                      answerList[index] = multipleAnswer;
                     }
-                    String alertIndexOfNoAnswer =
-                        indexOfNoAnswer.join("번, ") + "번";
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: Text(
-                              "$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
-                          actions: [
-                            FlatButton(
-                              child: Text("채점"),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => QuizResult(
-                                      problemList: problemList,
-                                      answerList: answerList,
-                                      problemType: problemType,
-                                      difficulty: difficulty,
-                                      order: order,
-                                      quizNumber: quizNumber,
-                                      isDailyQuiz: false,
+                    if (answerList.contains("")) {
+                      int cur = 0;
+                      indexOfNoAnswer = [];
+                      while (answerList.indexOf("", cur) != -1) {
+                        indexOfNoAnswer.add(answerList.indexOf("", cur) + 1);
+                        cur = answerList.indexOf("", cur) + 1;
+                      }
+                      String alertIndexOfNoAnswer =
+                          indexOfNoAnswer.join("번, ") + "번";
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Text(
+                                "$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
+                            actions: [
+                              FlatButton(
+                                child: Text("채점"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => QuizResult(
+                                        problemList: problemList,
+                                        answerList: answerList,
+                                        problemType: problemType,
+                                        difficulty: difficulty,
+                                        order: order,
+                                        quizNumber: quizNumber,
+                                        isDailyQuiz: false,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            FlatButton(
-                              child: Text("계속 풀기"),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                _moveProblem(indexOfNoAnswer[0] - 1);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizResult(
-                          problemList: problemList,
-                          answerList: answerList,
-                          problemType: problemType,
-                          difficulty: difficulty,
-                          order: order,
-                          quizNumber: quizNumber,
-                          isDailyQuiz: false,
+                                  );
+                                },
+                              ),
+                              FlatButton(
+                                child: Text("계속 풀기"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _moveProblem(indexOfNoAnswer[0] - 1);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizResult(
+                            problemList: problemList,
+                            answerList: answerList,
+                            problemType: problemType,
+                            difficulty: difficulty,
+                            order: order,
+                            quizNumber: quizNumber,
+                            isDailyQuiz: false,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                },
+                      );
+                    }
+                  },
+                ),
               ),
               FlatButton(
-                child: Text('다음'),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('다음 문제', style: TextStyle(fontSize: 17,color: maincolor,)),
+                      Icon(Icons.keyboard_arrow_right, size: 35,color: maincolor,),
+                    ]),
                 onPressed: () {
                   if (index < problemList.length - 1) {
                     _moveProblem(index + 1);
@@ -371,13 +383,18 @@ class _Quiz extends State<Quiz> {
   Widget _Answer(BuildContext context) {
     if (problemList[index].multipleWrongAnswers == null) {
       return Column(children: <Widget>[
-        SizedBox(height: 280,),
+        SizedBox(
+          height: 26,
+        ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 30),
-          height: 50,
+          height: 60,
           child: TextField(
             controller: _answerController,
+            cursorColor: maincolor,
+            autofocus: true,
             decoration: InputDecoration(
+              fillColor: Colors.transparent,
               filled: true,
               labelText: "답을 입력해주세요.",
               border: OutlineInputBorder(
@@ -387,7 +404,9 @@ class _Quiz extends State<Quiz> {
             ),
           ),
         ),
-        SizedBox(height: 11,),
+        SizedBox(
+          height: 255,
+        ),
       ]);
     }
 

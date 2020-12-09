@@ -117,14 +117,13 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
             ])),
             Tab(
                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      SizedBox(width: 7,),
                       Icon(
                         Icons.description,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(width: 9,),
                       Text('DailyQuiz 결과',style: TextStyle(color: Colors.white, fontSize: 17),)
                     ])
             ),
