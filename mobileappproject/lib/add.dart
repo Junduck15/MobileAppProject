@@ -73,20 +73,20 @@ class _Add extends State<Add> {
       }
     }
 
-    // Future<void> _uploadImageToFirebase(PickedFile image) async {
-    //   try {
-    //     int randomNumber = Random().nextInt(100000);
-    //     String imageLocation = 'image${randomNumber}.jpg';
+    Future<void> _uploadImageToFirebase(File image) async {
+      try {
+        int randomNumber = Random().nextInt(100000);
+        String imageLocation = 'image${randomNumber}.jpg';
 
-    //     final Reference storageReference =
-    //         FirebaseStorage.instance.ref().child(imageLocation);
-    //     final UploadTask uploadTask =
-    //         storageReference.putFile(File(image.path));
-    //     await uploadTask.whenComplete(() => _addPathToDatabase(imageLocation));
-    //   } catch (e) {
-    //     print(e.message);
-    //   }
-    // }
+        final Reference storageReference =
+            FirebaseStorage.instance.ref().child(imageLocation);
+        final UploadTask uploadTask =
+            storageReference.putFile(File(image.path));
+        await uploadTask.whenComplete(() => _addPathToDatabase(imageLocation));
+      } catch (e) {
+        print(e.message);
+      }
+    }
 
     // getImage() async {
     //   var image = await _picker.getImage(source: ImageSource.gallery);
@@ -476,6 +476,7 @@ class _Add extends State<Add> {
                             pickedImage = tempStore;
                             isImageLoaded = true;
                           });
+                           _uploadImageToFirebase(pickedImage);
                         },
                       ),
                     
