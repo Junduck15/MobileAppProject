@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:mobileappproject/models/problemModel.dart';
 import 'package:mobileappproject/quizResult.dart';
+import 'login.dart';
 
 class Quiz extends StatefulWidget {
   final String problemType;
@@ -110,7 +111,7 @@ class _Quiz extends State<Quiz> {
         ),
         title: Text(
           '퀴즈',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
       body: _Body(context),
@@ -184,7 +185,10 @@ class _Quiz extends State<Quiz> {
   }
 
   Widget _Sections(BuildContext context) {
-    return Column(
+    return SafeArea(
+        child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           height: 10,
@@ -201,15 +205,31 @@ class _Quiz extends State<Quiz> {
           ),
         ),
         _Picture(context),
-        Expanded(
+        Padding(
+          padding: EdgeInsets.fromLTRB(35.0, 30.0, 35.0, .0),
           child: Container(
-            child: Text(
-              problemList[index].problemtext,
-              maxLines: 5,
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Q.',
+                      style: TextStyle(
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold,
+                        color: maincolor,
+                      )),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SingleChildScrollView(
+                      child: Container(
+                          height: 180,
+                          child: SingleChildScrollView(
+                              child: Text(problemList[index].problemtext,
+                                  style: TextStyle(
+                                    fontSize: 18.5,
+                                    color: Colors.black,
+                                  )))))
+                ]),
           ),
         ),
         _Answer(context),
@@ -226,7 +246,7 @@ class _Quiz extends State<Quiz> {
                 onPressed: () {
                   if (index > 0) {
                     setState(() {
-                      _moveProblem(index-1);
+                      _moveProblem(index - 1);
                     });
                   } else {
                     final snackBar = SnackBar(
@@ -255,12 +275,14 @@ class _Quiz extends State<Quiz> {
                       indexOfNoAnswer.add(answerList.indexOf("", cur) + 1);
                       cur = answerList.indexOf("", cur) + 1;
                     }
-                    String alertIndexOfNoAnswer = indexOfNoAnswer.join("번, ") + "번";
+                    String alertIndexOfNoAnswer =
+                        indexOfNoAnswer.join("번, ") + "번";
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          content: Text("$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
+                          content: Text(
+                              "$alertIndexOfNoAnswer 문제를 아직 풀지 않았습니다. 그래도 채점하시겠습니까?"),
                           actions: [
                             FlatButton(
                               child: Text("채점"),
@@ -293,9 +315,8 @@ class _Quiz extends State<Quiz> {
                         );
                       },
                     );
-                  }
-                  else {
-                   Navigator.pushReplacement(
+                  } else {
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => QuizResult(
@@ -316,7 +337,7 @@ class _Quiz extends State<Quiz> {
                 child: Text('다음'),
                 onPressed: () {
                   if (index < problemList.length - 1) {
-                    _moveProblem(index+1);
+                    _moveProblem(index + 1);
                   } else {
                     final snackBar = SnackBar(
                       content: Text('마지막 문제입니다!'),
@@ -333,7 +354,7 @@ class _Quiz extends State<Quiz> {
           ),
         ),
       ],
-    );
+    )));
   }
 
   Widget _Picture(BuildContext context) {
@@ -349,21 +370,25 @@ class _Quiz extends State<Quiz> {
 
   Widget _Answer(BuildContext context) {
     if (problemList[index].multipleWrongAnswers == null) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        height: 50,
-        child: TextField(
-          controller: _answerController,
-          decoration: InputDecoration(
-            filled: true,
-            labelText: "답을 입력해주세요.",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide(),
+      return Column(children: <Widget>[
+        SizedBox(height: 280,),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 30),
+          height: 50,
+          child: TextField(
+            controller: _answerController,
+            decoration: InputDecoration(
+              filled: true,
+              labelText: "답을 입력해주세요.",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(),
+              ),
             ),
           ),
         ),
-      );
+        SizedBox(height: 11,),
+      ]);
     }
 
     if (!problemList[index]
@@ -383,10 +408,10 @@ class _Quiz extends State<Quiz> {
         TextEditingController(text: problemList[index].multipleWrongAnswers[3]);
 
     return Container(
-        padding: EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 10.0),
+        padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 10.0),
         child: Column(children: [
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(30, 10, 30, 10),
             child: InkWell(
               onTap: () {
                 setState(() {
@@ -398,7 +423,7 @@ class _Quiz extends State<Quiz> {
                 controller: _choice1Controller,
                 enabled: false,
                 decoration: InputDecoration(
-                  fillColor: Colors.blue,
+                  fillColor: maincolor,
                   filled: multipleAnswer ==
                       problemList[index].multipleWrongAnswers[0],
                   border: OutlineInputBorder(
@@ -410,7 +435,7 @@ class _Quiz extends State<Quiz> {
             ),
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(30, 10, 30, 10),
             child: InkWell(
               onTap: () {
                 setState(() {
@@ -422,7 +447,7 @@ class _Quiz extends State<Quiz> {
                 controller: _choice2Controller,
                 enabled: false,
                 decoration: InputDecoration(
-                  fillColor: Colors.blue,
+                  fillColor: maincolor,
                   filled: multipleAnswer ==
                       problemList[index].multipleWrongAnswers[1],
                   border: OutlineInputBorder(
@@ -434,7 +459,7 @@ class _Quiz extends State<Quiz> {
             ),
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(30, 10, 30, 10),
             child: InkWell(
               onTap: () {
                 setState(() {
@@ -446,7 +471,7 @@ class _Quiz extends State<Quiz> {
                 controller: _choice3Controller,
                 enabled: false,
                 decoration: InputDecoration(
-                  fillColor: Colors.blue,
+                  fillColor: maincolor,
                   filled: multipleAnswer ==
                       problemList[index].multipleWrongAnswers[2],
                   border: OutlineInputBorder(
@@ -458,7 +483,7 @@ class _Quiz extends State<Quiz> {
             ),
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: EdgeInsets.fromLTRB(30, 10, 30, 10),
             child: InkWell(
               onTap: () {
                 setState(() {
@@ -470,7 +495,7 @@ class _Quiz extends State<Quiz> {
                 controller: _choice4Controller,
                 enabled: false,
                 decoration: InputDecoration(
-                  fillColor: Colors.blue,
+                  fillColor: maincolor,
                   filled: multipleAnswer ==
                       problemList[index].multipleWrongAnswers[3],
                   border: OutlineInputBorder(
