@@ -1,67 +1,229 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:mobileappproject/main.dart';
 import 'home.dart';
 import 'package:mobileappproject/login.dart';
 
 class Added extends StatelessWidget {
-  
   final String problem;
   final String answer;
   final bool isMul;
   final AsyncSnapshot snap;
   final String problemType;
+  final String mul1;
+  final String mul2;
+  final String mul3;
 
-  const Added(
-      {Key key,
-      this.problem,
-      this.answer,
-      this.isMul,
-      this.snap,
-      this.problemType})
-      : super(key: key);
+  const Added({
+    Key key,
+    this.problem,
+    this.answer,
+    this.isMul,
+    this.snap,
+    this.problemType,
+    this.mul1,
+    this.mul2,
+    this.mul3,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Widget prob = Container(
-        margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
-        child: Column(children: [
-          Center(
-            child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xffd4d4d4),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.fromLTRB(100, 20, 100, 120),
-                margin: EdgeInsets.fromLTRB(10, 15, 10, 15),
-                child: Text(problem)),
-          ),
-          const Divider(
-            color: Colors.grey,
-            height: 1.0,
-          ),
-        ]));
-    Widget answ = Container(
-      margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
-      child: Column(
-        children: [
-          Center(
-            child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xffd4d4d4),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.fromLTRB(100, 20, 100, 120),
-                margin: EdgeInsets.fromLTRB(10, 15, 10, 15),
-                child: Text(answer)),
-          ),
-          const Divider(
-            color: Colors.grey,
-            height: 1.0,
-          ),
-        ],
-      ),
-    );
+    Widget check =
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+        padding: EdgeInsets.fromLTRB(30.0, 30.0, 15.0, 20.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          isMul == false
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                      Container(
+                        height: 25.0,
+                        width: 65,
+                        color: Colors.transparent,
+                        child: new Container(
+                            decoration: new BoxDecoration(
+                              color: Colors.orangeAccent,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: new Center(
+                              child: new Text("주관식",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500)),
+                            )),
+                      ),
+                      //Text(await trans()),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Q.',
+                                style: TextStyle(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  color: maincolor,
+                                )),
+                            Flexible(
+                                child: Padding(
+                                    padding: EdgeInsets.fromLTRB(10, 9, 20, 10),
+                                    child: Text(problem,
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          color: maincolor,
+                                        ))))
+                          ]),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Divider(
+                        height: 1.0,
+                        color: maincolor,
+                        indent: 40,
+                        endIndent: 20,
+                      ),
+                      SizedBox(
+                        height: 25,
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('A.',
+                                style: TextStyle(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  color: maincolor,
+                                )),
+                            Flexible(
+                                child: Padding(
+                              padding: EdgeInsets.fromLTRB(10, 9, 20, 15),
+                              child: Text(answer,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.redAccent,
+                                  )),
+                            ))
+                          ]),
+                    ])
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                      Container(
+                        height: 25.0,
+                        width: 65,
+                        color: Colors.transparent,
+                        child: new Container(
+                            decoration: new BoxDecoration(
+                              color: Colors.lightGreen,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: new Center(
+                              child: new Text("객관식",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500)),
+                            )),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Q.',
+                                style: TextStyle(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  color: maincolor,
+                                )),
+                            Flexible(
+                                child: Padding(
+                                    padding: EdgeInsets.fromLTRB(10, 9, 20, 15),
+                                    child: Text(problem,
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          color: maincolor,
+                                        ))))
+                          ]),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Divider(
+                        height: 1.0,
+                        color: Colors.grey,
+                        indent: 40,
+                        endIndent: 20,
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('A.',
+                                style: TextStyle(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  color: maincolor,
+                                )),
+                            Flexible(
+                                child: Padding(
+                                    padding: EdgeInsets.fromLTRB(10, 9, 20, 15),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('1)    ' + mul1,
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: maincolor,
+                                              )),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text('2)   ' + mul2,
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: maincolor,
+                                              )),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text('3)   ' + mul3,
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: maincolor,
+                                              )),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text('4)   ' + answer,
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: maincolor,
+                                              )),
+                                          SizedBox(height: 30,),
+                                          Text('정답', style: TextStyle(fontSize: 16),),
+                                          SizedBox(height: 10,),
+                                          Text(' '+answer,
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: Colors.redAccent,
+                                              )),
+
+                                        ])))
+                          ]),
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ])
+        ]),
+      )
+    ]);
+
     Widget buttons = Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -90,6 +252,7 @@ class Added extends StatelessWidget {
             ))
       ],
     ));
+
     return MaterialApp(
       title: 'Flutter layout demo',
       home: Scaffold(
@@ -103,13 +266,34 @@ class Added extends StatelessWidget {
         ),
         body: ListView(
           children: <Widget>[
-            Container(
-                margin: EdgeInsets.fromLTRB(15, 10, 0, 15),
-                child: Text('등록된 문제')),
-            prob,
-            Container(
-                margin: EdgeInsets.fromLTRB(15, 10, 0, 15), child: Text('정답')),
-            answ,
+            SizedBox(
+              height: 25,
+            ),
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.collections_bookmark,
+                            size: 23, color: maincolor),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Flexible(
+                          child: Text(
+                            problemType,
+                            overflow: TextOverflow.clip,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                          ),
+                        ),
+                      ]),
+                ]),
+            check,
             buttons
           ],
         ),

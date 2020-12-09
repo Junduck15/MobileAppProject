@@ -21,7 +21,7 @@ class Problems_infolderPage extends StatefulWidget {
 
 class _Problems_infolderPage extends State<Problems_infolderPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  String dropdownValue = '최신순';
+  String dropdownValue = "최신순";
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +32,10 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
 
     switch (dropdownValue) {
       case "최신순":
-        query = query.orderBy('createdTime', descending: false );
+        query = query.orderBy('createdTime', descending: true );
         break;
       case "오래된순":
-        query = query.orderBy('createdTime', descending: true );
+        query = query.orderBy('createdTime', descending: false );
         break;
     }
 
@@ -388,7 +388,7 @@ class _Problems_infolderPage extends State<Problems_infolderPage> {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Add()));
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.border_color),
         backgroundColor: maincolor,
       ),
     );

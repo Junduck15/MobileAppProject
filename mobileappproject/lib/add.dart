@@ -682,7 +682,7 @@ class _Add extends State<Add> {
                                             answer: answerController.text,
                                             isMul: false,
                                             snap: snap,
-                                            problemType: problemType)));
+                                            problemType: problemType.toString())));
                               }
                             },
                           ),
@@ -783,7 +783,12 @@ class _Add extends State<Add> {
                                               problem: problemController.text,
                                               answer:
                                                   multiAnswerController.text,
-                                              isMul: true)),
+                                              isMul: true,
+                                              problemType: problemType.toString(),
+                                            mul1: multi1Controller.text,
+                                            mul2: multi2Controller.text,
+                                            mul3: multi3Controller.text,
+                                          )),
                                     );
                                   }
                                 },

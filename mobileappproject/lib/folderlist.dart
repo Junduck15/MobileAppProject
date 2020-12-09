@@ -255,7 +255,7 @@ class _FolderPageState extends State<FolderPage> {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Add()));
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.border_color),
         backgroundColor: maincolor,
       ),
     );
