@@ -88,14 +88,6 @@ class _Add extends State<Add> {
       }
     }
 
-    // getImage() async {
-    //   var image = await _picker.getImage(source: ImageSource.gallery);
-    //   setState(() {
-    //     _image = File(image.path);
-    //   });
-    //   _uploadImageToFirebase(image);
-    // }
-
     Widget isShared = Container(
         margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
         child: Row(children: [
