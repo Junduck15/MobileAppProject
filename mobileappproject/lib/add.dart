@@ -252,7 +252,7 @@ class _Add extends State<Add> {
                           );
                         }).toList(),
                         validator: (value) =>
-                            value == null ? '문제 순서를 선택하지 않았습니다.' : null,
+                            value == null ? '문제 그룹을 선택하지 않았습니다.' : null,
                       ),
                     ),
                   );
@@ -311,7 +311,7 @@ class _Add extends State<Add> {
           }
 
           return Form(
-            // key: _formKey,
+            //key: _formKey,
             child: Column(
               children: [
                 _ProblemTypeSection(context),
@@ -420,7 +420,7 @@ class _Add extends State<Add> {
             color: Colors.grey,
           ),
         ]));
-        Future readText() async {
+    Future readText() async {
       FirebaseVisionImage ourImage = FirebaseVisionImage.fromFile(pickedImage);
       TextRecognizer recognizeText = FirebaseVision.instance.textRecognizer();
       VisionText readText = await recognizeText.processImage(ourImage);
@@ -431,34 +431,35 @@ class _Add extends State<Add> {
           print(line.text);
         }
       }
-       setState(() {
-         translated1=translated;
-                          });
+      setState(() {
+        translated1 = translated;
+      });
       print(translated);
     }
+
     Future pickImage() async {
       showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-                title: Text("사진 읽어오기"),
+                title: Text("사진으로 문제입력"),
                 content: Container(
-                  
+                  height: 400,
+                  width: 400,
                   child: Column(
                     children: [
                       SizedBox(height: 50.0),
                       isImageLoaded
                           ? Center(
                               child: Container(
-                                  height: 200.0,
-                                  width: 200.0,
+                                  height: 250.0,
+                                  width: 250.0,
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                           image: FileImage(pickedImage),
                                           fit: BoxFit.cover))),
                             )
                           : Container(),
-                     
                       FlatButton(
                         child: Text('사진 불러오기'),
                         onPressed: () async {
@@ -469,27 +470,29 @@ class _Add extends State<Add> {
                             pickedImage = tempStore;
                             isImageLoaded = true;
                           });
-                           _uploadImageToFirebase(pickedImage);
                         },
-                      ),
-                    
+                      )])),
+                  actions: <Widget>[
                     FlatButton(
-                        child: Text('텍스트로 변환하기'),
+                      child: Text("취소", style: TextStyle(color: Colors.black38)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                      FlatButton(
+                        child: Text('입력'),
                         onPressed: () async {
-                          translated="";
-                         await readText();
-                         problemVal = translated;
-                         Navigator.pop(context);
+                          translated = "";
+                          await readText();
+                          problemVal = translated;
+                          _uploadImageToFirebase(pickedImage);
+                          Navigator.pop(context);
                         },
                       ),
-                      
                     ],
-                  ),
-                ));
+            );
           });
     }
-
-    
 
     Widget problemSection = Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -507,7 +510,7 @@ class _Add extends State<Add> {
               controller: problemController,
               validator: (value) {
                 if (value.isEmpty) {
-                  return '문제 등록을 위해 문제를 입력하시오.';
+                  return '문제 등록을 위해 문제를 입력하세요.';
                 }
                 return null;
               },
@@ -528,11 +531,14 @@ class _Add extends State<Add> {
                 children: <Widget>[
                   //SizedBox(width: 40,),
                   FlatButton(
-                      child: Text('사진으로 문제입력'),
+                      child: Row(children: <Widget>[
+                        Icon(Icons.image, color: Colors.black45),
+                        SizedBox(width: 4,),
+                        Text('사진으로 문제입력', style: TextStyle(color: Colors.black54)),
+                      ]),
                       onPressed: () {
                         pickImage();
                       }),
-                  
                 ]),
           ),
         ]));
@@ -555,7 +561,7 @@ class _Add extends State<Add> {
               controller: answerController,
               validator: (value) {
                 if (value.isEmpty) {
-                  return '문제등록을 위해 정답을 입력해주시오.';
+                  return '문제등록을 위해 정답을 입력해주세요.';
                 }
                 return null;
               },
@@ -638,9 +644,26 @@ class _Add extends State<Add> {
                                   fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
-
-                              DocumentReference ref = FirebaseFirestore.instance.collection('users').doc(_auth.currentUser.uid)
-                                  .collection(problemType).doc();
+                              if (_formKey.currentState.validate() &&
+                                  problemController.text != "" &&
+                                  answerController.text != "") {
+                                Navigator.of(context).pushReplacement(
+                                    new MaterialPageRoute(
+                                        settings:
+                                        const RouteSettings(name: '/added'),
+                                        builder: (context) => new Added(
+                                            problem: problemController.text,
+                                            answer: answerController.text,
+                                            isMul: false,
+                                            snap: snap,
+                                            problemType:
+                                            problemType.toString())));
+                              }
+                              DocumentReference ref = FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(_auth.currentUser.uid)
+                                  .collection(problemType)
+                                  .doc();
                               ref.set({
                                 'problemtext': problemController.text,
                                 'problemtype': problemType,
@@ -650,7 +673,7 @@ class _Add extends State<Add> {
                                 'isShared': isSwitched,
                                 'createdTime': FieldValue.serverTimestamp(),
                                 'isMultiple': false,
-                                'id' : ref.id,
+                                'id': ref.id,
                               });
                               if (isSwitched) {
                                 firestore.collection(problemCategory).add({
@@ -663,20 +686,6 @@ class _Add extends State<Add> {
                                   'createdTime': FieldValue.serverTimestamp(),
                                   'isMultiple': false
                                 });
-                              }
-                              if (_formKey.currentState.validate() &&
-                                  problemController.text != "" &&
-                                  answerController.text != "") {
-                                Navigator.of(context).pushReplacement(
-                                    new MaterialPageRoute(
-                                        settings:
-                                            const RouteSettings(name: '/added'),
-                                        builder: (context) => new Added(
-                                            problem: problemController.text,
-                                            answer: answerController.text,
-                                            isMul: false,
-                                            snap: snap,
-                                            problemType: problemType.toString())));
                               }
                             },
                           ),
@@ -726,8 +735,36 @@ class _Add extends State<Add> {
                                   multipleWrongAnswers
                                       .add(multi3Controller.text);
 
-                                  DocumentReference ref = FirebaseFirestore.instance.collection('users').doc(_auth.currentUser.uid)
-                                      .collection(problemType).doc();
+                                  if (_formKeyMulti.currentState.validate() &&
+                                      problemController.text != "" &&
+                                      multi1Controller.text != "" &&
+                                      multi2Controller.text != "" &&
+                                      multi3Controller.text != "" &&
+                                      multiAnswerController.text != "" &&
+                                      problemType != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Added(
+                                            problem: problemController.text,
+                                            answer:
+                                            multiAnswerController.text,
+                                            isMul: true,
+                                            problemType:
+                                            problemType.toString(),
+                                            mul1: multi1Controller.text,
+                                            mul2: multi2Controller.text,
+                                            mul3: multi3Controller.text,
+                                          )),
+                                    );
+                                  }
+
+                                  DocumentReference ref = FirebaseFirestore
+                                      .instance
+                                      .collection('users')
+                                      .doc(_auth.currentUser.uid)
+                                      .collection(problemType)
+                                      .doc();
                                   ref.set({
                                     'problemtext': problemController.text,
                                     'answer': multiAnswerController.text,
@@ -739,10 +776,13 @@ class _Add extends State<Add> {
                                         multipleWrongAnswers,
                                     'createdTime': FieldValue.serverTimestamp(),
                                     'isMultiple': true,
-                                    'id' : ref.id,
+                                    'id': ref.id,
                                   });
                                   if (isSwitched) {
-                                    DocumentReference ref2 = FirebaseFirestore.instance.collection(problemCategory).doc();
+                                    DocumentReference ref2 = FirebaseFirestore
+                                        .instance
+                                        .collection(problemCategory)
+                                        .doc();
                                     ref2.set({
                                       'problemtype': problemType,
                                       'problemtext': problemController.text,
@@ -755,7 +795,7 @@ class _Add extends State<Add> {
                                       'createdTime':
                                           FieldValue.serverTimestamp(),
                                       'isMultiple': true,
-                                      'id' : ref.id,
+                                      'id': ref.id,
                                     });
                                   }
                                   firestore
@@ -765,28 +805,6 @@ class _Add extends State<Add> {
                                     "problemTypes":
                                         FieldValue.arrayUnion([problemType]),
                                   });
-                                  if (_formKeyMulti.currentState.validate() &&
-                                      problemController.text != "" &&
-                                      multi1Controller.text != "" &&
-                                      multi2Controller.text != "" &&
-                                      multi3Controller.text != "" &&
-                                      multiAnswerController.text != "" &&
-                                      problemType != null) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Added(
-                                              problem: problemController.text,
-                                              answer:
-                                                  multiAnswerController.text,
-                                              isMul: true,
-                                              problemType: problemType.toString(),
-                                            mul1: multi1Controller.text,
-                                            mul2: multi2Controller.text,
-                                            mul3: multi3Controller.text,
-                                          )),
-                                    );
-                                  }
                                 },
                               )),
                         ),
