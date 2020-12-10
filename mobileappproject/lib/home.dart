@@ -89,7 +89,8 @@ class _HomePageState extends State<HomePage> {
   void _configureSelectNotificationSubject(){
     selectNotificationSubject.stream.listen((String payload) async {
       print('clicked!');
-      List<dynamic> problemTypes;
+      List<dynamic> problemTypes = [];
+      List<dynamic> problemTypesWithProblems = [];
       FirebaseFirestore.instance
           .collection("users")
           .doc(auth.currentUser.uid)
@@ -98,13 +99,28 @@ class _HomePageState extends State<HomePage> {
         data.data()["problemTypes"] != null
             ? problemTypes = data.data()["problemTypes"]
             : problemTypes = [];
-        await Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-              builder: (BuildContext context) => DailyQuiz(
-                problemTypes: problemTypes,
-              )),
-        );
+
+        for(var i = 0; i < problemTypes.length; i++){
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(auth.currentUser.uid)
+              .collection(problemTypes[i])
+              .snapshots()
+              .listen((data) async {
+                if (data.docs.length > 0) {
+                  problemTypesWithProblems.add(problemTypes[i]);
+                }
+                if(i == problemTypes.length - 1){
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                        builder: (BuildContext context) => DailyQuiz(
+                          problemTypes: problemTypesWithProblems,
+                        )),
+                  );
+                }
+          });
+        }
       });
     });
   }
