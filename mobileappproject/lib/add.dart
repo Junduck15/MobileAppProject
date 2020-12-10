@@ -310,16 +310,13 @@ class _Add extends State<Add> {
             snap = snapshot;
           }
 
-          return Form(
-            //key: _formKey,
-            child: Column(
-              children: [
-                _ProblemTypeSection(context),
-                SizedBox(
-                  height: 30,
-                ),
-              ],
-            ),
+          return Column(
+            children: [
+              _ProblemTypeSection(context),
+              SizedBox(
+                height: 30,
+              ),
+            ],
           );
         },
       );
