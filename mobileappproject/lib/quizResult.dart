@@ -206,7 +206,7 @@ class _QuizResult extends State<QuizResult> {
           return PieChartSectionData(
             color: Colors.red,
             value: (wrongNumber / quizNumber) * 100,
-            title: '$wrongNumber문제',
+            title: wrongNumber == 0? '' : '$wrongNumber문제',
             radius: radius,
             titleStyle: TextStyle(
                 fontSize: fontSize, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
@@ -215,7 +215,7 @@ class _QuizResult extends State<QuizResult> {
           return PieChartSectionData(
             color: Colors.blue,
             value: (rightNumber / quizNumber) * 100,
-            title: '$rightNumber문제',
+            title: rightNumber == 0? '' : '$rightNumber문제',
             radius: radius,
             titleStyle: TextStyle(
                 fontSize: fontSize, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
@@ -254,9 +254,6 @@ class _QuizResult extends State<QuizResult> {
       ),
       subtitle: Text(
         problemList[index].multipleWrongAnswers == null ? "주관식" : "객관식",
-      ),
-      trailing: FlatButton(
-        child: Text("trailing"),
       ),
     );
   }
