@@ -50,7 +50,7 @@ class _FolderPageState extends State<FolderPage> {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text("취소"),
+                child: Text("취소", style: TextStyle(color: Colors.black38)),
                 onPressed: () {
                   Navigator.pop(context);
                 },
