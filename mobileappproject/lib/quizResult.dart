@@ -6,6 +6,7 @@ import 'package:mobileappproject/quizResultDetail.dart';
 import 'models/indicator.dart';
 import 'models/problemModel.dart';
 import 'package:intl/intl.dart';
+import 'login.dart' ;
 
 class QuizResult extends StatefulWidget {
   final List<Problem> problemList;
@@ -97,10 +98,11 @@ class _QuizResult extends State<QuizResult> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: maincolor,
         elevation: 0,
         title: Text(
           '퀴즈 결과',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: _body(context),
@@ -112,7 +114,7 @@ class _QuizResult extends State<QuizResult> {
       mainAxisSize: MainAxisSize.max,
       children: [
       AspectRatio(
-      aspectRatio: 1.3,
+      aspectRatio: 1.5,
       child: Card(
         color: Colors.white,
         child: Row(
@@ -151,16 +153,18 @@ class _QuizResult extends State<QuizResult> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Indicator(
-                  color: Colors.blue,
-                  text: '맞음',
+                  color: Colors.indigoAccent,
+                  size: 18,
+                  text: '   맞음',
                   isSquare: true,
                 ),
                 SizedBox(
-                  height: 4,
+                  height: 10,
                 ),
                 Indicator(
-                  color: Colors.red,
-                  text: '틀림',
+                  color: Colors.deepOrangeAccent,
+                  size: 18,
+                  text: '   틀림',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -204,7 +208,7 @@ class _QuizResult extends State<QuizResult> {
       switch (i) {
         case 0:
           return PieChartSectionData(
-            color: Colors.red,
+            color: Colors.deepOrangeAccent,
             value: (wrongNumber / quizNumber) * 100,
             title: wrongNumber == 0? '' : '$wrongNumber문제',
             radius: radius,
@@ -213,7 +217,7 @@ class _QuizResult extends State<QuizResult> {
           );
         case 1:
           return PieChartSectionData(
-            color: Colors.blue,
+            color: Colors.indigoAccent,
             value: (rightNumber / quizNumber) * 100,
             title: rightNumber == 0? '' : '$rightNumber문제',
             radius: radius,
@@ -245,16 +249,17 @@ class _QuizResult extends State<QuizResult> {
           ),
         );
       },
-      leading: Text("$displayIndex번"),
+      leading: Text("  $displayIndex번", style: TextStyle(fontSize: 18),),
       title: Text(
         scoringList[index] ? "틀림" : "맞음",
-        style: TextStyle(
-          color: scoringList[index] ? Colors.red : Colors.blue,
+        style: TextStyle(fontSize: 18,
+          color: scoringList[index] ? Colors.deepOrangeAccent : Colors.indigoAccent,
         ),
       ),
       subtitle: Text(
         problemList[index].multipleWrongAnswers == null ? "주관식" : "객관식",
       ),
+      trailing: Icon(Icons.chevron_right, size: 30,),
     );
   }
 }

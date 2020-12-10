@@ -149,11 +149,11 @@ class _HomePageState extends State<HomePage> {
             title: Text('오답노트'),
           ),
           new BottomNavigationBarItem(
-            icon: Icon(Icons.description),
+            icon: Icon(Icons.offline_pin),
             title: Text('Quiz'),
           ),
           new BottomNavigationBarItem(
-            icon: Icon(Icons.question_answer),
+            icon: Icon(Icons.shopping_cart),
             title: Text('문제은행'),
           )
         ]);
