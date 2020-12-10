@@ -61,6 +61,7 @@ class _Add extends State<Add> {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
         imageString = await ref.getDownloadURL();
+        print(imageString);
       } catch (e) {
         print(e.message);
         showDialog(
