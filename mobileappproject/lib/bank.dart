@@ -13,6 +13,7 @@ class _BankPage extends State<BankPage> {
   List<dynamic> problemTypes = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var problemType;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +84,7 @@ class _BankPage extends State<BankPage> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
+<<<<<<< HEAD
           return AlertDialog(
               title: Text("문제 그룹 지정"),
              
@@ -228,6 +230,157 @@ class _BankPage extends State<BankPage> {
                       // }
                     }),
               ],);
+=======
+          return Form(
+              key: _formKey,
+              child: AlertDialog(
+                  title: Text("문제 그룹 지정"),
+                  actions: [
+                    FlatButton(
+                      child: Text(
+                        "취소",
+                        style: TextStyle(fontSize: 16, color: Colors.black38),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(() {
+                          problemType = null;
+                        });
+                      },
+                    ),
+                    FlatButton(
+                        child: Text(
+                          "담기",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            Navigator.pop(context);
+
+                            //problemTypes.add(doc['problemtype']);
+
+                            firestore
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .update({
+                              "problemTypes":
+                                  FieldValue.arrayUnion(problemTypes),
+                            });
+                            DocumentReference ref = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .collection(problemType)
+                                .doc();
+
+                            doc['isMultiple'] == false
+                                ? ref.set({
+                                    'problemtext': doc['problemtext'],
+                                    'answer': doc['answer'],
+                                    'picture': doc['picture'],
+                                    'creator': doc['creator'],
+                                    'isShared': doc['isShared'],
+                                    'createdTime': FieldValue.serverTimestamp(),
+                                    'isMultiple': false,
+                                    'problemtype': problemType,
+                                    'id': ref.id,
+                                  })
+                                : ref.set({
+                                    'problemtext': doc['problemtext'],
+                                    'answer': doc['answer'],
+                                    'multipleWrongAnswers':
+                                        doc['multipleWrongAnswers'],
+                                    'picture': doc['picture'],
+                                    'creator': doc['creator'],
+                                    'isShared': doc['isShared'],
+                                    'createdTime': FieldValue.serverTimestamp(),
+                                    'isMultiple': false,
+                                    'problemtype': problemType,
+                                    'id': ref.id,
+                                  });
+                          }
+                          setState(() {
+                            problemType = null;
+                          });
+                        }),
+                  ],
+                  content: Container(
+                      height: 150,
+                      child: Column(
+                        children: [
+                          Container(
+                              child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
+                                  child: FormField<String>(
+                                    builder: (FormFieldState<String> state) {
+                                      return InputDecorator(
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        5.0))),
+                                        child: DropdownButtonHideUnderline(
+                                          child:
+                                              DropdownButtonFormField<String>(
+                                            hint: Text("문제그룹"),
+                                            value: problemType,
+                                            isDense: true,
+                                            isExpanded: true,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                problemType = newValue;
+                                              });
+                                            },
+                                            items: problemTypes
+                                                .map((dynamic value) {
+                                              return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(value,
+                                                      overflow:
+                                                          TextOverflow.fade));
+                                            }).toList(),
+                                            validator: (value) => value == null
+                                                ? '문제 그룹을 선택하지 않았습니다.'
+                                                : null,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                  width: 70,
+                                  height: 70,
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
+                                  child: Column(children: <Widget>[
+                                    FlatButton(
+                                      child: Icon(
+                                        Icons.add,
+                                        size: 30,
+                                      ),
+                                      onPressed: () {
+                                        _showDialog2();
+                                      },
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      '그룹 추가',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                      ),
+                                    )
+                                  ])),
+                            ],
+                          )),
+                        ],
+                      ))));
+>>>>>>> a911614df440d1187145e26b2ee379aa960f7c4a
         },
       );
     }
@@ -335,7 +488,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -517,7 +670,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -678,7 +831,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -860,7 +1013,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1019,7 +1172,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1201,7 +1354,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1360,7 +1513,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1542,7 +1695,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,

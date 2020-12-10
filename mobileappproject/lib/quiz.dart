@@ -86,16 +86,25 @@ class _Quiz extends State<Quiz> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  content: Text("퀴즈를 종료하시겠습니까?", style: TextStyle(fontSize: 17),),
+                  content: Text(
+                    "퀴즈를 종료하시겠습니까?",
+                    style: TextStyle(fontSize: 17),
+                  ),
                   actions: [
                     FlatButton(
-                      child: Text("취소", style: TextStyle(fontSize: 16, color: Colors.black38),),
+                      child: Text(
+                        "취소",
+                        style: TextStyle(fontSize: 16, color: Colors.black38),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
                     FlatButton(
-                      child: Text("종료", style: TextStyle(fontSize: 16),),
+                      child: Text(
+                        "종료",
+                        style: TextStyle(fontSize: 16),
+                      ),
                       onPressed: () {
                         Navigator.popUntil(
                           context,
@@ -240,12 +249,20 @@ class _Quiz extends State<Quiz> {
             children: <Widget>[
               FlatButton(
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                  Icon(Icons.keyboard_arrow_left, size: 35,color: maincolor,),
-                  Text('이전 문제', style: TextStyle(fontSize: 17,color: maincolor,)),
-                ]),
+                      Icon(
+                        Icons.keyboard_arrow_left,
+                        size: 35,
+                        color: maincolor,
+                      ),
+                      Text('이전 문제',
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: maincolor,
+                          )),
+                    ]),
                 onPressed: () {
                   if (index > 0) {
                     setState(() {
@@ -344,8 +361,16 @@ class _Quiz extends State<Quiz> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('다음 문제', style: TextStyle(fontSize: 17,color: maincolor,)),
-                      Icon(Icons.keyboard_arrow_right, size: 35,color: maincolor,),
+                      Text('다음 문제',
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: maincolor,
+                          )),
+                      Icon(
+                        Icons.keyboard_arrow_right,
+                        size: 35,
+                        color: maincolor,
+                      ),
                     ]),
                 onPressed: () {
                   if (index < problemList.length - 1) {

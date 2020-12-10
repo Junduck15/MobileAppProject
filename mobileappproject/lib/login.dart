@@ -20,6 +20,38 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    _signInSilently();
+  }
+
+  Future _signInSilently() async {
+    bool isSignedIn = await GoogleSignIn().isSignedIn();
+    if (isSignedIn) {
+      GoogleSignInAccount googleUser = await GoogleSignIn().signInSilently();
+      UserCredential userCredential;
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+      final GoogleAuthCredential googleAuthCredential =
+      GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      userCredential = await _auth.signInWithCredential(googleAuthCredential);
+
+      final user = userCredential.user;
+
+      Navigator.pushReplacementNamed(
+        context,
+        '/home',
+      );
+      //print(GoogleSignIn().currentUser.email);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +133,8 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
     try {
       user = (await _auth.signInAnonymously()).user;
 
-      addUser(user.uid);
+      addUser(user.uid, user.displayName);
+
 
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Signed in Anonymously as user ${user.uid}"),
@@ -169,7 +202,7 @@ class _OtherProvidersSignInSectionState
 
       final user = userCredential.user;
 
-      addUser(user.uid);
+      addUser(user.uid, user.displayName);
 
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Sign In ${user.uid} with Google"),
@@ -185,13 +218,24 @@ class _OtherProvidersSignInSectionState
   }
 }
 
-Future<void> addUser(String uid) {
+Future<void> addUser(String uid, String displayname) {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   users.doc(uid).get().then((doc) {
     if (doc.exists) {
-
+      DocumentReference ref = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid);
+      ref.update({
+        'displayname': displayname,
+      });
     }
     else {
+      DocumentReference ref = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid);
+      ref.set({
+        'displayname': displayname,
+      });
       return users
           .doc(uid)
           .set({

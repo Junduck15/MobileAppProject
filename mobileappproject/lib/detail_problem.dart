@@ -120,8 +120,8 @@ class _Detail_problemPageState extends State<Detail_problemPage> {
                 return Text("Loading");
               }
 
-              if (snapshot.data == null) {
-                return CircularProgressIndicator();
+              if (!snapshot.hasData || snapshot.data.exists == false) {
+                return LinearProgressIndicator();
               } else {
                 problemtext = snapshot.data['problemtext'];
                 answer = snapshot.data['answer'];
