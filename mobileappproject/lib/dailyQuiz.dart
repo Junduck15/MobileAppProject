@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobileappproject/login.dart';
 import 'package:mobileappproject/models/problemModel.dart';
 import 'package:mobileappproject/quizResult.dart';
+import 'package:intl/intl.dart';
 
 class DailyQuiz extends StatefulWidget {
   final List<dynamic> problemTypes;
@@ -133,6 +134,17 @@ class _DailyQuiz extends State<DailyQuiz> {
                         style: TextStyle(fontSize: 16, color: Colors.black38),
                       ),
                       onPressed: () {
+                        Future<void> addDailyQuizRecord() {
+                          CollectionReference dailyQuiz = FirebaseFirestore.instance.collection('users').doc(auth.currentUser.uid).collection('dailyQuiz');
+                          return dailyQuiz
+                              .add({
+                            'score': 0,
+                            'date': DateFormat.Md().format(DateTime.now()),
+                          })
+                              .then((value) => print("Daily Quiz Record Added"))
+                              .catchError((error) => print("Failed to add Daily Quiz Record: $error"));
+                        }
+                        addDailyQuizRecord();
                         Navigator.popUntil(
                           context,
                           ModalRoute.withName('/home'),
