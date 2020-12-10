@@ -20,6 +20,8 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   List<dynamic> problemTypes = [];
+  List<dynamic> problemTypesWithProblems = [];
+  List<int> problemNumberOfTypes = [];
   List<String> difficulties = [
     "All",
     "Confusing",
@@ -85,7 +87,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
       context,
       MaterialPageRoute(
         builder: (context) => DailyQuiz(
-          problemTypes: problemTypes,
+          problemTypes: problemTypesWithProblems,
         ),
       ),
     );
@@ -200,6 +202,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
           snapshot.data.data()["problemTypes"] != null
               ? problemTypes = snapshot.data.data()["problemTypes"]
               : problemTypes = [];
+          checkProblemCount();
         }
 
         return Form(
@@ -292,7 +295,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
                       );
                     }).toList(),
                     validator: (value) =>
-                        value == null ? '문제 그룹을 선택하지 않았습니다.' : null,
+                        value == null ? '문제 그룹을 선택하지 않았습니다.' : (problemNumberOfTypes[problemTypes.indexOf(value)] == 0 ? '해당 그룹에 문제가 존재하지 않습니다.' : null),
                   ),
                 ),
               )
@@ -516,5 +519,21 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  void checkProblemCount() {
+    for(var i = 0; i < problemTypes.length; i++){
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(auth.currentUser.uid)
+          .collection(problemTypes[i])
+          .snapshots()
+          .listen((data) async {
+        problemNumberOfTypes.add(data.docs.length);
+        if(data.docs.length > 0){
+          problemTypesWithProblems.add(problemTypes[i]);
+        }
+      });
+    }
   }
 }
