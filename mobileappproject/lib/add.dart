@@ -678,7 +678,7 @@ class _Add extends State<Add> {
                                   'answer': answerController.text,
                                   'problemtype': problemType,
                                   'picture': imageString,
-                                  'creator': _auth.currentUser.uid,
+                                  'creator': _auth.currentUser.displayName,
                                   'isShared': isSwitched,
                                   'createdTime': FieldValue.serverTimestamp(),
                                   'isMultiple': false
@@ -785,7 +785,7 @@ class _Add extends State<Add> {
                                       'problemtext': problemController.text,
                                       'answer': answerController.text,
                                       'picture': imageString,
-                                      'creator': _auth.currentUser.uid,
+                                      'creator': _auth.currentUser.displayName,
                                       'isShared': isSwitched,
                                       'multipleWrongAnswers':
                                           multipleWrongAnswers,

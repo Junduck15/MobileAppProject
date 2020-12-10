@@ -341,7 +341,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -523,7 +523,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -683,7 +683,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -865,7 +865,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1024,7 +1024,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1206,7 +1206,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1365,7 +1365,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
@@ -1547,7 +1547,7 @@ class _BankPage extends State<BankPage> {
                                                                               .grey,
                                                                           fontStyle:
                                                                               FontStyle.italic)),
-                                                                  Text(' 가 등록 ',
+                                                                  Text(' 이/가 등록 ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               13,
