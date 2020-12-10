@@ -101,7 +101,8 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
     try {
       user = (await _auth.signInAnonymously()).user;
 
-      addUser(user.uid);
+      addUser(user.uid, user.displayName);
+
 
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Signed in Anonymously as user ${user.uid}"),
@@ -169,7 +170,7 @@ class _OtherProvidersSignInSectionState
 
       final user = userCredential.user;
 
-      addUser(user.uid);
+      addUser(user.uid, user.displayName);
 
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Sign In ${user.uid} with Google"),
@@ -185,13 +186,24 @@ class _OtherProvidersSignInSectionState
   }
 }
 
-Future<void> addUser(String uid) {
+Future<void> addUser(String uid, String displayname) {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   users.doc(uid).get().then((doc) {
     if (doc.exists) {
-
+      DocumentReference ref = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid);
+      ref.update({
+        'displayname': displayname,
+      });
     }
     else {
+      DocumentReference ref = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid);
+      ref.set({
+        'displayname': displayname,
+      });
       return users
           .doc(uid)
           .set({

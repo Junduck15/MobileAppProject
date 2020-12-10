@@ -12,6 +12,7 @@ class Profile extends StatefulWidget {
   Profile({
     Key key,
   }) : super(key: key);
+
   _ProfileState createState() => _ProfileState();
 }
 
@@ -118,9 +119,9 @@ class _ProfileState extends State<Profile> {
                   width: 20,
                 ),
                 Text(
-                  auth.currentUser.uid,
+                  auth.currentUser.displayName,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                   ),
                 ),
               ])),
@@ -157,74 +158,103 @@ class _ProfileState extends State<Profile> {
             endIndent: 30,
           ),
           Container(
-            margin: EdgeInsets.symmetric(vertical: 15),
-            child: Row(
-              children: <Widget>[
-                SizedBox(
-                  width: 35,
-                ),
-                Icon(
-                  Icons.alarm,
-                  color: maincolor,
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Switch(
-                  value: isSwitched,
-                  onChanged: (value) {
-                    if (value == true) {
-                      Future<TimeOfDay> selectedTime = showTimePicker(
-                        initialTime: TimeOfDay(hour: notiHour, minute: notiMinute),
-                        initialEntryMode: TimePickerEntryMode.input,
-                        context: context,
-                        helpText: '설정한 시간에 매일 알림이 도착합니다.',
-                      );
-                      selectedTime.then((time) {
-                        if(time != null){
-                          _scheduleDailyNotification(time.hour, time.minute);
-                          setState(() {
-                            prefs.setInt('notiHour', time.hour);
-                            prefs.setInt('notiMinute', time.minute);
-                            notiHour = prefs.getInt('notiHour');
-                            notiMinute = prefs.getInt('notiMinute');
-                            isSwitched = value;
-                            prefs.setBool('dailyQuizNotification', value);
-                          });
-                          final snackBar = SnackBar(
-                            content: Text(
-                              '매일 ' +
-                                  timeFormat.format(notiHour).toString() +
-                                  ':' +
-                                  timeFormat.format(notiMinute).toString() +
-                                  '에 데일리 퀴즈 알림이 도착합니다.',
-                            ),
-                          );
-                          _scaffoldKey.currentState.showSnackBar(snackBar);
-                        }
-                      });
-                    } else {
-                      _cancelNotification();
-                      setState(() {
-                        isSwitched = value;
-                        prefs.setBool('dailyQuizNotification', value);
-                      });
-                    }
-                  },
-                  activeTrackColor: Colors.lightGreenAccent,
-                  activeColor: Colors.green,
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  timeFormat.format(notiHour).toString() +
-                      ':' +
-                      timeFormat.format(notiMinute).toString(),
-                ),
-              ],
-            ),
-          ),
+              margin: EdgeInsets.symmetric(vertical: 15),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 35,
+                        ),
+                        Icon(
+                          Icons.alarm,
+                          color: maincolor,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          '데일리 퀴즈 알람',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Transform.scale(
+                            scale: 1.2,
+                            child: Switch(
+                              value: isSwitched,
+                              onChanged: (value) {
+                                if (value == true) {
+                                  Future<TimeOfDay> selectedTime =
+                                      showTimePicker(
+                                    initialTime: TimeOfDay(
+                                        hour: notiHour, minute: notiMinute),
+                                    initialEntryMode: TimePickerEntryMode.input,
+                                    context: context,
+                                    helpText: '설정한 시간에 매일 알림이 도착합니다.',
+                                  );
+                                  selectedTime.then((time) {
+                                    if (time != null) {
+                                      _scheduleDailyNotification(
+                                          time.hour, time.minute);
+                                      setState(() {
+                                        prefs.setInt('notiHour', time.hour);
+                                        prefs.setInt('notiMinute', time.minute);
+                                        notiHour = prefs.getInt('notiHour');
+                                        notiMinute = prefs.getInt('notiMinute');
+                                        isSwitched = value;
+                                        prefs.setBool(
+                                            'dailyQuizNotification', value);
+                                      });
+                                      final snackBar = SnackBar(
+                                        content: Text(
+                                          '매일 ' +
+                                              timeFormat
+                                                  .format(notiHour)
+                                                  .toString() +
+                                              ':' +
+                                              timeFormat
+                                                  .format(notiMinute)
+                                                  .toString() +
+                                              '에 데일리 퀴즈 알림이 도착합니다.',
+                                        ),
+                                      );
+                                      _scaffoldKey.currentState
+                                          .showSnackBar(snackBar);
+                                    }
+                                  });
+                                } else {
+                                  _cancelNotification();
+                                  setState(() {
+                                    isSwitched = value;
+                                    prefs.setBool(
+                                        'dailyQuizNotification', value);
+                                  });
+                                }
+                              },
+                              activeTrackColor: Colors.lightGreenAccent,
+                              activeColor: Colors.green,
+                            )),
+                        SizedBox(
+                          width: 20,
+                        ),
+                      ],
+                    ),
+                    isSwitched == true? Row(children: <Widget>[
+                      SizedBox(
+                        width: 78,
+                      ),
+                      Text(
+                        '알람 예약:  매일 ' +
+                            timeFormat.format(notiHour).toString() +
+                            ':' +
+                            timeFormat.format(notiMinute).toString(),
+                      ),
+                    ]) : Container()
+
+                  ])),
           Divider(
             height: 1.5,
             color: maincolor,
