@@ -20,6 +20,38 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    _signInSilently();
+  }
+
+  Future _signInSilently() async {
+    bool isSignedIn = await GoogleSignIn().isSignedIn();
+    if (isSignedIn) {
+      GoogleSignInAccount googleUser = await GoogleSignIn().signInSilently();
+      UserCredential userCredential;
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+      final GoogleAuthCredential googleAuthCredential =
+      GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      userCredential = await _auth.signInWithCredential(googleAuthCredential);
+
+      final user = userCredential.user;
+
+      Navigator.pushReplacementNamed(
+        context,
+        '/home',
+      );
+      //print(GoogleSignIn().currentUser.email);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
