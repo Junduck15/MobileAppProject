@@ -61,6 +61,7 @@ class _Add extends State<Add> {
       try {
         final ref = FirebaseStorage.instance.ref().child(text);
         imageString = await ref.getDownloadURL();
+        print(imageString);
       } catch (e) {
         print(e.message);
         showDialog(
@@ -87,14 +88,6 @@ class _Add extends State<Add> {
         print(e.message);
       }
     }
-
-    // getImage() async {
-    //   var image = await _picker.getImage(source: ImageSource.gallery);
-    //   setState(() {
-    //     _image = File(image.path);
-    //   });
-    //   _uploadImageToFirebase(image);
-    // }
 
     Widget isShared = Container(
         margin: EdgeInsets.fromLTRB(20, 5, 0, 5),
