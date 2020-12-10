@@ -36,7 +36,7 @@ class _DailyQuiz extends State<DailyQuiz> {
   String multipleAnswer;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Timer timer;
-  int leftTime = 100;
+  int leftTime;
   Random random = Random();
 
   _DailyQuiz({
@@ -196,6 +196,7 @@ class _DailyQuiz extends State<DailyQuiz> {
                 .toList();
           }
           _initAnswerList(snapshot.data.size);
+          leftTime = problemList.length*15;
           return _Sections(context);
         },
       );
