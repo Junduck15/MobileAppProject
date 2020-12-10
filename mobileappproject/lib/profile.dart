@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobileappproject/login.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -247,6 +248,7 @@ class _ProfileState extends State<Profile> {
                   ),
                   onPressed: () {
                     auth.signOut();
+                    GoogleSignIn().signOut();
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => SignInPage()));
                   },
