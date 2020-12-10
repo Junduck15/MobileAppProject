@@ -1,10 +1,9 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileappproject/QuizMenu.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 import 'dailyQuiz.dart';
 import 'profile.dart';
@@ -13,12 +12,11 @@ import 'folderlist.dart';
 import 'main.dart';
 
 class HomePage extends StatefulWidget {
-
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
+  final FirebaseAuth auth = FirebaseAuth.instance;
   int _currentIndex = 0;
 
   final List<Widget> _children = [FolderPage(), QuizMenu(), BankPage()];
@@ -40,20 +38,20 @@ class _HomePageState extends State<HomePage> {
   void _requestPermissions() {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+          alert: true,
+          badge: true,
+          sound: true,
+        );
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        MacOSFlutterLocalNotificationsPlugin>()
+            MacOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   void _configureDidReceiveLocalNotificationSubject() {
@@ -76,8 +74,7 @@ class _HomePageState extends State<HomePage> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (BuildContext context) =>
-                        HomePage(),
+                    builder: (BuildContext context) => HomePage(),
                   ),
                 );
               },
@@ -89,16 +86,26 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _configureSelectNotificationSubject() {
+  void _configureSelectNotificationSubject(){
     selectNotificationSubject.stream.listen((String payload) async {
       print('clicked!');
-      await Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-            builder: (BuildContext context) => DailyQuiz(
-                // problemTypes: problemTypes,
-            )),
-      );
+      List<dynamic> problemTypes;
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(auth.currentUser.uid)
+          .snapshots()
+          .listen((data) async {
+        data.data()["problemTypes"] != null
+            ? problemTypes = data.data()["problemTypes"]
+            : problemTypes = [];
+        await Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+              builder: (BuildContext context) => DailyQuiz(
+                problemTypes: problemTypes,
+              )),
+        );
+      });
     });
   }
 
@@ -112,14 +119,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-        body: _children[_currentIndex],
-        bottomNavigationBar: _BottomBar()
-    );
+        body: _children[_currentIndex], bottomNavigationBar: _BottomBar());
   }
 
-
-  Widget _BottomBar(){
+  Widget _BottomBar() {
     return BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         onTap: _onTap,
@@ -138,6 +141,5 @@ class _HomePageState extends State<HomePage> {
             title: Text('문제은행'),
           )
         ]);
-
   }
 }
