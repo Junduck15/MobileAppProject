@@ -31,7 +31,6 @@ class _BankPage extends State<BankPage> {
         problemTypes = ds['problemTypes'];
       });
     }
-
     void _showDialog2() {
       showDialog(
         context: context,
@@ -86,130 +85,149 @@ class _BankPage extends State<BankPage> {
         builder: (BuildContext context) {
           return AlertDialog(
               title: Text("문제 그룹 지정"),
-              actions: [
+             
+              content: Container(
+                  height: 150,
+                  child: Column(
+                    children: [
+                      Container(
+                          child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
+                              child: FormField<String>(
+                                builder: (FormFieldState<String> state) {
+                                  return InputDecorator(
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0))),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButtonFormField<String>(
+                                        hint: Text("문제그룹"),
+                                        value: problemType,
+                                        isDense: true,
+                                        isExpanded: true,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            problemType = newValue;
+                                          });
+                                        },
+                                        items:
+                                            problemTypes.map((dynamic value) {
+                                          return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value,
+                                                  overflow: TextOverflow.fade));
+                                        }).toList(),
+                                        validator: (value) => value == null
+                                            ? '문제 그룹을 선택하지 않았습니다.'
+                                            : null,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          Container(
+                              width: 70,
+                              height: 70,
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
+                              child: Column(children: <Widget>[
+                                FlatButton(
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 30,
+                                  ),
+                                  onPressed: () {
+                                    _showDialog2();
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '그룹 추가',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                )
+                              ])),
+                        ],
+                      )),
+                    ],
+                  ))
+                 ,  actions: [
                 FlatButton(
-                  child: Text("취소", style: TextStyle(fontSize: 16, color: Colors.black38),),
+                  child: Text(
+                    "취소",
+                    style: TextStyle(fontSize: 16, color: Colors.black38),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
                 ),
                 FlatButton(
-                    child: Text("담기", style: TextStyle(fontSize: 16),),
+                    child: Text(
+                      "담기",
+                      style: TextStyle(fontSize: 16),
+                    ),
                     onPressed: () {
-                      problemTypes.add(doc['problemtype']);
-                      firestore
-                          .collection('users')
-                          .doc(_auth.currentUser.uid)
-                          .update({
-                        "problemTypes": FieldValue.arrayUnion(problemTypes),
-                      });
-                      DocumentReference ref = FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(_auth.currentUser.uid)
-                          .collection(problemType)
-                          .doc();
+                      //problemTypes.add(doc['problemtype']);
+                      if (problemType != null) {
+                        firestore
+                            .collection('users')
+                            .doc(_auth.currentUser.uid)
+                            .update({
+                          "problemTypes": FieldValue.arrayUnion(problemTypes),
+                        });
+                        DocumentReference ref = FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(_auth.currentUser.uid)
+                            .collection(problemType)
+                            .doc();
 
-                      doc['isMultiple'] == false
-                          ? ref.set({
-                              'problemtext': doc['problemtext'],
-                              'answer': doc['answer'],
-                              'picture': doc['picture'],
-                              'creator': doc['creator'],
-                              'isShared': doc['isShared'],
-                              'createdTime': FieldValue.serverTimestamp(),
-                              'isMultiple': false,
-                              'problemtype': problemType,
-                              'id': ref.id,
-                            })
-                          : ref.set({
-                              'problemtext': doc['problemtext'],
-                              'answer': doc['answer'],
-                              'multipleWrongAnswers':
-                                  doc['multipleWrongAnswers'],
-                              'picture': doc['picture'],
-                              'creator': doc['creator'],
-                              'isShared': doc['isShared'],
-                              'createdTime': FieldValue.serverTimestamp(),
-                              'isMultiple': false,
-                              'problemtype': problemType,
-                              'id': ref.id,
-                            });
-                      Navigator.pop(context);
+                        doc['isMultiple'] == false
+                            ? ref.set({
+                                'problemtext': doc['problemtext'],
+                                'answer': doc['answer'],
+                                'picture': doc['picture'],
+                                'creator': doc['creator'],
+                                'isShared': doc['isShared'],
+                                'createdTime': FieldValue.serverTimestamp(),
+                                'isMultiple': false,
+                                'problemtype': problemType,
+                                'id': ref.id,
+                              })
+                            : ref.set({
+                                'problemtext': doc['problemtext'],
+                                'answer': doc['answer'],
+                                'multipleWrongAnswers':
+                                    doc['multipleWrongAnswers'],
+                                'picture': doc['picture'],
+                                'creator': doc['creator'],
+                                'isShared': doc['isShared'],
+                                'createdTime': FieldValue.serverTimestamp(),
+                                'isMultiple': false,
+                                'problemtype': problemType,
+                                'id': ref.id,
+                              });
+                        Navigator.pop(context);
+                       } 
+                    //  else {
+                      //   showDialog(
+                      //       context: context,
+                      //       builder: (BuildContext context) {
+                      //         return AlertDialog(
+                      //           title: Text("문제 그룹을 선택하시오"),
+                      //         );
+                      //       });
+                      // }
                     }),
-              ],
-              content: Container(
-                height: 150,
-                  child: Column(
-                children: [
-                  Container(
-                      child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
-                          child: FormField<String>(
-                            builder: (FormFieldState<String> state) {
-                              return InputDecorator(
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0))),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButtonFormField<String>(
-                                    hint: Text("문제그룹"),
-                                    value: problemType,
-                                    isDense: true,
-                                    isExpanded: true,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        problemType = newValue;
-                                      });
-                                    },
-                                    items: problemTypes.map((dynamic value) {
-                                      return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value,
-                                              overflow: TextOverflow.fade));
-                                    }).toList(),
-                                    validator: (value) => value == null
-                                        ? '문제 그룹을 선택하지 않았습니다.'
-                                        : null,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Container(
-                          width: 70,
-                          height: 70,
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
-                          child: Column(children: <Widget>[
-                            FlatButton(
-                              child: Icon(
-                                Icons.add,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                _showDialog2();
-                              },
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              '그룹 추가',
-                              style: TextStyle(
-                                fontSize: 13,
-                              ),
-                            )
-                          ])),
-                    ],
-                  )),
-                ],
-              )));
+              ],);
         },
       );
     }
@@ -538,6 +556,7 @@ class _BankPage extends State<BankPage> {
                                                                     print(
                                                                         problemTypes);
                                                                   });
+
                                                                   _body(
                                                                       context,
                                                                       stream.data
