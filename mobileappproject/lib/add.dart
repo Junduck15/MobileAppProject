@@ -117,6 +117,7 @@ class _Add extends State<Add> {
         ]));
 
     void _showDialog() {
+      final _formKey = GlobalKey<FormState>();
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -124,14 +125,19 @@ class _Add extends State<Add> {
           return AlertDialog(
             title: Text("문제 그룹 생성"),
             content: Container(
-              height: 80,
-              child: Column(
-                children: [
-                  Text("생성할 문제 그룹 이름을 입력해주세요."),
-                  TextField(
-                    controller: newTypeController,
-                  ),
-                ],
+              height: 100,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Text("생성할 문제 그룹 이름을 입력해주세요."),
+                    TextFormField(
+                      controller: newTypeController,
+                      validator: (value) =>
+                          value == "" ? '생성할 문제 그룹의 이름을 입력하지 않았습니다..' : null,
+                    ),
+                  ],
+                ),
               ),
             ),
             actions: <Widget>[
@@ -144,18 +150,20 @@ class _Add extends State<Add> {
               FlatButton(
                 child: Text("생성"),
                 onPressed: () {
-                  firestore
-                      .collection('users')
-                      .doc(_auth.currentUser.uid)
-                      .update({
-                    "problemTypes":
-                        FieldValue.arrayUnion([newTypeController.text]),
-                  });
-                  firestore
-                      .collection('users')
-                      .doc(_auth.currentUser.uid)
-                      .collection('problemType');
-                  Navigator.pop(context);
+                  if (_formKey.currentState.validate()) {
+                    firestore
+                        .collection('users')
+                        .doc(_auth.currentUser.uid)
+                        .update({
+                      "problemTypes":
+                          FieldValue.arrayUnion([newTypeController.text]),
+                    });
+                    firestore
+                        .collection('users')
+                        .doc(_auth.currentUser.uid)
+                        .collection('problemType');
+                    Navigator.pop(context);
+                  }
                 },
               ),
             ],
@@ -439,54 +447,54 @@ class _Add extends State<Add> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-                title: Text("사진으로 문제입력"),
-                content: Container(
+              title: Text("사진으로 문제입력"),
+              content: Container(
                   height: 400,
                   width: 400,
-                  child: Column(
-                    children: [
-                      SizedBox(height: 50.0),
-                      isImageLoaded
-                          ? Center(
-                              child: Container(
-                                  height: 250.0,
-                                  width: 250.0,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: FileImage(pickedImage),
-                                          fit: BoxFit.cover))),
-                            )
-                          : Container(),
-                      FlatButton(
-                        child: Text('사진 불러오기'),
-                        onPressed: () async {
-                          var tempStore = await ImagePicker.pickImage(
-                              source: ImageSource.gallery);
-
-                          setState(() {
-                            pickedImage = tempStore;
-                            isImageLoaded = true;
-                          });
-                        },
-                      )])),
-                  actions: <Widget>[
+                  child: Column(children: [
+                    SizedBox(height: 50.0),
+                    isImageLoaded
+                        ? Center(
+                            child: Container(
+                                height: 250.0,
+                                width: 250.0,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: FileImage(pickedImage),
+                                        fit: BoxFit.cover))),
+                          )
+                        : Container(),
                     FlatButton(
-                      child: Text("취소", style: TextStyle(color: Colors.black38)),
-                      onPressed: () {
-                        Navigator.pop(context);
+                      child: Text('사진 불러오기'),
+                      onPressed: () async {
+                        var tempStore = await ImagePicker.pickImage(
+                            source: ImageSource.gallery);
+
+                        setState(() {
+                          pickedImage = tempStore;
+                          isImageLoaded = true;
+                        });
                       },
-                    ),
-                      FlatButton(
-                        child: Text('입력'),
-                        onPressed: () async {
-                          translated = "";
-                          await readText();
-                          problemVal = translated;
-                          _uploadImageToFirebase(pickedImage);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
+                    )
+                  ])),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("취소", style: TextStyle(color: Colors.black38)),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                FlatButton(
+                  child: Text('입력'),
+                  onPressed: () async {
+                    translated = "";
+                    await readText();
+                    problemVal = translated;
+                    _uploadImageToFirebase(pickedImage);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             );
           });
     }
@@ -530,8 +538,11 @@ class _Add extends State<Add> {
                   FlatButton(
                       child: Row(children: <Widget>[
                         Icon(Icons.image, color: Colors.black45),
-                        SizedBox(width: 4,),
-                        Text('사진으로 문제입력', style: TextStyle(color: Colors.black54)),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Text('사진으로 문제입력',
+                            style: TextStyle(color: Colors.black54)),
                       ]),
                       onPressed: () {
                         pickImage();
@@ -647,14 +658,14 @@ class _Add extends State<Add> {
                                 Navigator.of(context).pushReplacement(
                                     new MaterialPageRoute(
                                         settings:
-                                        const RouteSettings(name: '/added'),
+                                            const RouteSettings(name: '/added'),
                                         builder: (context) => new Added(
                                             problem: problemController.text,
                                             answer: answerController.text,
                                             isMul: false,
                                             snap: snap,
                                             problemType:
-                                            problemType.toString())));
+                                                problemType.toString())));
                               }
                               DocumentReference ref = FirebaseFirestore.instance
                                   .collection('users')
@@ -743,16 +754,16 @@ class _Add extends State<Add> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => Added(
-                                            problem: problemController.text,
-                                            answer:
-                                            multiAnswerController.text,
-                                            isMul: true,
-                                            problemType:
-                                            problemType.toString(),
-                                            mul1: multi1Controller.text,
-                                            mul2: multi2Controller.text,
-                                            mul3: multi3Controller.text,
-                                          )),
+                                                problem: problemController.text,
+                                                answer:
+                                                    multiAnswerController.text,
+                                                isMul: true,
+                                                problemType:
+                                                    problemType.toString(),
+                                                mul1: multi1Controller.text,
+                                                mul2: multi2Controller.text,
+                                                mul3: multi3Controller.text,
+                                              )),
                                     );
                                   }
 
