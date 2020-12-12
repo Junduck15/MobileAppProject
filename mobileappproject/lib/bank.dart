@@ -15,6 +15,8 @@ class _BankPage extends State<BankPage> {
   var problemType;
   final _formKey = GlobalKey<FormState>();
 
+  String image = 'https://ifh.cc/g/PZ4pEO.png';
+
   @override
   Widget build(BuildContext context) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -238,7 +240,7 @@ class _BankPage extends State<BankPage> {
                                     'creator': doc['creator'],
                                     'isShared': doc['isShared'],
                                     'createdTime': FieldValue.serverTimestamp(),
-                                    'isMultiple': false,
+                                    'isMultiple': true,
                                     'problemtype': problemType,
                                     'id': ref.id,
                                   });
@@ -315,9 +317,77 @@ class _BankPage extends State<BankPage> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      SizedBox(
-                                                        height: 20,
-                                                      ),
+                                                      Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .fromLTRB(
+                                                                      0.0,
+                                                                      20.0,
+                                                                      0.0,
+                                                                      10.0),
+                                                              width: 32.0,
+                                                              height: 32.0,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  fit: BoxFit
+                                                                      .fitHeight,
+                                                                  image:
+                                                                      NetworkImage(
+                                                                          image),
+                                                                ),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                color: Colors
+                                                                    .transparent,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 13),
+                                                              child: Text(
+                                                                  stream.data.docs[
+                                                                          index]
+                                                                      [
+                                                                      'creator'],
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          17,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontStyle:
+                                                                          FontStyle
+                                                                              .italic)),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        top:
+                                                                            13),
+                                                                child: Text(
+                                                                    '  이/가 등록 ',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            15,
+                                                                        color: Colors
+                                                                            .grey))),
+                                                          ]),
+                                                      Padding(
+                                                        padding : EdgeInsets.symmetric(vertical: 7),
+                                                            child: Divider(height: 1,)
+                                                      )
+                                                      ,
                                                       stream.data.docs[index][
                                                                   'isMultiple'] ==
                                                               false
@@ -355,30 +425,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                            250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -485,30 +536,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -600,12 +632,80 @@ class _BankPage extends State<BankPage> {
                                                     20.0, 0.0, 15.0, 13.0),
                                                 child: Column(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    CrossAxisAlignment
+                                                        .start,
                                                     children: [
-                                                      SizedBox(
-                                                        height: 20,
-                                                      ),
+                                                      Row(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0.0,
+                                                                  20.0,
+                                                                  0.0,
+                                                                  10.0),
+                                                              width: 32.0,
+                                                              height: 32.0,
+                                                              decoration:
+                                                              BoxDecoration(
+                                                                image:
+                                                                DecorationImage(
+                                                                  fit: BoxFit
+                                                                      .fitHeight,
+                                                                  image:
+                                                                  NetworkImage(
+                                                                      image),
+                                                                ),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                    .circular(
+                                                                    50.0)),
+                                                                color: Colors
+                                                                    .transparent,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                  top: 13),
+                                                              child: Text(
+                                                                  stream.data.docs[
+                                                                  index]
+                                                                  [
+                                                                  'creator'],
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                      17,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontStyle:
+                                                                      FontStyle
+                                                                          .italic)),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                    top:
+                                                                    13),
+                                                                child: Text(
+                                                                    '  이/가 등록 ',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                        15,
+                                                                        color: Colors
+                                                                            .grey))),
+                                                          ]),
+                                                      Padding(
+                                                          padding : EdgeInsets.symmetric(vertical: 7),
+                                                          child: Divider(height: 1,)
+                                                      )
+                                                      ,
                                                       stream.data.docs[index][
                                                                   'isMultiple'] ==
                                                               false
@@ -643,30 +743,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -773,30 +854,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -888,12 +950,80 @@ class _BankPage extends State<BankPage> {
                                                     20.0, 0.0, 15.0, 13.0),
                                                 child: Column(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    CrossAxisAlignment
+                                                        .start,
                                                     children: [
-                                                      SizedBox(
-                                                        height: 20,
-                                                      ),
+                                                      Row(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0.0,
+                                                                  20.0,
+                                                                  0.0,
+                                                                  10.0),
+                                                              width: 32.0,
+                                                              height: 32.0,
+                                                              decoration:
+                                                              BoxDecoration(
+                                                                image:
+                                                                DecorationImage(
+                                                                  fit: BoxFit
+                                                                      .fitHeight,
+                                                                  image:
+                                                                  NetworkImage(
+                                                                      image),
+                                                                ),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                    .circular(
+                                                                    50.0)),
+                                                                color: Colors
+                                                                    .transparent,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                  top: 13),
+                                                              child: Text(
+                                                                  stream.data.docs[
+                                                                  index]
+                                                                  [
+                                                                  'creator'],
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                      17,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontStyle:
+                                                                      FontStyle
+                                                                          .italic)),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                    top:
+                                                                    13),
+                                                                child: Text(
+                                                                    '  이/가 등록 ',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                        15,
+                                                                        color: Colors
+                                                                            .grey))),
+                                                          ]),
+                                                      Padding(
+                                                          padding : EdgeInsets.symmetric(vertical: 7),
+                                                          child: Divider(height: 1,)
+                                                      )
+                                                      ,
                                                       stream.data.docs[index][
                                                                   'isMultiple'] ==
                                                               false
@@ -931,30 +1061,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -1061,30 +1172,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -1176,12 +1268,80 @@ class _BankPage extends State<BankPage> {
                                                     20.0, 0.0, 15.0, 13.0),
                                                 child: Column(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    CrossAxisAlignment
+                                                        .start,
                                                     children: [
-                                                      SizedBox(
-                                                        height: 20,
-                                                      ),
+                                                      Row(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0.0,
+                                                                  20.0,
+                                                                  0.0,
+                                                                  10.0),
+                                                              width: 32.0,
+                                                              height: 32.0,
+                                                              decoration:
+                                                              BoxDecoration(
+                                                                image:
+                                                                DecorationImage(
+                                                                  fit: BoxFit
+                                                                      .fitHeight,
+                                                                  image:
+                                                                  NetworkImage(
+                                                                      image),
+                                                                ),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                    .circular(
+                                                                    50.0)),
+                                                                color: Colors
+                                                                    .transparent,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                  top: 13),
+                                                              child: Text(
+                                                                  stream.data.docs[
+                                                                  index]
+                                                                  [
+                                                                  'creator'],
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                      17,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontStyle:
+                                                                      FontStyle
+                                                                          .italic)),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                    top:
+                                                                    13),
+                                                                child: Text(
+                                                                    '  이/가 등록 ',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                        15,
+                                                                        color: Colors
+                                                                            .grey))),
+                                                          ]),
+                                                      Padding(
+                                                          padding : EdgeInsets.symmetric(vertical: 7),
+                                                          child: Divider(height: 1,)
+                                                      )
+                                                      ,
                                                       stream.data.docs[index][
                                                                   'isMultiple'] ==
                                                               false
@@ -1219,30 +1379,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
@@ -1349,30 +1490,11 @@ class _BankPage extends State<BankPage> {
                                                                   SizedBox(
                                                                     height: 10,
                                                                   ),
-                                                                  Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .end,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Text(
-                                                                            stream.data.docs[index][
-                                                                                'creator'],
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.grey,
-                                                                                fontStyle: FontStyle.italic)),
-                                                                        Text(
-                                                                            ' 이/가 등록 ',
-                                                                            style:
-                                                                                TextStyle(fontSize: 13, color: Colors.grey)),
-                                                                      ]),
                                                                   Container(
                                                                     margin: EdgeInsets
-                                                                        .only(
-                                                                            top:
-                                                                                30),
-                                                                    width: 330,
+                                                                        .fromLTRB(
+                                                                        250,30,0,0),
+                                                                    width: 150,
                                                                     child:
                                                                         RaisedButton(
                                                                       color:
