@@ -134,7 +134,7 @@ class _Add extends State<Add> {
                     TextFormField(
                       controller: newTypeController,
                       validator: (value) =>
-                          value == "" ? '생성할 문제 그룹의 이름을 입력하지 않았습니다..' : null,
+                          value == "" ? '생성할 문제 그룹의 이름을 입력하지 않았습니다.' : null,
                     ),
                   ],
                 ),
@@ -451,32 +451,38 @@ class _Add extends State<Add> {
               content: Container(
                   height: 400,
                   width: 400,
-                  child: Column(children: [
-                    SizedBox(height: 50.0),
-                    isImageLoaded
-                        ? Center(
-                            child: Container(
-                                height: 250.0,
-                                width: 250.0,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: FileImage(pickedImage),
-                                        fit: BoxFit.cover))),
-                          )
-                        : Container(),
-                    FlatButton(
-                      child: Text('사진 불러오기'),
-                      onPressed: () async {
-                        var tempStore = await ImagePicker.pickImage(
-                            source: ImageSource.gallery);
+                  child: StatefulBuilder(
+                    builder: (context, setState) {
+                      return Column(children: [
+                        SizedBox(height: 50.0),
+                        isImageLoaded
+                            ? Center(
+                          child: Container(
+                              height: 250.0,
+                              width: 250.0,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: FileImage(pickedImage),
+                                      fit: BoxFit.cover))),
+                        )
+                            : Container(),
+                        FlatButton(
+                          child: Text('사진 불러오기'),
+                          onPressed: () async {
+                            var tempStore = await ImagePicker.pickImage(
+                                source: ImageSource.gallery);
 
-                        setState(() {
-                          pickedImage = tempStore;
-                          isImageLoaded = true;
-                        });
-                      },
-                    )
-                  ])),
+                            setState(() {
+                              pickedImage = tempStore;
+                              isImageLoaded = true;
+                            });
+                          },
+                        )
+                      ],
+                      );
+                    },
+                  ),
+              ),
               actions: <Widget>[
                 FlatButton(
                   child: Text("취소", style: TextStyle(color: Colors.black38)),
