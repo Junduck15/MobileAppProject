@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobileappproject/quizResultDetail.dart';
+
+import 'login.dart' ;
 import 'models/indicator.dart';
 import 'models/problemModel.dart';
-import 'package:intl/intl.dart';
-import 'login.dart' ;
 
 class QuizResult extends StatefulWidget {
   final List<Problem> problemList;

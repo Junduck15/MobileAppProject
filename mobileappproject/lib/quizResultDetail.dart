@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobileappproject/main.dart';
 import 'package:mobileappproject/models/problemModel.dart';
+
 import 'login.dart';
 
 class QuizResultDetail extends StatefulWidget {
