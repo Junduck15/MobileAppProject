@@ -82,6 +82,7 @@ class _BankPage extends State<BankPage> {
     }
 
     Widget _body(BuildContext context, QueryDocumentSnapshot doc) {
+      final _formKey = GlobalKey<FormState>();
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -115,41 +116,45 @@ class _BankPage extends State<BankPage> {
                               Expanded(
                                 child: Container(
                                   padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
-                                  child: FormField<String>(
-                                    builder: (FormFieldState<String> state) {
-                                      return InputDecorator(
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        5.0))),
-                                        child: DropdownButtonHideUnderline(
-                                          child:
-                                              DropdownButtonFormField<String>(
-                                            hint: Text("문제그룹"),
-                                            value: problemType,
-                                            isDense: true,
-                                            isExpanded: true,
-                                            onChanged: (newValue) {
-                                              setState(() {
-                                                problemType = newValue;
-                                              });
-                                            },
-                                            items: problemTypes
-                                                .map((dynamic value) {
-                                              return DropdownMenuItem<String>(
-                                                  value: value,
-                                                  child: Text(value,
-                                                      overflow:
-                                                          TextOverflow.fade));
-                                            }).toList(),
-                                            validator: (value) => value == null
-                                                ? '문제 그룹을 선택하지 않았습니다.'
-                                                : null,
+                                  child: Form(
+                                    key: _formKey,
+                                    child: FormField<String>(
+                                      builder: (FormFieldState<String> state) {
+                                        return InputDecorator(
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0))),
+                                          child: DropdownButtonHideUnderline(
+                                            child:
+                                                DropdownButtonFormField<String>(
+                                              hint: Text("문제그룹"),
+                                              value: problemType,
+                                              isDense: true,
+                                              isExpanded: true,
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  problemType = newValue;
+                                                });
+                                              },
+                                              items: problemTypes
+                                                  .map((dynamic value) {
+                                                return DropdownMenuItem<String>(
+                                                    value: value,
+                                                    child: Text(value,
+                                                        overflow:
+                                                            TextOverflow.fade));
+                                              }).toList(),
+                                              validator: (value) =>
+                                                  value == null
+                                                      ? '문제 그룹을 선택하지 않았습니다.'
+                                                      : null,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
@@ -198,44 +203,47 @@ class _BankPage extends State<BankPage> {
                           style: TextStyle(fontSize: 16),
                         ),
                         onPressed: () {
-                          firestore
-                              .collection('users')
-                              .doc(_auth.currentUser.uid)
-                              .update({
-                            "problemTypes": FieldValue.arrayUnion(problemTypes),
-                          });
-                          DocumentReference ref = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(_auth.currentUser.uid)
-                              .collection(problemType)
-                              .doc();
+                          if (_formKey.currentState.validate()) {
+                            firestore
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .update({
+                              "problemTypes":
+                                  FieldValue.arrayUnion(problemTypes),
+                            });
+                            DocumentReference ref = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(_auth.currentUser.uid)
+                                .collection(problemType)
+                                .doc();
 
-                          doc['isMultiple'] == false
-                              ? ref.set({
-                                  'problemtext': doc['problemtext'],
-                                  'answer': doc['answer'],
-                                  'picture': doc['picture'],
-                                  'creator': doc['creator'],
-                                  'isShared': doc['isShared'],
-                                  'createdTime': FieldValue.serverTimestamp(),
-                                  'isMultiple': false,
-                                  'problemtype': problemType,
-                                  'id': ref.id,
-                                })
-                              : ref.set({
-                                  'problemtext': doc['problemtext'],
-                                  'answer': doc['answer'],
-                                  'multipleWrongAnswers':
-                                      doc['multipleWrongAnswers'],
-                                  'picture': doc['picture'],
-                                  'creator': doc['creator'],
-                                  'isShared': doc['isShared'],
-                                  'createdTime': FieldValue.serverTimestamp(),
-                                  'isMultiple': false,
-                                  'problemtype': problemType,
-                                  'id': ref.id,
-                                });
-                          Navigator.pop(context);
+                            doc['isMultiple'] == false
+                                ? ref.set({
+                                    'problemtext': doc['problemtext'],
+                                    'answer': doc['answer'],
+                                    'picture': doc['picture'],
+                                    'creator': doc['creator'],
+                                    'isShared': doc['isShared'],
+                                    'createdTime': FieldValue.serverTimestamp(),
+                                    'isMultiple': false,
+                                    'problemtype': problemType,
+                                    'id': ref.id,
+                                  })
+                                : ref.set({
+                                    'problemtext': doc['problemtext'],
+                                    'answer': doc['answer'],
+                                    'multipleWrongAnswers':
+                                        doc['multipleWrongAnswers'],
+                                    'picture': doc['picture'],
+                                    'creator': doc['creator'],
+                                    'isShared': doc['isShared'],
+                                    'createdTime': FieldValue.serverTimestamp(),
+                                    'isMultiple': false,
+                                    'problemtype': problemType,
+                                    'id': ref.id,
+                                  });
+                            Navigator.pop(context);
+                          }
                         }),
                   ],
                 );
