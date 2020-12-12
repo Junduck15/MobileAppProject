@@ -79,7 +79,7 @@ class _QuizResult extends State<QuizResult> {
         return dailyQuiz
             .add({
           'score': (rightNumber / quizNumber) * 100,
-          'date': DateFormat.Md().format(DateTime.now()),
+          'date': DateFormat('yyyyMMdd').format(DateTime.now()),
         })
             .then((value) => print("Daily Quiz Record Added"))
             .catchError((error) => print("Failed to add Daily Quiz Record: $error"));
