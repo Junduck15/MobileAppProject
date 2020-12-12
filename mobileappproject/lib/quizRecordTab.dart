@@ -27,7 +27,6 @@ class QuizRecordTabState extends State<QuizRecordTab> {
     0,
   ];
   List<dynamic> yyyyMMdd = [];
-  List<dynamic> Md = [];
   List<dynamic> EEEE = [];
   int touchedIndex;
 
@@ -38,8 +37,6 @@ class QuizRecordTabState extends State<QuizRecordTab> {
     for (var i = 6; i >= 0; i--) {
       yyyyMMdd.add(DateFormat("yyyyMMdd")
           .format(DateTime(now.year, now.month, now.day - i)));
-      Md.add(
-          DateFormat.Md().format(DateTime(now.year, now.month, now.day - i)));
       EEEE.add(
           DateFormat.EEEE().format(DateTime(now.year, now.month, now.day - i)));
     }
@@ -53,7 +50,7 @@ class QuizRecordTabState extends State<QuizRecordTab> {
           .doc(auth.currentUser.uid)
           .collection('dailyQuiz')
           .where('date',
-              isGreaterThan: DateFormat.Md().format(DateTime(
+              isGreaterThan: DateFormat('yyyyMMdd').format(DateTime(
                   DateTime.now().year,
                   DateTime.now().month,
                   DateTime.now().day - 7)))
@@ -67,7 +64,7 @@ class QuizRecordTabState extends State<QuizRecordTab> {
           for (var i = 0; i < snapshot.data.docs.length; i++) {
             Map<String, dynamic> data = snapshot.data.docs[i].data();
             for (var j = 0; j <= 6; j++) {
-              if (data['date'] == Md[j]) {
+              if (data['date'] == yyyyMMdd[j]) {
                 dailyQuizRecord[j] = data['score'].toDouble();
                 break;
               }

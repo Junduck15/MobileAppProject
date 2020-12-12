@@ -148,7 +148,7 @@ class _QuizMenu extends State<QuizMenu> with TickerProviderStateMixin {
             .collection("users")
             .doc(auth.currentUser.uid)
             .collection("dailyQuiz")
-            .where('date', isEqualTo: DateFormat.Md().format(DateTime.now()))
+            .where('date', isEqualTo: DateFormat('yyyyMMdd').format(DateTime.now()))
             .get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
